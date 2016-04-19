@@ -24,6 +24,6 @@ int main(void) {
     int cantidad_entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
     int retardo = config_get_int_value(config, "RETARDO");
 
-    printf("Puerto: :%d", puerto);
+    printf("Puerto:%d", puerto);
 	return EXIT_SUCCESS;
 }
