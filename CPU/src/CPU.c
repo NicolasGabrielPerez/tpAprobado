@@ -15,6 +15,7 @@
 #include <commons/collections/list.h>
 
 #include "ansiop.h"
+#include "configInit.h"
 
 static const char* DEFINICION_VARIABLES = "variables a, b, c";
 static const char* ASIGNACION = "a = b + 12";
@@ -65,9 +66,12 @@ void correrImprimirTexto() {
 
 
 int main(int argc, char **argv) {
-	correrDefinirVariables();
-	correrAsignar();
-	correrImprimir();
-	correrImprimirTexto();
+	//correrDefinirVariables();
+	//correrAsignar();
+	//correrImprimir();
+	//correrImprimirTexto();
+
+	initConfig();
+
 	return 0;
 }
