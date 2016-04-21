@@ -10,10 +10,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <commons/config.h>
 
 int main(void) {
-	t_config* config;
-	config = config_create("consola.config");
+	t_config* config = config_create("consola.config");
+	t_config* config = config_create("nucleo.config");
+		if(config==NULL){
+			printf("No se pudo leer la configuración");
+			return EXIT_FAILURE;
+		}
     int puerto = config_get_int_value(config, "PUERTO");
     int ip_swap = config_get_int_value(config, "IP_SWAP");
     int puerto_swap = config_get_int_value(config, "PUERTO_SWAP");
