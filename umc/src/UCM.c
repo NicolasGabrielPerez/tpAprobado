@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <commons/config.h>
+#include <commons/collections/list.h>
+#include <commons/collections/dictionary.h>
 
 int main(void) {
 	t_config* config;
