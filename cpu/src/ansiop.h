@@ -6,12 +6,12 @@
 
 
 
-	t_puntero dummy_definirVariable(t_nombre_variable variable);
-	t_puntero dummy_obtenerPosicionVariable(t_nombre_variable variable);
-	t_valor_variable dummy_dereferenciar(t_puntero puntero);
+	t_puntero definirVariable(t_nombre_variable variable);
+	t_puntero obtenerPosicionVariable(t_nombre_variable variable);
+	t_valor_variable dereferenciar(t_puntero puntero);
 
-	void dummy_asignar(t_puntero puntero, t_valor_variable variable);
-	void dummy_imprimir(t_valor_variable valor);
-	void dummy_imprimirTexto(char* texto);
+	void asignar(t_puntero puntero, t_valor_variable variable);
+	void imprimir(t_valor_variable valor);
+	void imprimirTexto(char* texto);
 
 #endif

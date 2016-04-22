@@ -16,6 +16,7 @@
 
 #include "ansiop.h"
 #include "configInit.h"
+#include "librery.h"
 
 static const char* DEFINICION_VARIABLES = "variables a, b, c";
 static const char* ASIGNACION = "a = b + 12";
@@ -24,12 +25,12 @@ static const char* IMPRIMIR_TEXTO = "textPrint foo\n";
 
 
 AnSISOP_funciones functions = {
-	.AnSISOP_definirVariable	= dummy_definirVariable,
-	.AnSISOP_obtenerPosicionVariable= dummy_obtenerPosicionVariable,
-	.AnSISOP_dereferenciar	= dummy_dereferenciar,
-	.AnSISOP_asignar	= dummy_asignar,
-	.AnSISOP_imprimir	= dummy_imprimir,
-	.AnSISOP_imprimirTexto	= dummy_imprimirTexto,
+	.AnSISOP_definirVariable	= definirVariable,
+	.AnSISOP_obtenerPosicionVariable= obtenerPosicionVariable,
+	.AnSISOP_dereferenciar	= dereferenciar,
+	.AnSISOP_asignar	= asignar,
+	.AnSISOP_imprimir	= imprimir,
+	.AnSISOP_imprimirTexto	= imprimirTexto,
 };
 AnSISOP_kernel kernel_functions = { };
 
@@ -62,7 +63,23 @@ void correrImprimirTexto() {
 	printf("================\n");
 }
 
+void socketInit() {
 
+	int socketNucleo = 0;
+	int socketUmc = 0;
+
+	int resultNucleo = crear_cliente(&socketNucleo, NUCLEO_IP, NUCLEO_PORT);
+	int resultUmc = crear_cliente(&socketUmc, UMC_IP, UMC_PORT);
+
+	if(resultNucleo == 0) {
+
+	}
+
+	if(resultUmc == 0) {
+
+	}
+
+}
 
 
 int main(int argc, char **argv) {
@@ -70,8 +87,9 @@ int main(int argc, char **argv) {
 	//correrAsignar();
 	//correrImprimir();
 	//correrImprimirTexto();
+	//initConfig();
 
-	initConfig();
+	socketInit();
 
 	return 0;
 }
