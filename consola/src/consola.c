@@ -81,10 +81,11 @@ int main(void) {
 	  perror("send");
 	}
 
-    if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
+    if ((numbytes = recv(sockfd, buf, 20, 0)) == -1) {
         perror("recv");
         exit(1);
     }
+
     printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
