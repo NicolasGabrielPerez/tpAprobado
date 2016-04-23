@@ -24,6 +24,8 @@ static const char* ASIGNACION = "a = b + 12";
 static const char* IMPRIMIR = "print b";
 static const char* IMPRIMIR_TEXTO = "textPrint foo\n";
 
+int socketNucleo = 0;
+int socketUmc = 0;
 
 AnSISOP_funciones functions = {
 	.AnSISOP_definirVariable	= definirVariable,
@@ -66,9 +68,6 @@ void correrImprimirTexto() {
 
 void socketInit() {
 
-	int socketNucleo = 0;
-	int socketUmc = 0;
-
 	int resultNucleo = crear_cliente(&socketNucleo, NUCLEO_IP, NUCLEO_PORT);
 	int resultUmc = crear_cliente(&socketUmc, UMC_IP, UMC_PORT);
 
@@ -88,6 +87,20 @@ void socketInit() {
 
 }
 
+void sendMessage() {
+	char package[PACKAGESIZE];
+	int enviar = 1;
+
+	while(enviar){
+			char* receivedData = fgets(package, PACKAGESIZE, stdin);
+			printf("CPU: Mensaje Recibido\n");
+			if (!strcmp(package,"exit\n")) enviar = 0;
+			if (enviar) {
+				send(socketNucleo, package, PACKAGESIZE, 0);
+				//send(socketNucleo, package, strlen(package) + 1, 0);
+			}
+	}
+}
 
 int main(int argc, char **argv) {
 	//correrDefinirVariables();
@@ -97,6 +110,7 @@ int main(int argc, char **argv) {
 	//initConfig();
 
 	socketInit();
+	sendMessage();
 
 	return 0;
 }
