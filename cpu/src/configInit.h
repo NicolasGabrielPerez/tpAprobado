@@ -10,6 +10,8 @@
 	#define UMC_IP "127.0.0.1"
 	#define UMC_PORT "8009"
 
+	#define PACKAGESIZE 1024 //Esto es variable segun la cantidad de datos.
+
 	void initConfig();
 
 #endif /* CONFIGINIT_H_ */
