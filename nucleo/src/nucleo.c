@@ -176,7 +176,9 @@ int main(void) {
 	    char** shared_values = config_get_array_value(config, "SHARED_VARS");
 
 	    int socket_umc = socketInit("utnso40","8989");
-	    handshake(socket_umc);
+	    if(handshake(socket_umc)!=0){
+	    	puts("Error en handskake con umc");
+	    }
 
 	    fd_set master;    // master file descriptor list
        fd_set read_fds;  // temp file descriptor list for select()
