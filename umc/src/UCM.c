@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <libreria-nuestra/sockets-then-exist.h>
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -147,6 +148,10 @@ int main(void) {
                                    get_in_addr((struct sockaddr*)&remoteaddr),
                                    remoteIP, INET6_ADDRSTRLEN),
                                newfd);
+                          puts("ucm: Voy a enviar algo...\n");
+                          if (send(newfd, "Hola!", nbytes, 0) == -1) {
+							  perror("send");
+						  }
                        }
                    } else {
                        // handle data from a client

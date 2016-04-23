@@ -3,7 +3,7 @@
 	<name>umc</name>
 	<comment></comment>
 	<projects>
-		<project>push-then-exist</project>
+		<project>libreria-nuestra</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
