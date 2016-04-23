@@ -108,6 +108,8 @@ int main(void) {
            exit(3);
        }
 
+       printf("Creado listener: %d\n", listener);
+
        // add the listener to the master set
        FD_SET(listener, &master);
 
@@ -156,7 +158,7 @@ int main(void) {
 
 							printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
-							if (send(newfd, "Nucl!", 5, 0) == -1) {
+							if (send(newfd, "Soy la UMC", 5, 0) == -1) {
 								 perror("send");
 							 }
 
