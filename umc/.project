@@ -3,6 +3,7 @@
 	<name>umc</name>
 	<comment></comment>
 	<projects>
+		<project>push-then-exist</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
