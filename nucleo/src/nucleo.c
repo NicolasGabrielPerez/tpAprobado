@@ -125,7 +125,7 @@ int main(void) {
        FD_ZERO(&master);    // clear the master and temp sets
        FD_ZERO(&read_fds);
 
-       listener = crear_puerto_escucha("8989");
+       listener = crear_puerto_escucha("8990");
 
        printf("Creado listener: %d\n", listener);
 
@@ -177,7 +177,7 @@ int main(void) {
 
                            printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
-                           if (send(newfd, "Nucl!", 5, 0) == -1) {
+                           if (send(newfd, "Soy el NUCLEO", 5, 0) == -1) {
 								 perror("send");
 							 }
 

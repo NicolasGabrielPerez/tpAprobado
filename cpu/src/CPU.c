@@ -147,25 +147,15 @@ void sendMessage() {
 	}
 }
 
-int main(int argc, char **argv) {
-	//correrDefinirVariables();
-	//correrAsignar();
-	//correrImprimir();
-	//correrImprimirTexto();
-	//initConfig();
-
-//	sendMessage();
+int handshake(int sockfd){
 	char buf[50];
-	int socket_umc = socketInit("utnso40", "8989"); //socket usado para conectarse a la umc
-	int socket_nucleo = socketInit("utnso40", "8990"); //socket usado para conectarse a la umc
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
-
-	puts("Núcleo: Voy a enviar algo...\n");
-	if (send(socket_umc,"Hola!", 5, 0) == -1) {
+	puts("CPU: Voy a enviar algo...\n");
+	if (send(sockfd,"Soy una CPU", 5, 0) == -1) {
 	  perror("send");
 	}
 
-	if ((numbytes = recv(socket_umc, buf, 49, 0)) == -1) {
+	if ((numbytes = recv(sockfd, buf, 49, 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
@@ -175,10 +165,34 @@ int main(int argc, char **argv) {
 	buf[numbytes] = '\0';
 
 	puts("Antes de close\n");
-	close(socket_umc);
+	close(sockfd);
 	puts("Despues de close\n");
+
+	return 0;
+}
+
+int main(int argc, char **argv) {
+	//correrDefinirVariables();
+	//correrAsignar();
+	//correrImprimir();
+	//correrImprimirTexto();
+	//initConfig();
+
+//	sendMessage();
+
+	int socket_umc = socketInit("utnso40", "8989"); //socket usado para conectarse a la umc
+	int socket_nucleo = socketInit("utnso40", "8990"); //socket usado para conectarse a la umc
+
+	//Hago handskae con umc
+	if(handshake(socket_umc) != 0){
+		puts("Error en handshake con la umc");
+	}
+
+	//Hago handskae con nucleo
+	if(handshake(socket_nucleo) != 0){
+		puts("Error en handshake con la umc");
+	}
 
 	return EXIT_SUCCESS;
 
-	return 0;
 }
