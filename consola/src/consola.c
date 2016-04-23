@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <commons/config.h>
-#include <libreria-nuestra/sockets-then-exist.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -9,6 +8,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <commons/string.h>
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once
 
@@ -34,7 +34,7 @@ int main(void) {
 	int retardo_compactacion = config_get_int_value(config, "RETARDO_COMPACTACION");
 
 	int sockfd, numbytes;
-	char buf[6];
+	char buf[50];
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
 	char s[INET6_ADDRSTRLEN];
@@ -80,12 +80,15 @@ int main(void) {
         perror("recv");
         exit(1);
     }
-
+    printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
 	printf("client: received '%s'\n",buf);
+	//printf("client: size of what received '%s'\n",string_length(buf));
 
+	puts("Antes de close\n");
 	close(sockfd);
+	puts("Despues de close\n");
 
 	return EXIT_SUCCESS;
 }

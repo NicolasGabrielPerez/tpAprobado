@@ -148,7 +148,7 @@ int main(void) {
                                    remoteIP, INET6_ADDRSTRLEN),
                                newfd);
                           puts("ucm: Voy a enviar algo...\n");
-                          if (send(newfd, "Hola!", nbytes, 0) == -1) {
+                          if (send(newfd, "Hola!", 5, 0) == -1) {
 							  perror("send");
 						  }
                        }
