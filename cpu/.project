@@ -23,4 +23,11 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>librery</name>
+			<type>2</type>
+			<location>/home/utnso/Dropbox/Facultad/UTN/Sistemas Operativos/compartido VM/workspace/TP/librery</location>
+		</link>
+	</linkedResources>
 </projectDescription>

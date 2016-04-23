@@ -1,7 +1,9 @@
 #include "configInit.h"
 
 
-char* PATH_CONFIG = "/home/utnso/Dropbox/Facultad/UTN/Sistemas Operativos/compartido VM/workspace/TP/CPU/src/config.txt";
+
+
+#define PATH_CONFIG "/home/utnso/Dropbox/Facultad/UTN/Sistemas Operativos/compartido VM/workspace/TP/CPU/src/config.txt"
 
 void initConfig() {
 

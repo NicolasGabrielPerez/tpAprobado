@@ -8,7 +8,7 @@
 #include "librery.h"
 
 
-#define BACKLOG 10
+#define BACKLOG 5
 
 int crear_cliente(int* socketCliente,char* IP,char* PUERTO){
 
