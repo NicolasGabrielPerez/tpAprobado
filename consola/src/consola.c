@@ -76,6 +76,11 @@ int main(void) {
 
 	freeaddrinfo(servinfo); // all done with this structure
 
+	puts("Núcleo: Voy a enviar algo...\n");
+	if (send(sockfd,"Hola!", 5, 0) == -1) {
+	  perror("send");
+	}
+
     if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
         perror("recv");
         exit(1);

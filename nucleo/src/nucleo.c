@@ -55,8 +55,11 @@ int main(void) {
 
 	    fd_set master;    // master file descriptor list
        fd_set read_fds;  // temp file descriptor list for select()
-       int fdmax;        // maximum file descriptor number
+       fd_set cpus;
+       fd_set consolas;
 
+       int fdmax;        // maximum file descriptor number
+       int bytes_recibidos;
        int listener;     // listening socket descriptor
        int newfd;        // newly accept()ed socket descriptor
        struct sockaddr_storage remoteaddr; // client address
@@ -155,10 +158,17 @@ int main(void) {
                                    get_in_addr((struct sockaddr*)&remoteaddr),
                                    remoteIP, INET6_ADDRSTRLEN),
                                newfd);
-                          puts("ucm: Voy a enviar algo...\n");
-                          if (send(newfd, "Hola!", 5, 0) == -1) {
-							  perror("send");
-						  }
+
+                           if ((bytes_recibidos = recv(newfd, buf, 20, 0)) == -1) {
+							   perror("recv");
+							   exit(1);
+						   }
+
+                           if (send(newfd, "Nucl!", 5, 0) == -1) {
+								 perror("send");
+							 }
+
+                           printf("Se recibio: %s\nbytes_recibidos: %d", buf, bytes_recibidos);
                        }
                    } else {
                        // handle data from a client
@@ -173,8 +183,9 @@ int main(void) {
                            close(i); // bye!
                            FD_CLR(i, &master); // remove from master set
                        } else {
+                    	   //se recibió mensaje
                            // we got some data from a client
-                    	   puts("ucm: Voy a enviar algo...\n");
+                    	   puts("Núcleo: Voy a enviar algo...\n");
                     	   if (send(i, "Hola!", 5, 0) == -1) {
 								 perror("send");
 							 }
