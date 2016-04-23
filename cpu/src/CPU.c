@@ -72,19 +72,18 @@ void socketInit() {
 	int resultUmc = crear_cliente(&socketUmc, UMC_IP, UMC_PORT);
 
 	if(resultNucleo == 0) {
-		printf("Bien papa nucleo\n");
+		printf("Socket nucleo creado\n");
 		printf("Result: %d\n", socketNucleo);
 	} else {
-		printf("Mal papa nucleo\n");
+		printf("Error al crear socket nucleo\n");
 	}
 
 	if(resultUmc == 0) {
-		printf("Bien papa umc\n");
+		printf("Socket UMC creado\n");
 		printf("Result: %d\n", socketUmc);
 	} else {
-		printf("Mal papa umc\n");
+		printf("Error al crear socket UMC\n");
 	}
-
 }
 
 void sendMessage() {
@@ -92,7 +91,7 @@ void sendMessage() {
 	int enviar = 1;
 
 	while(enviar){
-			char* receivedData = fgets(package, PACKAGESIZE, stdin);
+			fgets(package, PACKAGESIZE, stdin);
 			printf("CPU: Mensaje Recibido\n");
 			if (!strcmp(package,"exit\n")) enviar = 0;
 			if (enviar) {
