@@ -74,6 +74,8 @@ int crear_puerto_escucha(char* port){
 	   perror("listen");
 	   exit(3);
    }
+
+   return listener;
 }
 
 int main(void) {
@@ -124,6 +126,8 @@ int main(void) {
        FD_ZERO(&read_fds);
 
        listener = crear_puerto_escucha("8989");
+
+       printf("Creado listener: %d\n", listener);
 
        // add the listener to the master set
        FD_SET(listener, &master);
