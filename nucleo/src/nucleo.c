@@ -159,16 +159,20 @@ int main(void) {
                                    remoteIP, INET6_ADDRSTRLEN),
                                newfd);
 
-                           if ((bytes_recibidos = recv(newfd, buf, 20, 0)) == -1) {
+                           printf("El fd es: %d", newfd);
+                           if ((bytes_recibidos = recv(newfd, buf, 5, 0)) == -1) {
 							   perror("recv");
 							   exit(1);
 						   }
+
+                           printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
                            if (send(newfd, "Nucl!", 5, 0) == -1) {
 								 perror("send");
 							 }
 
-                           printf("Se recibio: %s\nbytes_recibidos: %d", buf, bytes_recibidos);
+                           puts("Pasamos por el send...");
+
                        }
                    } else {
                        // handle data from a client

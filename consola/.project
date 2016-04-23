@@ -3,7 +3,6 @@
 	<name>consola</name>
 	<comment></comment>
 	<projects>
-		<project>libreria-nuestra</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
