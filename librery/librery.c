@@ -8,7 +8,7 @@
 #include "librery.h"
 
 
-
+#define BACKLOG 10
 
 int crear_cliente(int* socketCliente,char* IP,char* PUERTO){
 
@@ -16,7 +16,7 @@ int crear_cliente(int* socketCliente,char* IP,char* PUERTO){
 	struct addrinfo *serverInfo;
 
 	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
+	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 
 	getaddrinfo(IP, PUERTO, &hints, &serverInfo);
@@ -35,7 +35,7 @@ int crear_servidor(int* listenningSocket, char* PUERTO){
 	struct addrinfo *serverInfo;
 
 	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
+	hints.ai_family = AF_INET;
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_socktype = SOCK_STREAM;
 

@@ -3,7 +3,7 @@
 #include <commons/config.h>
 
 int main(void) {
-	t_config* config = config_create("swap.config");
+	t_config* config = config_create("consola.config");
 	if(config==NULL){
 		printf("No se pudo leer la configuración");
 		return EXIT_FAILURE;
