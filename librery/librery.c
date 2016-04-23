@@ -8,9 +8,10 @@
 #include "librery.h"
 
 
+#define BACKLOG 5
 
 
-int crear_cliente(int* socketCliente,char* IP,char* PUERTO){
+int crear_cliente(int* socketCliente, char* IP,char* PUERTO){
 
 	struct addrinfo hints;
 	struct addrinfo *serverInfo;

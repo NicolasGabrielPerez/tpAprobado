@@ -5,10 +5,10 @@
 	#include <commons/config.h>
 
 
-	char* NUCLEO_IP;
-	char* NUCLEO_PORT;
-	char* UMC_IP;
-	char* UMC_PORT;
+	#define NUCLEO_IP "127.0.0.1"
+	#define NUCLEO_PORT "8000"
+	#define UMC_IP "127.0.0.1"
+	#define UMC_PORT "8009"
 
 	void initConfig();
 

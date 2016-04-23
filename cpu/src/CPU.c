@@ -16,7 +16,8 @@
 
 #include "ansiop.h"
 #include "configInit.h"
-#include "librery.h"
+
+#include <librery.h>
 
 static const char* DEFINICION_VARIABLES = "variables a, b, c";
 static const char* ASIGNACION = "a = b + 12";
@@ -72,11 +73,17 @@ void socketInit() {
 	int resultUmc = crear_cliente(&socketUmc, UMC_IP, UMC_PORT);
 
 	if(resultNucleo == 0) {
-
+		printf("Bien papa nucleo\n");
+		printf("Result: %d\n", socketNucleo);
+	} else {
+		printf("Mal papa nucleo\n");
 	}
 
 	if(resultUmc == 0) {
-
+		printf("Bien papa umc\n");
+		printf("Result: %d\n", socketUmc);
+	} else {
+		printf("Mal papa umc\n");
 	}
 
 }
