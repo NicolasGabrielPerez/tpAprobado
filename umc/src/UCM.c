@@ -86,7 +86,7 @@ int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 	puts("CPU: Voy a enviar algo...\n");
-	if (send(sockfd,"Soy una CPU", 5, 0) == -1) {
+	if (send(sockfd,"Soy UMC", 7, 0) == -1) {
 	  perror("send");
 	}
 
@@ -99,9 +99,8 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	puts("Antes de close\n");
 	close(sockfd);
-	puts("Despues de close\n");
+	puts("Swap: handshake finalizado felizmente\n");
 
 	return 0;
 }
@@ -210,7 +209,7 @@ int main(void) {
 
    // main loop
    for(;;) {
-	   puts("Comienzo del main loop\n");
+	   puts("UMC: esperando conexiones...\n");
 	   read_fds = master; // copy it
 	   if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
 		   perror("select");
@@ -242,7 +241,6 @@ int main(void) {
 								remoteIP, INET6_ADDRSTRLEN),
 							newfd);
 
-						printf("El fd es: %d", newfd);
 						if ((bytes_recibidos = recv(newfd, buf, sizeof(buf), 0)) == -1) {
 						   perror("recv");
 						   exit(1);
@@ -254,7 +252,7 @@ int main(void) {
 							 perror("send");
 						 }
 
-						puts("Pasamos por el send...");
+						puts("Terminó el envío\n");
 				   }
 				   continue;
 			   }
@@ -290,7 +288,7 @@ int main(void) {
 
 						printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
-						if (send(newfd, "Soy la UMC", 5, 0) == -1) {
+						if (send(newfd, "Soy UMC", 7, 0) == -1) {
 							 perror("send");
 						 }
 

@@ -96,9 +96,8 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	puts("Antes de close\n");
 	close(sockfd);
-	puts("Despues de close\n");
+	puts("Swap: handshake finalizado felizmente\n");
 
 	return 0;
 }

@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -83,11 +84,11 @@ int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 	puts("CPU: Voy a enviar algo...\n");
-	if (send(sockfd,"Soy una CPU", 5, 0) == -1) {
+	if (send(sockfd,"Soy NUCLEO", 10, 0) == -1) {
 	  perror("send");
 	}
 
-	if ((numbytes = recv(sockfd, buf, 49, 0)) == -1) {
+	if ((numbytes = recv(sockfd, buf, sizeof(buf), 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
@@ -96,9 +97,8 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	puts("Antes de close\n");
 	close(sockfd);
-	puts("Despues de close\n");
+	puts("Swap: handshake finalizado felizmente\n");
 
 	return 0;
 }
@@ -191,18 +191,16 @@ int main(void) {
 
 	    //t_dictionary* io_dictionary = create_dictionary_from_strings(config, io_ids, io_sleep_times); //lo creo por las dudas
 
-	    char** semaforos_ids = config_get_array_value(config, "SEM_ID");
-	    char** semaforos_init_values = config_get_array_value(config, "SEM_INIT");
+	    //char** semaforos_ids = config_get_array_value(config, "SEM_ID");
+	    //char** semaforos_init_values = config_get_array_value(config, "SEM_INIT");
 
-	    char** shared_values = config_get_array_value(config, "SHARED_VARS");
+	    //char** shared_values = config_get_array_value(config, "SHARED_VARS");
 
 	    int socket_umc = crear_socket_cliente("127.0.0.1", puerto_umc);
 	    handshake(socket_umc);
 
 	    fd_set master;    // master file descriptor list
        fd_set read_fds;  // temp file descriptor list for select()
-       fd_set cpus;
-       fd_set consolas;
 
        int fdmax;        // maximum file descriptor number
        int bytes_recibidos;
@@ -245,7 +243,7 @@ int main(void) {
 
        // main loop
        for(;;) {
-    	   puts("Comienzo del main loop\n");
+    	   puts("NUCLEO: Esperando conexiones...\n");
            read_fds = master; // copy it
            if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
                perror("select");
@@ -277,19 +275,18 @@ int main(void) {
                 	  		   remoteIP, INET6_ADDRSTRLEN),
                 	  	   newfd);
 
-                	  	printf("El fd es: %d", newfd);
-                	  	if ((bytes_recibidos = recv(newfd, buf, 5, 0)) == -1) {
+                	  	if ((bytes_recibidos = recv(newfd, buf, sizeof(buf), 0)) == -1) {
                 	  	   perror("recv");
                 	  	   exit(1);
                 	  	}
 
                 	  	printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
-                	  	if (send(newfd, "Soy el NUCLEO", 5, 0) == -1) {
+                	  	if (send(newfd, "Soy NUCLEO", 10, 0) == -1) {
                 	  		 perror("send");
                 	  	 }
 
-                	  	puts("Pasamos por el send...");
+                	  	puts("Terminó el envío\n");
                        }
 
                 	  	continue;
@@ -318,25 +315,25 @@ int main(void) {
 						   newfd);
 
 						printf("El fd es: %d", newfd);
-						if ((bytes_recibidos = recv(newfd, buf, 5, 0)) == -1) {
+						if ((bytes_recibidos = recv(newfd, buf, sizeof(buf), 0)) == -1) {
 						   perror("recv");
 						   exit(1);
 						}
 
 						printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
-						if (send(newfd, "Soy el NUCLEO", 5, 0) == -1) {
+						if (send(newfd, "Soy NUCLEO", 10, 0) == -1) {
 							 perror("send");
 						 }
 
-						puts("Pasamos por el send...");
+						puts("Pasamos por el send...\n");
 						 }
 
 						continue;
 				}
 
 				   // handle data from a client
-				   if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) {
+				   if ((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0) {
 					   // got error or connection closed by client
 					   if (nbytes == 0) {
 						   // connection closed

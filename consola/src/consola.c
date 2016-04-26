@@ -76,7 +76,7 @@ int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 	puts("CPU: Voy a enviar algo...\n");
-	if (send(sockfd,"Soy una CPU", 5, 0) == -1) {
+	if (send(sockfd,"Soy CONSOLA", 11, 0) == -1) {
 	  perror("send");
 	}
 
@@ -89,9 +89,8 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	puts("Antes de close\n");
 	close(sockfd);
-	puts("Despues de close\n");
+	puts("Swap: handshake finalizado felizmente\n");
 
 	return 0;
 }
