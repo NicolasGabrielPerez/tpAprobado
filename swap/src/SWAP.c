@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <commons/config.h>
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -28,7 +29,7 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int socketInit(char* ip, char* port) { //devuelve un nuevo socket para conectarse al server especificado
+int crear_socket_cliente(char* ip, char* port) { //devuelve un nuevo socket para conectarse al server especificado
 	int sockfd; //aca se va a poner el socket obtenido mediante getaddrinfo
 
 	struct addrinfo hints; //estructura conf info necesaria para getaddrinfo
@@ -82,7 +83,7 @@ int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 	puts("CPU: Voy a enviar algo...\n");
-	if (send(sockfd,"Soy SWAP", 5, 0) == -1) {
+	if (send(sockfd,"Soy SWAP", 8, 0) == -1) {
 	  perror("send");
 	}
 
@@ -91,7 +92,7 @@ int handshake(int sockfd){
 		exit(1);
 	}
 
-	printf("client: received '%s'\n",buf);
+	printf("swap: received '%s'\n",buf);
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
@@ -103,8 +104,16 @@ int handshake(int sockfd){
 }
 
 int main(void) {
+	t_config* config = config_create("swap.config");
+	if(config==NULL){
+		printf("No se pudo leer la configuración");
+		return EXIT_FAILURE;
+	}
+	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
 
-	int socket_umc = socketInit("utnso40", "8989"); //socket usado para conectarse a la umc
+	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
+
+	int socket_umc = crear_socket_cliente("127.0.0.1", puerto_umc); //socket usado para conectarse a la umc
 	//Hago handskae con umc
 	if(handshake(socket_umc) != 0){
 		puts("Error en handshake con la umc");

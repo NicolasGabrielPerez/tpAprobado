@@ -29,7 +29,7 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int socketInit(char* ip, char* port) { //devuelve un nuevo socket para conectarse al server especificado
+int crear_socket_cliente(char* ip, char* port) { //devuelve un nuevo socket para conectarse al server especificado
 	int sockfd; //aca se va a poner el socket obtenido mediante getaddrinfo
 
 	struct addrinfo hints; //estructura conf info necesaria para getaddrinfo
@@ -151,17 +151,38 @@ int crear_puerto_escucha(char* port){
    return listener;
 }
 
+void imprimirClaveValor(char** claves, char** valores){
+	char* clave;
+	char* valor;
+	int i;
+	for(i = 0; claves[i]!=NULL; i++){
+		clave = *claves;
+		valor = *valores;
+		printf("Config: %s,%s\n", clave, valor);
+	}
+}
+
 int main(void) {
 		t_config* config = config_create("nucleo.config");
-		char* puerto_prog = config_get_string_value(config, "PUERTO_PROG");
-	    char* puerto_cpu = config_get_string_value(config, "PUERTO_CPU");
+		char* puerto_prog = config_get_string_value(config, "PUERTO_PROG"); //puerto escucha de Consola
+	    char* puerto_cpu = config_get_string_value(config, "PUERTO_CPU"); //puerto escucha de CPU
+	    char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto de UMC
 	    int package_size = config_get_int_value(config, "PACKAGESIZE");
 	    int backlog = config_get_int_value(config, "BACKLOG");
 	    int quantum = config_get_int_value(config, "QUANTUM");
 	    int quantum_sleep = config_get_int_value(config, "QUANTUM_SLEEP");
 
+	    printf("Config: PUERTO_PROG=%s\n", puerto_prog);
+		printf("Config: PUERTO_CPU=%s\n", puerto_cpu);
+		printf("Config: PACKAGESIZE=%d\n", package_size);
+		printf("Config: BACKLOG=%d\n", backlog);
+		printf("Config: QUANTUM=%d\n", quantum);
+		printf("Config: QUANTUM_SLEEP=%d\n", quantum_sleep);
+
 		char** io_ids = config_get_array_value(config, "IO_ID");
 		char** io_sleep_times = config_get_array_value(config, "IO_SLEEP");
+
+		imprimirClaveValor(io_ids, io_sleep_times);
 
 		//para obtener un value, usas (char *)dictionary_get(x_dictionary,clave)
 		//OJO, el t_dictionary solo funciona de strings a strings,
@@ -175,7 +196,7 @@ int main(void) {
 
 	    char** shared_values = config_get_array_value(config, "SHARED_VARS");
 
-	    int socket_umc = socketInit("utnso40","8989");
+	    int socket_umc = crear_socket_cliente("127.0.0.1", puerto_umc);
 	    handshake(socket_umc);
 
 	    fd_set master;    // master file descriptor list
@@ -185,7 +206,7 @@ int main(void) {
 
        int fdmax;        // maximum file descriptor number
        int bytes_recibidos;
-       int listener;     // listening socket descriptor
+       int consola_listener, cpu_listener;     // listening socket descriptor
        int newfd;        // newly accept()ed socket descriptor
        struct sockaddr_storage remoteaddr; // client address
        socklen_t addrlen;
@@ -201,15 +222,26 @@ int main(void) {
        FD_ZERO(&master);    // clear the master and temp sets
        FD_ZERO(&read_fds);
 
-       listener = crear_puerto_escucha("8990");
+       consola_listener = crear_puerto_escucha(puerto_prog);
 
-       printf("Creado listener: %d\n", listener);
+       printf("Creado listener de Consola: %d\n", consola_listener);
 
-       // add the listener to the master set
-       FD_SET(listener, &master);
+       cpu_listener = crear_puerto_escucha(puerto_cpu);
+
+	   printf("Creado listener: %d\n", cpu_listener);
+
+       // agrego listener de consola
+       FD_SET(consola_listener, &master);
+
+       // agrego listener de consola
+       FD_SET(cpu_listener, &master);
 
        // keep track of the biggest file descriptor
-       fdmax = listener; // so far, it's this one
+       if(consola_listener> cpu_listener){
+    	   fdmax = consola_listener;
+       }else{
+    	   fdmax = cpu_listener; // so far, it's this one
+       }
 
        // main loop
        for(;;) {
@@ -223,64 +255,106 @@ int main(void) {
            // run through the existing connections looking for data to read
            for(i = 0; i <= fdmax; i++) {
                if (FD_ISSET(i, &read_fds)) { // we got one!!
-                   if (i == listener) {
-                	   puts("Cambió el listener\n");
-                	   // handle new connections
-                       addrlen = sizeof remoteaddr;
-                       newfd = accept(listener,
-                           (struct sockaddr *)&remoteaddr,
-                           &addrlen);
+                   if (i == consola_listener) {
+                	   puts("Cambió el listener de consola\n");
+                	  	// handle new connections
+                	  	addrlen = sizeof remoteaddr;
+                	  	newfd = accept(consola_listener,
+                	  	(struct sockaddr *)&remoteaddr,
+                	  	&addrlen);
 
-                       if (newfd == -1) {
-                           perror("accept");
-                       } else {
-                           FD_SET(newfd, &master); // add to master set
-                           if (newfd > fdmax) {    // keep track of the max
-                               fdmax = newfd;
-                           }
-                           printf("selectserver: new connection from %s on "
-                               "socket %d\n",
-                               inet_ntop(remoteaddr.ss_family,
-                                   get_in_addr((struct sockaddr*)&remoteaddr),
-                                   remoteIP, INET6_ADDRSTRLEN),
-                               newfd);
+                	  	if (newfd == -1) {
+                	  	perror("accept");
+                	  	} else {
+                	  	FD_SET(newfd, &master); // add to master set
+                	  	if (newfd > fdmax) {    // keep track of the max
+                	  	   fdmax = newfd;
+                	  	}
+                	  	printf("nucleo: new connection from %s on "
+                	  	   "socket %d\n",
+                	  	   inet_ntop(remoteaddr.ss_family,
+                	  		   get_in_addr((struct sockaddr*)&remoteaddr),
+                	  		   remoteIP, INET6_ADDRSTRLEN),
+                	  	   newfd);
 
-                           printf("El fd es: %d", newfd);
-                           if ((bytes_recibidos = recv(newfd, buf, 5, 0)) == -1) {
-							   perror("recv");
-							   exit(1);
-						   }
+                	  	printf("El fd es: %d", newfd);
+                	  	if ((bytes_recibidos = recv(newfd, buf, 5, 0)) == -1) {
+                	  	   perror("recv");
+                	  	   exit(1);
+                	  	}
 
-                           printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
+                	  	printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
-                           if (send(newfd, "Soy el NUCLEO", 5, 0) == -1) {
-								 perror("send");
-							 }
+                	  	if (send(newfd, "Soy el NUCLEO", 5, 0) == -1) {
+                	  		 perror("send");
+                	  	 }
 
-                           puts("Pasamos por el send...");
-
+                	  	puts("Pasamos por el send...");
                        }
-                   } else {
-                       // handle data from a client
-                       if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) {
-                           // got error or connection closed by client
-                           if (nbytes == 0) {
-                               // connection closed
-                               printf("selectserver: socket %d hung up\n", i);
-                           } else {
-                               perror("recv");
-                           }
-                           close(i); // bye!
-                           FD_CLR(i, &master); // remove from master set
-                       } else {
-                    	   //se recibió mensaje
-                           // we got some data from a client
-                    	   puts("Núcleo: Voy a enviar algo...\n");
-                    	   if (send(i, "Hola!", 5, 0) == -1) {
-								 perror("send");
-							 }
-                       }
-                   } // END handle data from client
+
+                	  	continue;
+                   }
+
+                   if (i == cpu_listener) {
+					   puts("Cambió el listener de cpu\n");
+						// handle new connections
+						addrlen = sizeof remoteaddr;
+						newfd = accept(cpu_listener,
+						(struct sockaddr *)&remoteaddr,
+						&addrlen);
+
+						if (newfd == -1) {
+						perror("accept");
+						} else {
+						FD_SET(newfd, &master); // add to master set
+						if (newfd > fdmax) {    // keep track of the max
+						   fdmax = newfd;
+						}
+						printf("nucleo: new connection from %s on "
+						   "socket %d\n",
+						   inet_ntop(remoteaddr.ss_family,
+							   get_in_addr((struct sockaddr*)&remoteaddr),
+							   remoteIP, INET6_ADDRSTRLEN),
+						   newfd);
+
+						printf("El fd es: %d", newfd);
+						if ((bytes_recibidos = recv(newfd, buf, 5, 0)) == -1) {
+						   perror("recv");
+						   exit(1);
+						}
+
+						printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
+
+						if (send(newfd, "Soy el NUCLEO", 5, 0) == -1) {
+							 perror("send");
+						 }
+
+						puts("Pasamos por el send...");
+						 }
+
+						continue;
+				}
+
+				   // handle data from a client
+				   if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) {
+					   // got error or connection closed by client
+					   if (nbytes == 0) {
+						   // connection closed
+						   printf("selectserver: socket %d hung up\n", i);
+					   } else {
+						   perror("recv");
+					   }
+					   close(i); // bye!
+					   FD_CLR(i, &master); // remove from master set
+				   } else {
+					   //se recibió mensaje
+					   // we got some data from a client
+					   puts("Núcleo: Voy a enviar algo...\n");
+					   if (send(i, "Hola!", 5, 0) == -1) {
+							 perror("send");
+						 }
+				  } // END handle data from client
+
                } // END got new incoming connection
            } // END looping through file descriptors
        } // END for(;;)--and you thought it would never end!
