@@ -86,11 +86,11 @@ int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 	puts("CPU: Voy a enviar algo...\n");
-	if (send(sockfd,"Soy UMC", 7, 0) == -1) {
+	if (send(sockfd,"Soy UMC    ", 11, 0) == -1) {
 	  perror("send");
 	}
 
-	if ((numbytes = recv(sockfd, buf, 49, 0)) == -1) {
+	if ((numbytes = recv(sockfd, buf, 11, 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
@@ -241,14 +241,14 @@ int main(void) {
 								remoteIP, INET6_ADDRSTRLEN),
 							newfd);
 
-						if ((bytes_recibidos = recv(newfd, buf, sizeof(buf), 0)) == -1) {
+						if ((bytes_recibidos = recv(newfd, buf, 11, 0)) == -1) {
 						   perror("recv");
 						   exit(1);
 					   }
 
 						printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
-						if (send(newfd, "Soy la UMC", 5, 0) == -1) {
+						if (send(newfd, "Soy la UMC ", 10, 0) == -1) {
 							 perror("send");
 						 }
 
@@ -281,7 +281,7 @@ int main(void) {
 							newfd);
 
 						printf("El fd es: %d", newfd);
-						if ((bytes_recibidos = recv(newfd, buf, sizeof(buf), 0)) == -1) {
+						if ((bytes_recibidos = recv(newfd, buf, 8, 0)) == -1) {
 						   perror("recv");
 						   exit(1);
 					   }

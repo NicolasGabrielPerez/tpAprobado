@@ -105,11 +105,21 @@ int main(void) {
 
 	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
 
-	int socket_nucleo = crear_socket_cliente("127.0.0.1", puerto_nucleo); //socket usado para conectarse a la umc
+	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
 
 	//Hago handskae con umc
 	if(handshake(socket_nucleo) != 0){
 		puts("Error en handshake con el Núcleo");
+	}
+
+	char buf[50];
+	int numbytes;
+	while(1){
+		puts("Esperando conexiones...");
+		if ((numbytes = recv(socket_nucleo, buf, 50, 0)) == -1) {
+			perror("recv");
+			exit(1);
+			}
 	}
 
 	return EXIT_SUCCESS;

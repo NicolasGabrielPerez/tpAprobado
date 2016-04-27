@@ -84,11 +84,11 @@ int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 	puts("CPU: Voy a enviar algo...\n");
-	if (send(sockfd,"Soy NUCLEO", 10, 0) == -1) {
+	if (send(sockfd,"Soy NUCLEO", 11, 0) == -1) {
 	  perror("send");
 	}
 
-	if ((numbytes = recv(sockfd, buf, sizeof(buf), 0)) == -1) {
+	if ((numbytes = recv(sockfd, buf, 11, 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
@@ -174,6 +174,7 @@ int main(void) {
 
 	    printf("Config: PUERTO_PROG=%s\n", puerto_prog);
 		printf("Config: PUERTO_CPU=%s\n", puerto_cpu);
+		printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 		printf("Config: PACKAGESIZE=%d\n", package_size);
 		printf("Config: BACKLOG=%d\n", backlog);
 		printf("Config: QUANTUM=%d\n", quantum);
@@ -196,7 +197,7 @@ int main(void) {
 
 	    //char** shared_values = config_get_array_value(config, "SHARED_VARS");
 
-	    int socket_umc = crear_socket_cliente("127.0.0.1", puerto_umc);
+	    int socket_umc = crear_socket_cliente("utnso40", puerto_umc);
 	    handshake(socket_umc);
 
 	    fd_set master;    // master file descriptor list
@@ -275,7 +276,7 @@ int main(void) {
                 	  		   remoteIP, INET6_ADDRSTRLEN),
                 	  	   newfd);
 
-                	  	if ((bytes_recibidos = recv(newfd, buf, sizeof(buf), 0)) == -1) {
+                	  	if ((bytes_recibidos = recv(newfd, buf, 11, 0)) == -1) {
                 	  	   perror("recv");
                 	  	   exit(1);
                 	  	}

@@ -151,7 +151,7 @@ int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 	puts("CPU: Voy a enviar algo...\n");
-	if (send(sockfd,"Soy CPU", 7, 0) == -1) {
+	if (send(sockfd,"Soy CPU    ", 11, 0) == -1) {
 	  perror("send");
 	}
 
@@ -191,8 +191,8 @@ int main(int argc, char **argv) {
 	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 
-	int socket_umc = crear_socket_cliente("127.0.0.1", puerto_umc); //socket usado para conectarse a la umc
-	int socket_nucleo = crear_socket_cliente("127.0.0.1", puerto_nucleo); //socket usado para conectarse a la umc
+	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
+	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
 
 	//Hago handskae con umc
 	if(handshake(socket_umc) != 0){

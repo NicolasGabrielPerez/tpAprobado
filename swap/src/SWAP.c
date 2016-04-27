@@ -87,7 +87,7 @@ int handshake(int sockfd){
 	  perror("send");
 	}
 
-	if ((numbytes = recv(sockfd, buf, 49, 0)) == -1) {
+	if ((numbytes = recv(sockfd, buf, 11, 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
@@ -112,7 +112,7 @@ int main(void) {
 
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 
-	int socket_umc = crear_socket_cliente("127.0.0.1", puerto_umc); //socket usado para conectarse a la umc
+	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
 	//Hago handskae con umc
 	if(handshake(socket_umc) != 0){
 		puts("Error en handshake con la umc");
