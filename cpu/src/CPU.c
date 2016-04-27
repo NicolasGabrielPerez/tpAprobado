@@ -82,7 +82,7 @@ void correrImprimirTexto() {
 	printf("================\n");
 }
 
-int socketInit(char* ip, char* port) { //devuelve un nuevo socket para conectarse al server especificado
+int crear_socket_cliente(char* ip, char* port) { //devuelve un nuevo socket para conectarse al server especificado
 	int sockfd; //aca se va a poner el socket obtenido mediante getaddrinfo
 
 	struct addrinfo hints; //estructura conf info necesaria para getaddrinfo
@@ -151,7 +151,7 @@ int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 	puts("CPU: Voy a enviar algo...\n");
-	if (send(sockfd,"Soy una CPU", 5, 0) == -1) {
+	if (send(sockfd,"Soy CPU    ", 11, 0) == -1) {
 	  perror("send");
 	}
 
@@ -164,9 +164,8 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	puts("Antes de close\n");
 	close(sockfd);
-	puts("Despues de close\n");
+	puts("Swap: handshake finalizado felizmente\n");
 
 	return 0;
 }
@@ -180,8 +179,20 @@ int main(int argc, char **argv) {
 
 //	sendMessage();
 
-	int socket_umc = socketInit("utnso40", "8989"); //socket usado para conectarse a la umc
-	int socket_nucleo = socketInit("utnso40", "8990"); //socket usado para conectarse a la umc
+	t_config* config = config_create("cpu.config");
+	if(config==NULL){
+		printf("No se pudo leer la configuración");
+		return EXIT_FAILURE;
+	}
+
+	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
+	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
+
+	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
+	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
+
+	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
+	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
 
 	//Hago handskae con umc
 	if(handshake(socket_umc) != 0){
