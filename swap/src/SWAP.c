@@ -118,5 +118,19 @@ int main(void) {
 		puts("Error en handshake con la umc");
 	}
 
+    //conexiones checkpoint
+          int PACKAGESIZE = 500;
+          int status = 1;
+          	char package[PACKAGESIZE];
+
+          	while(status){
+          			status = recv(socket_consola, (void*) package, PACKAGESIZE, 0);//cambiar socket al de umc
+
+          			if (status != 0) printf("%s", package);
+          	}
+
+
+          	close(servidorUMC);
+
 	return EXIT_SUCCESS;
 }

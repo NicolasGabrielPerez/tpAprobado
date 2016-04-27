@@ -355,6 +355,21 @@ int main(void) {
 
                } // END got new incoming connection
            } // END looping through file descriptors
+           //conexiones checkpoint
+           int PACKAGESIZE = 500;
+           int status = 1;
+           	char package[PACKAGESIZE];
+
+           	while(status){
+           			status = recv(socket_consola, (void*) package, PACKAGESIZE, 0);//cambiar socket al de consola
+           			if (status) send(socket_cpu, package, strlen(package) + 1, 0);//cambiar socket al de cpu
+           			if (status != 0) printf("%s", package);
+           	}
+
+           	close(socket_consola);
+           	close(clienteCPU);
+           	close(servidorUMC);
+
        } // END for(;;)--and you thought it would never end!
 
        return 0;

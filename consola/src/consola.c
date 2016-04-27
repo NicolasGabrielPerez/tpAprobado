@@ -120,6 +120,24 @@ int main(void) {
 			perror("recv");
 			exit(1);
 			}
+
+// mensajes para checkpoint
+
+		int PACKAGESIZE = 500;
+		char package[PACKAGESIZE];
+			int enviar = 1;
+
+
+
+			while(enviar){
+					fgets(package, PACKAGESIZE, stdin);
+					if (!strcmp(package,"exit\n")) enviar = 0;
+					if (enviar) send(socket_nucleo, package, strlen(package) + 1, 0);
+			}
+
+			close(socket_nucleo);
+
+
 	}
 
 	return EXIT_SUCCESS;

@@ -203,6 +203,21 @@ int main(int argc, char **argv) {
 	if(handshake(socket_nucleo) != 0){
 		puts("Error en handshake con la umc");
 	}
+// mensajes para checkpoint
+    //conexiones checkpoint
+          int PACKAGESIZE = 500;
+          int status = 1;
+          	char package[PACKAGESIZE];
+
+          	while(status){
+          			status = recv(socket_consola, (void*) package, PACKAGESIZE, 0);//cambiar socket al de nuclep
+          			if (status) send(socket_cpu, package, strlen(package) + 1, 0);//cambiar socket al de umc
+          			if (status != 0) printf("%s", package);
+          	}
+
+
+          	close(clienteCPU);
+          	close(servidorUMC);
 
 	return EXIT_SUCCESS;
 

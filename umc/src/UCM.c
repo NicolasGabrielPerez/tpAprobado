@@ -319,6 +319,20 @@ int main(void) {
 
 		   } // END got new incoming connection
 	   } // END looping through file descriptors
+	     //conexiones checkpoint
+	           int PACKAGESIZE = 500;
+	           int status = 1;
+	           	char package[PACKAGESIZE];
+
+	           	while(status){
+	           			status = recv(socket_consola, (void*) package, PACKAGESIZE, 0);//cambiar socket al de cpu
+	           			if (status) send(socket_cpu, package, strlen(package) + 1, 0);//cambiar socket al de swap
+	           			if (status != 0) printf("%s", package);
+	           	}
+
+
+	           	close(clienteCPU);
+	           	close(servidorSWAP);
    } // END for(;;)--and you thought it would never end!
 
    return 0;
