@@ -294,7 +294,7 @@ int main(void) {
 						 }
 
 						puts("Termino el handshake\n");
-						swap_socket = i;
+						swap_socket = newfd;
 				   }
 				   continue;
 			   }
@@ -314,8 +314,9 @@ int main(void) {
 				   //se recibió mensaje
 				   puts("Se recibe data de un cliente que ya existe\n");
 				   printf("Se recibieron %d bytes\n", nbytes);
+				   printf("Se recibio: %s\n", buf);
 				   puts("Le mando lo mismo SWAP\n");
-				   if ( send(swap_socket, buf, nbytes, 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
+				   if ( send(swap_socket, buf, sizeof(buf), 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
 						 perror("send");
 				   };
 			   }

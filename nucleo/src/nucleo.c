@@ -333,14 +333,14 @@ int main(void) {
 
 							printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
 
-							if (send(newfd, "Soy NUCLEO", 10, 0) == -1) {
+							if (send(newfd, "Soy NUCLEO", 11, 0) == -1) {
 								 perror("send");
 							 }
 
 							puts("Terminó el handshake\n");
-							list_add(cpu_sockets, i);
-							cpu_socket = i;
-							puts("Socket agregado\n");
+							//list_add(cpu_sockets, newfd);
+							cpu_socket = newfd;
+							printf("Socket de cpu agregado: %d\n", cpu_socket);
 						 }
 
 						continue;
@@ -365,8 +365,9 @@ int main(void) {
 					   //Hago de cuenta que se validó que lo que acaba de llegar es de la consola
 					   // Y le quiero mandar a cpu
 
+					   printf("Socket de cpu:%d\n", cpu_socket);
 					   printf("Voy a mandar: %s\n", buf);
-						if (send(cpu_socket, buf, 20, 0) == -1) {
+						if (send(cpu_socket, buf, sizeof(buf) , 0) == -1) {
 							 perror("send");
 						 }
 //					   int j;
