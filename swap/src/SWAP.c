@@ -96,8 +96,9 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	close(sockfd);
 	puts("Swap: handshake finalizado felizmente\n");
+
+	printf("FD: %d", sockfd);
 
 	return 0;
 }
@@ -112,11 +113,27 @@ int main(void) {
 
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 
+	int bytes_recibidos;
+	char buf[50];
+
 	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
 	//Hago handskae con umc
 	if(handshake(socket_umc) != 0){
 		puts("Error en handshake con la umc");
 	}
 
+	printf("FD: %d", socket_umc);
+
+	puts("Esperando conexiones...");
+	//Quiero recibir de umc, lo que le pasó consola
+	if ((bytes_recibidos = recv(socket_umc, buf, sizeof(buf), 0)) == -1) {
+	   perror("recv");
+	   exit(1);
+	}
+
+	printf("Recibidos %d bytes \n", bytes_recibidos);
+	printf("Recibi lo siguiente de nucleo:\n%s\n", buf);
+
+	puts("Terminé felizmente");
 	return EXIT_SUCCESS;
 }

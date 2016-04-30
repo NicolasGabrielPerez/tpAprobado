@@ -164,7 +164,6 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	close(sockfd);
 	puts("Swap: handshake finalizado felizmente\n");
 
 	return 0;
@@ -178,6 +177,9 @@ int main(int argc, char **argv) {
 	//initConfig();
 
 //	sendMessage();
+
+	char buf[50];
+	int nbytes;
 
 	t_config* config = config_create("cpu.config");
 	if(config==NULL){
@@ -194,7 +196,7 @@ int main(int argc, char **argv) {
 	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
 	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
 
-	//Hago handskae con umc
+	//Hago handshake con umc
 	if(handshake(socket_umc) != 0){
 		puts("Error en handshake con la umc");
 	}
@@ -203,6 +205,30 @@ int main(int argc, char **argv) {
 	if(handshake(socket_nucleo) != 0){
 		puts("Error en handshake con la umc");
 	}
+
+	//Quiero recibir de núcleo, lo que le pasó consola
+	if ((nbytes = recv(socket_nucleo, buf, sizeof(buf), 0)) <= 0) {
+	   // got error or connection closed by client
+	   if (nbytes == 0) {
+		   // connection closed
+		   printf("socket %d hung up\n", socket_nucleo);
+	   } else {
+		   perror("recv");
+	   }
+	   close(socket_nucleo); // bye!
+   } else {
+	   //se recibió mensaje
+	   printf("Se recibieron %d bytes\n", nbytes);
+	   printf("Se recibió%s\n", buf);
+
+  } // END handle data from client
+
+
+	if (send(socket_umc, buf, nbytes, 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
+		 perror("send");
+    };
+
+	puts("Ya le hice un envio a UMC. Termino mi ejecucion.");
 
 	return EXIT_SUCCESS;
 
