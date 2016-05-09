@@ -1,13 +1,3 @@
-/*
- ============================================================================
- Name        : UCM.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
- ============================================================================
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <commons/config.h>
@@ -99,7 +89,6 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	close(sockfd);
 	puts("Swap: handshake finalizado felizmente\n");
 
 	return 0;
@@ -193,6 +182,8 @@ int main(void) {
 
    nucleo_y_cpu_listener = crear_puerto_escucha(puerto_cpu_nucleo);
    swap_listener = crear_puerto_escucha(puerto_swap);
+
+   int swap_socket;
 
    printf("Creado listener: %d\n", nucleo_y_cpu_listener);
 
@@ -292,7 +283,8 @@ int main(void) {
 							 perror("send");
 						 }
 
-						puts("Pasamos por el send...\n");
+						puts("Termino el handshake\n");
+						swap_socket = newfd;
 				   }
 				   continue;
 			   }
@@ -309,30 +301,19 @@ int main(void) {
 				   close(i); // bye!
 				   FD_CLR(i, &master); // remove from master set
 			   } else {
-				   // we got some data from a client
-				   puts("ucm: Voy a enviar algo...\n");
-				   if (send(i, "Hola!", 5, 0) == -1) {
+				   //se recibió mensaje
+				   puts("Se recibe data de un cliente que ya existe\n");
+				   printf("Se recibieron %d bytes\n", nbytes);
+				   printf("Se recibio: %s\n", buf);
+				   puts("Le mando lo mismo SWAP\n");
+				   if ( send(swap_socket, buf, sizeof(buf), 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
 						 perror("send");
-					 }
+				   };
 			   }
 
 
 		   } // END got new incoming connection
 	   } // END looping through file descriptors
-	     //conexiones checkpoint
-	           int PACKAGESIZE = 500;
-	           int status = 1;
-	           	char package[PACKAGESIZE];
-
-	           	while(status){
-	           			status = recv(socket_consola, (void*) package, PACKAGESIZE, 0);//cambiar socket al de cpu
-	           			if (status) send(socket_cpu, package, strlen(package) + 1, 0);//cambiar socket al de swap
-	           			if (status != 0) printf("%s", package);
-	           	}
-
-
-	           	close(clienteCPU);
-	           	close(servidorSWAP);
    } // END for(;;)--and you thought it would never end!
 
    return 0;

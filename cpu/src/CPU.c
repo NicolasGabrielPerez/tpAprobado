@@ -1,13 +1,3 @@
-/*
- ============================================================================
- Name        : CPU.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
- ============================================================================
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -20,12 +10,16 @@
 #include <parser/metadata_program.h>
 #include <parser/parser.h>
 #include <parser/sintax.h>
-
-#include <commons/config.h>
 #include <commons/log.h>
 #include <commons/collections/list.h>
 
 #include "ansiop.h"
+#include "configInit.h"
+
+static const char* DEFINICION_VARIABLES = "variables a, b, c";
+static const char* ASIGNACION = "a = b + 12";
+static const char* IMPRIMIR = "print b";
+static const char* IMPRIMIR_TEXTO = "textPrint foo\n";
 
 int socketNucleo = 0;
 int socketUmc = 0;
@@ -50,10 +44,33 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-//void correrDefinirVariables() {
-//	printf("Ejecutando '%s'\n", DEFINICION_VARIABLES);
-//	analizadorLinea(strdup(DEFINICION_VARIABLES), &functions, &kernel_functions);
-//}
+void correrDefinirVariables() {
+	printf("Ejecutando '%s'\n", DEFINICION_VARIABLES);
+	analizadorLinea(strdup(DEFINICION_VARIABLES), &functions, &kernel_functions);
+	printf("================\n");
+}
+
+
+void correrAsignar() {
+	printf("Ejecutando '%s'\n", ASIGNACION);
+	analizadorLinea(strdup(ASIGNACION), &functions, &kernel_functions);
+	printf("================\n");
+}
+
+
+void correrImprimir() {
+	printf("Ejecutando '%s'\n", IMPRIMIR);
+	analizadorLinea(strdup(IMPRIMIR), &functions, &kernel_functions);
+	printf("================\n");
+}
+
+
+
+void correrImprimirTexto() {
+	printf("Ejecutando '%s'", IMPRIMIR_TEXTO);
+	analizadorLinea(strdup(IMPRIMIR_TEXTO), &functions, &kernel_functions);
+	printf("================\n");
+}
 
 int crear_socket_cliente(char* ip, char* port) { //devuelve un nuevo socket para conectarse al server especificado
 	int sockfd; //aca se va a poner el socket obtenido mediante getaddrinfo
@@ -105,6 +122,21 @@ int crear_socket_cliente(char* ip, char* port) { //devuelve un nuevo socket para
 	return sockfd;
 }
 
+void sendMessage() {
+	char package[PACKAGESIZE];
+	int enviar = 1;
+
+	while(enviar){
+			fgets(package, PACKAGESIZE, stdin);
+			printf("CPU: Mensaje Recibido\n");
+			if (!strcmp(package,"exit\n")) enviar = 0;
+			if (enviar) {
+				send(socketNucleo, package, PACKAGESIZE, 0);
+				//send(socketNucleo, package, strlen(package) + 1, 0);
+			}
+	}
+}
+
 int handshake(int sockfd){
 	char buf[50];
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
@@ -122,13 +154,22 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	close(sockfd);
-	puts("Swap: handshake finalizado felizmente\n");
+	puts("CPU: handshake finalizado felizmente\n");
 
 	return 0;
 }
 
 int main(int argc, char **argv) {
+	//correrDefinirVariables();
+	//correrAsignar();
+	//correrImprimir();
+	//correrImprimirTexto();
+	//initConfig();
+
+//	sendMessage();
+
+	char buf[50];
+	int nbytes;
 
 	t_config* config = config_create("cpu.config");
 	if(config==NULL){
@@ -136,19 +177,19 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	char* ip_nucleo = config_get_string_value(config, "IP_NUCLEO");
-	char* ip_umc = config_get_string_value(config, "IP_UMC");
-
 	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
 
 	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 
-	int socket_umc = crear_socket_cliente(ip_umc, puerto_umc); //socket usado para conectarse a la umc
-	int socket_nucleo = crear_socket_cliente(ip_nucleo, puerto_nucleo); //socket usado para conectarse a la umc
+	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
+	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
 
-	//Hago handskae con umc
+	printf("UMC FD: %d\n", socket_umc);
+	printf("NUCLEO FD: %d\n", socket_nucleo);
+
+	//Hago handshake con umc
 	if(handshake(socket_umc) != 0){
 		puts("Error en handshake con la umc");
 	}
@@ -157,20 +198,31 @@ int main(int argc, char **argv) {
 	if(handshake(socket_nucleo) != 0){
 		puts("Error en handshake con la umc");
 	}
-	// mensajes para checkpoint
-    //conexiones checkpoint
-          int PACKAGESIZE = 500;
-          int status = 1;
-          	char package[PACKAGESIZE];
 
-          	while(status){
-          			status = recv(socket_nucleo, (void*) package, PACKAGESIZE, 0);//cambiar socket al de nuclep
-          			if (status) send(socket_umc, package, strlen(package) + 1, 0);//cambiar socket al de umc
-          			if (status != 0) printf("%s", package);
-          	}
+	//Quiero recibir de núcleo, lo que le pasó consola
+	if ((nbytes = recv(socket_nucleo, buf, 50, 0)) <= 0) {
+	   // got error or connection closed by client
+	   if (nbytes == 0) {
+		   // connection closed
+		   printf("socket %d hung up\n", socket_nucleo);
+	   } else {
+		   perror("recv");
+	   }
+	   close(socket_nucleo); // bye!
+   } else {
+	   //se recibió mensaje
+	   printf("Se recibieron %d bytes\n", nbytes);
+	   printf("Se recibió: %s\n", buf);
 
-          	close(socket_nucleo);
-          	close(socket_umc);
+  } // END handle data from client
+
+
+	if (send(socket_umc, buf, nbytes, 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
+		 perror("send");
+    };
+
+	puts("Ya le hice un envio a UMC. Termino mi ejecucion.");
 
 	return EXIT_SUCCESS;
+
 }

@@ -89,7 +89,6 @@ int handshake(int sockfd){
 	printf("numbytes: '%d'\n",numbytes);
 	buf[numbytes] = '\0';
 
-	close(sockfd);
 	puts("Swap: handshake finalizado felizmente\n");
 
 	return 0;
@@ -105,6 +104,13 @@ int main(void) {
 
 	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
 
+	int received_bytes;
+	char buf[50];
+	puts("Ingrese comando\n");
+	scanf("%s", buf);
+
+	printf("Ejecutando...\n", buf);
+
 	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
 
 	//Hago handskae con umc
@@ -112,33 +118,22 @@ int main(void) {
 		puts("Error en handshake con el Núcleo");
 	}
 
-	char buf[50];
-	int numbytes;
-	while(1){
-		puts("Esperando conexiones...");
-		if ((numbytes = recv(socket_nucleo, buf, 50, 0)) == -1) {
-			perror("recv");
-			exit(1);
-			}
-
-// mensajes para checkpoint
-
-		int PACKAGESIZE = 500;
-		char package[PACKAGESIZE];
-			int enviar = 1;
-
-
-
-			while(enviar){
-					fgets(package, PACKAGESIZE, stdin);
-					if (!strcmp(package,"exit\n")) enviar = 0;
-					if (enviar) send(socket_nucleo, package, strlen(package) + 1, 0);
-			}
-
-			close(socket_nucleo);
-
-
+	//Le envio a nucleo el texto ingresado por consola
+	if (send(socket_nucleo, buf, sizeof(buf), 0) == -1) {
+		 perror("send");
 	}
+
+	puts("Se envió comando al Núcleo\n");
+
+//	while(1){
+//		puts("Esperando conexiones...");
+//		if ((received_bytes = recv(socket_nucleo, buf, 50, 0)) == -1) {
+//			perror("recv");
+//			exit(1);
+//		}
+//	}
+
+	puts("Terminé felizmente");
 
 	return EXIT_SUCCESS;
 }
