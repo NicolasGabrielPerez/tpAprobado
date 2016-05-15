@@ -34,3 +34,5 @@
 .metadata
 .project
 *.cproject
+
+Debug/
