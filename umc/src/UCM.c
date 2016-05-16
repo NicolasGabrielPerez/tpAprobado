@@ -36,7 +36,7 @@ int main(void) {
    fd_set read_fds;  // temp file descriptor list for select()
    int fdmax;        // maximum file descriptor number
    int bytes_recibidos;
-   int nucleo_y_cpu_listener, swap_listener;     // listening socket descriptor
+   int nucleo_y_cpu_listener, swap_socket;     // listening socket descriptor
    int newfd;        // newly accept()ed socket descriptor
    struct sockaddr_storage remoteaddr; // client address
    socklen_t addrlen;
@@ -52,22 +52,17 @@ int main(void) {
    FD_ZERO(&read_fds);
 
    nucleo_y_cpu_listener = crear_puerto_escucha(puerto_cpu_nucleo);
-   swap_listener = crear_puerto_escucha(puerto_swap);
+   swap_socket = crear_socket_cliente("utnso40", puerto_swap);
 
-   int swap_socket;
+   handshake(swap_socket, "soy umc");
 
    printf("Creado listener: %d\n", nucleo_y_cpu_listener);
 
    // add the listener to the master set
    FD_SET(nucleo_y_cpu_listener, &master);
-   FD_SET(swap_listener, &master);
 
    // keep track of the biggest file descriptor
-   if(nucleo_y_cpu_listener> swap_listener){
-   	   fdmax = nucleo_y_cpu_listener;
-      }else{
-   	   fdmax = swap_listener; // so far, it's this one
-      }
+   fdmax = nucleo_y_cpu_listener;
 
    // main loop
    for(;;) {
@@ -115,47 +110,6 @@ int main(void) {
 						 }
 
 						puts("Terminó el envío\n");
-				   }
-				   continue;
-			   }
-
-			   if(i == swap_listener){
-				   puts("Cambió el listener de swap\n");
-				   // handle new connections
-				   addrlen = sizeof remoteaddr;
-				   newfd = accept(swap_listener,
-					   (struct sockaddr *)&remoteaddr,
-					   &addrlen);
-
-				   puts("Conexion aceptada");
-				   if (newfd == -1) {
-					   perror("accept");
-				   } else {
-					   FD_SET(newfd, &master); // add to master set
-						if (newfd > fdmax) {    // keep track of the max
-							fdmax = newfd;
-						}
-						printf("umc: new connection from %s on "
-							"socket %d\n",
-							inet_ntop(remoteaddr.ss_family,
-								get_in_addr((struct sockaddr*)&remoteaddr),
-								remoteIP, INET6_ADDRSTRLEN),
-							newfd);
-
-						printf("El fd es: %d", newfd);
-						if ((bytes_recibidos = recv(newfd, buf, 8, 0)) == -1) {
-						   perror("recv");
-						   exit(1);
-					   }
-
-						printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
-
-						if (send(newfd, "Soy UMC", 7, 0) == -1) {
-							 perror("send");
-						 }
-
-						puts("Termino el handshake\n");
-						swap_socket = newfd;
 				   }
 				   continue;
 			   }

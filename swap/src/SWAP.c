@@ -10,36 +10,86 @@
 #include <commons/config.h>
 #include <sockets/sockets.h>
 
+int esperarConexionUMC(int umc_listener){
+	int umc_socket;
+	int bytes_recibidos;
+	char buf[50];
+	struct sockaddr_storage remoteaddr; // client address
+	socklen_t addrlen;
+	char remoteIP[INET6_ADDRSTRLEN];
+
+	   // handle new connections
+	   addrlen = sizeof remoteaddr;
+	   umc_socket = accept(umc_listener,
+		   (struct sockaddr *)&remoteaddr,
+		   &addrlen);
+
+	   puts("Conexion aceptada");
+	   if (umc_socket == -1) {
+		   perror("accept");
+	   } else {
+
+			printf("umc: new connection from %s on "
+				"socket %d\n",
+				inet_ntop(remoteaddr.ss_family,
+					get_in_addr((struct sockaddr*)&remoteaddr),
+					remoteIP, INET6_ADDRSTRLEN),
+					umc_listener);
+
+			printf("El fd es: %d", umc_socket);
+			if ((bytes_recibidos = recv(umc_socket, buf, 50, 0)) == -1) {
+			   perror("recv");
+			   exit(1);
+		   }
+
+			printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
+
+			if (send(umc_socket, "Soy SWAP", 50, 0) == -1) {
+				 perror("send");
+			 }
+
+			puts("Termino el handshake\n");
+	   }
+
+	   return umc_socket;
+}
+
 int main(void) {
 	t_config* config = config_create("swap.config");
 	if(config==NULL){
 		printf("No se pudo leer la configuración");
 		return EXIT_FAILURE;
 	}
-	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
+	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto usado escuchar a la umc
 
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 
-	int bytes_recibidos;
+	int bytes_recibidos = 1;
 	char buf[50];
 
-	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
-	//Hago handskae con umc
-	if(handshake(socket_umc, "PRUEBA") != 0){
-		puts("Error en handshake con la umc");
+	int umc_listener = crear_puerto_escucha(puerto_umc); //socket usado escuchar a la umc
+	int umc_socket = esperarConexionUMC(umc_listener);
+
+	while(bytes_recibidos){
+		puts("Esperando conexiones...");
+		//Quiero recibir de umc, lo que le pasó consola
+		bytes_recibidos = recv(umc_socket, buf, sizeof(buf), 0);
+
+		if(bytes_recibidos == -1) {
+		   perror("recv");
+		   exit(1);
+		}
+
+		 if (bytes_recibidos == 0) {
+		   // connection closed
+		   puts("umc hung up\n");
+	   }
+
+		printf("Recibidos %d bytes \n", bytes_recibidos);
+		printf("Recibi lo siguiente de nucleo:\n%s\n", buf);
 	}
 
-	printf("FD: %d", socket_umc);
-
-	puts("Esperando conexiones...");
-	//Quiero recibir de umc, lo que le pasó consola
-	if ((bytes_recibidos = recv(socket_umc, buf, sizeof(buf), 0)) == -1) {
-	   perror("recv");
-	   exit(1);
-	}
-
-	printf("Recibidos %d bytes \n", bytes_recibidos);
-	printf("Recibi lo siguiente de nucleo:\n%s\n", buf);
+	close(umc_socket); // bye!
 
 	puts("Terminé felizmente");
 	return EXIT_SUCCESS;
