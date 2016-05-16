@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <commons/config.h>
 #include <sockets/sockets.h>
+#include "swap-library.h"
 
 int esperarConexionUMC(int umc_listener){
 	int umc_socket;
@@ -61,15 +62,27 @@ int main(void) {
 		return EXIT_FAILURE;
 	}
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto usado escuchar a la umc
+	int swap_size = config_get_int_value(config, "SWAP_SIZE");
 
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
+	printf("Config: SWAP_SIZE=%d\n", swap_size);
 
-	int bytes_recibidos = 1;
-	char buf[50];
+	t_swap_block* swap = init_swap(swap_size);
+
+	if(swap == NULL){
+		puts("No se pudo inicializar SWAP");
+	} else{
+		printf("Inicializacion exitosa!!\n");
+		printf("Size: %d\n", swap->size);
+		printf("Primer char: %d\n", swap->memory_block[0]);
+		printf("Disponible: %d\n", swap->disponible);
+	}
 
 	int umc_listener = crear_puerto_escucha(puerto_umc); //socket usado escuchar a la umc
 	int umc_socket = esperarConexionUMC(umc_listener);
 
+	int bytes_recibidos = 1;
+	char buf[50];
 	while(bytes_recibidos){
 		puts("Esperando conexiones...");
 		//Quiero recibir de umc, lo que le pasó consola
