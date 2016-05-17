@@ -73,4 +73,15 @@ int almacenarBytesEnPagina(int nro_pagina, int offset, int size, char* buffer);
 */
 int finalizarPrograma(int program_id);
 
+/**
+* @NAME: handshake
+* @DESC: Tipo: Núcleo/CPU
+*/
+int handshake(int tipo);
+
+/**
+* @NAME: cambioDeProcesoActivo
+*/
+int cambioDeProcesoActivo(int program_id);
+
 #endif /* UMC_LIBRARY_H_ */
