@@ -12,6 +12,95 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sockets/sockets.h>
+#include <pthread.h>
+
+#define TIPO_NUCLEO 1
+#define TIPO_CPU 2
+int listener;
+int swap_socket;
+
+void* gestionarNucleo(int socket){
+	int bytes_recibidos;
+	char buf[50];
+
+	if ((bytes_recibidos = recv(socket, buf, 50, 0)) == -1) {
+	   perror("recv");
+	   exit(1);
+	}
+
+	return 0;
+}
+
+void* gestionarCPU(int socket){
+
+	return 0;
+}
+
+int handshakeYDeterminarTipo(new_socket){
+	int bytes_recibidos;
+	char buf[50];
+	int tipo;
+
+	printf("El fd es: %d", new_socket);
+	if ((bytes_recibidos = recv(new_socket, buf, 50, 0)) == -1) {
+	   perror("recv");
+	   exit(1);
+	}
+
+	printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
+
+
+
+	if (send(new_socket, "Soy SWAP", 50, 0) == -1) {
+		 perror("send");
+	 }
+
+	puts("Termino el handshake\n");
+
+	tipo = *((int*)buf[0]);
+	free(buf);
+	return tipo;
+}
+
+void crearHiloDeComponente(int new_socket){
+	int tipo = handshakeYDeterminarTipo(new_socket);
+	pthread_t newThread;
+	if(tipo==TIPO_NUCLEO){
+		pthread_create(&newThread, NULL, gestionarNucleo(), (void*) new_socket);
+	}
+	if(tipo==TIPO_CPU){
+		pthread_create(&newThread, NULL, gestionarCPU(), (void*) new_socket);
+	}
+
+}
+
+void aceptarConexiones(){
+	int new_socket;
+	struct sockaddr_storage remoteaddr; // client address
+	socklen_t addrlen;
+	char remoteIP[INET6_ADDRSTRLEN];
+
+	// handle new connections
+	addrlen = sizeof remoteaddr;
+	new_socket = accept(listener,
+	(struct sockaddr *)&remoteaddr,
+	&addrlen);
+
+	puts("Conexion aceptada");
+	if (new_socket == -1) {
+	   perror("accept");
+	} else {
+
+	printf("umc: new connection from %s on "
+		"socket %d\n",
+		inet_ntop(remoteaddr.ss_family,
+			get_in_addr((struct sockaddr*)&remoteaddr),
+			remoteIP, INET6_ADDRSTRLEN),
+			listener);
+
+	crearHiloDeComponente(new_socket);
+
+}
 
 int main(void) {
 	t_config* config = config_create("umc.config");
@@ -32,114 +121,20 @@ int main(void) {
     printf("Config: IP_SWAP=%s\n", ip_swap);
     printf("Config: PUERTO_SWAP=%s\n", puerto_swap);
 
-    fd_set master;    // master file descriptor list
-   fd_set read_fds;  // temp file descriptor list for select()
-   int fdmax;        // maximum file descriptor number
-   int bytes_recibidos;
-   int nucleo_y_cpu_listener, swap_socket;     // listening socket descriptor
-   int newfd;        // newly accept()ed socket descriptor
-   struct sockaddr_storage remoteaddr; // client address
-   socklen_t addrlen;
-
-   char buf[256];    // buffer for client data
-   int nbytes;
-
-   char remoteIP[INET6_ADDRSTRLEN];
-
-   int i;
-
-   FD_ZERO(&master);    // clear the master and temp sets
-   FD_ZERO(&read_fds);
-
-   nucleo_y_cpu_listener = crear_puerto_escucha(puerto_cpu_nucleo);
+   listener = crear_puerto_escucha(puerto_cpu_nucleo);
    swap_socket = crear_socket_cliente("utnso40", puerto_swap);
 
    handshake(swap_socket, "soy umc");
 
-   printf("Creado listener: %d\n", nucleo_y_cpu_listener);
+   printf("Creado listener: %d\n", listener);
 
-   // add the listener to the master set
-   FD_SET(nucleo_y_cpu_listener, &master);
+   while(1){
+		puts("Esperando conexiones...");
+		aceptarConexiones(); //crear un hilo para la nueva conexion
+   }
 
-   // keep track of the biggest file descriptor
-   fdmax = nucleo_y_cpu_listener;
+    close(listener); // bye!
 
-   // main loop
-   for(;;) {
-	   puts("UMC: esperando conexiones...\n");
-	   read_fds = master; // copy it
-	   if (select(fdmax+1, &read_fds, NULL, NULL, NULL) == -1) {
-		   perror("select");
-		   exit(4);
-	   }
-
-	   // run through the existing connections looking for data to read
-	   for(i = 0; i <= fdmax; i++) {
-		   if (FD_ISSET(i, &read_fds)) { // we got one!!
-			   if (i == nucleo_y_cpu_listener) {
-				   puts("Cambió el listener de nucleo y cpu\n");
-				   // handle new connections
-				   addrlen = sizeof remoteaddr;
-				   newfd = accept(nucleo_y_cpu_listener,
-					   (struct sockaddr *)&remoteaddr,
-					   &addrlen);
-
-				   if (newfd == -1) {
-					   perror("accept");
-				   } else {
-					   FD_SET(newfd, &master); // add to master set
-						if (newfd > fdmax) {    // keep track of the max
-							fdmax = newfd;
-						}
-						printf("selectserver: new connection from %s on "
-							"socket %d\n",
-							inet_ntop(remoteaddr.ss_family,
-								get_in_addr((struct sockaddr*)&remoteaddr),
-								remoteIP, INET6_ADDRSTRLEN),
-							newfd);
-
-						if ((bytes_recibidos = recv(newfd, buf, 11, 0)) == -1) {
-						   perror("recv");
-						   exit(1);
-					   }
-
-						printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
-
-						if (send(newfd, "Soy la UMC ", 10, 0) == -1) {
-							 perror("send");
-						 }
-
-						puts("Terminó el envío\n");
-				   }
-				   continue;
-			   }
-
-			   // handle data from a client
-			   if ((nbytes = recv(i, buf, sizeof buf, 0)) <= 0) {
-				   // got error or connection closed by client
-				   if (nbytes == 0) {
-					   // connection closed
-					   printf("selectserver: socket %d hung up\n", i);
-				   } else {
-					   perror("recv");
-				   }
-				   close(i); // bye!
-				   FD_CLR(i, &master); // remove from master set
-			   } else {
-				   //se recibió mensaje
-				   puts("Se recibe data de un cliente que ya existe\n");
-				   printf("Se recibieron %d bytes\n", nbytes);
-				   printf("Se recibio: %s\n", buf);
-				   puts("Le mando lo mismo SWAP\n");
-				   if ( send(swap_socket, buf, sizeof(buf), 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
-						 perror("send");
-				   };
-			   }
-
-
-		   } // END got new incoming connection
-	   } // END looping through file descriptors
-   } // END for(;;)--and you thought it would never end!
-
-   return 0;
+    puts("Terminé felizmente");
+	return EXIT_SUCCESS;
 }
