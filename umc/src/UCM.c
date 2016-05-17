@@ -12,8 +12,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include "../../push-library/sockets/sockets.h"
-#include "umc-library.h"
 #include <pthread.h>
+
+#include "umc-interfaz.h"
 
 #define TIPO_NUCLEO 1
 #define TIPO_CPU 2
@@ -39,45 +40,37 @@ void *gestionarCPU(void* socket){
 	return 0;
 }
 
-int handshakeYDeterminarTipo(new_socket){
-	int bytes_recibidos;
-	char buf[50];
-	int tipo;
+int makeHandshake(int new_socket){
+	int tipo = recibir_handshake(new_socket);
 
-	printf("El fd es: %d", new_socket);
-	if ((bytes_recibidos = recv(new_socket, buf, 50, 0)) == -1) {
-	   perror("recv");
-	   exit(1);
+	if(tipo==-1){
+		puts("Hubo error recibiendo handshake\n");
+		return -1;
 	}
 
-	printf("Se recibio: %s\nbytes_recibidos: %d.\n", buf, bytes_recibidos);
+	if(devolver_handshake(new_socket, tipo) == -1){
+		puts("Hubo error en el handshake");
+		return -1;
+	}
 
-
-
-	if (send(new_socket, "Soy SWAP", 50, 0) == -1) {
-		 perror("send");
-	 }
-
-	puts("Termino el handshake\n");
-
-	tipo = *((int*)buf[0]);
-	free(buf);
 	return tipo;
+
 }
 
-void crearHiloDeComponente(int new_socket){
-	int tipo = handshakeYDeterminarTipo(new_socket);
+int crearHiloDeComponente(int tipo, int new_socket){
 	pthread_t newThread;
+	int creacion;
 	if(tipo==TIPO_NUCLEO){
-		pthread_create(&newThread, NULL, &gestionarNucleo, (void*) new_socket);
+		creacion = pthread_create(&newThread, NULL, &gestionarNucleo, (void*) new_socket);
 	}
 	if(tipo==TIPO_CPU){
-		pthread_create(&newThread, NULL, &gestionarCPU, (void*) new_socket);
+		creacion = pthread_create(&newThread, NULL, &gestionarCPU, (void*) new_socket);
 	}
 
+	return creacion;
 }
 
-void aceptarConexiones(){
+int aceptarNuevaConexion(){
 	int new_socket;
 	struct sockaddr_storage remoteaddr; // client address
 	socklen_t addrlen;
@@ -92,7 +85,7 @@ void aceptarConexiones(){
 	puts("Conexion aceptada");
 	if (new_socket == -1) {
 	   perror("accept");
-	} else {
+	}
 
 	printf("umc: new connection from %s on "
 		"socket %d\n",
@@ -101,8 +94,19 @@ void aceptarConexiones(){
 			remoteIP, INET6_ADDRSTRLEN),
 			listener);
 
-	crearHiloDeComponente(new_socket);
+	return new_socket;
+}
 
+void gestionarNuevasConexiones(){
+	int new_socket = aceptarNuevaConexion();
+	int tipo = makeHandshake(new_socket);
+	if(tipo == -1){
+		puts("Hubo error en handshake");
+		return;
+	}
+	if(crearHiloDeComponente(tipo, new_socket) == -1){
+		puts("Error al crear hilo\n");
+	}
 }
 
 void initiMemoriaPrincipal(int marcos, int marco_size){
@@ -111,7 +115,7 @@ void initiMemoriaPrincipal(int marcos, int marco_size){
 }
 
 void initCache(int cantidad_entradas_tlb, int marco_size){
-	;
+	if(cantidad_entradas_tlb==0) return;
 }
 
 int main(void) {
@@ -145,7 +149,7 @@ int main(void) {
 
    while(1){
 		puts("Esperando conexiones...");
-		aceptarConexiones(); //crear un hilo para la nueva conexion
+		gestionarNuevasConexiones(); //crear un hilo para la nueva conexion
    }
 
     close(listener); // bye!

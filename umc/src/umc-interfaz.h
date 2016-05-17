@@ -13,8 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef UMC_LIBRARY_H_
-#define UMC_LIBRARY_H_
+#ifndef UMC_INTERFAZ_H_
+#define UMC_INTERFAZ_H_
 
 #include <commons/collections/list.h>
 
@@ -74,14 +74,21 @@ int almacenarBytesEnPagina(int nro_pagina, int offset, int size, char* buffer);
 int finalizarPrograma(int program_id);
 
 /**
-* @NAME: handshake
+* @NAME: devolver_handshake
 * @DESC: Tipo: Núcleo/CPU
 */
-int handshake(int tipo);
+int devolver_handshake(int socket, int tipo);
+
+/**
+* @NAME: recibir_handshake
+* @DESC: recibir mensaje inicial de proceso y determinar el tipo del mismo.
+* Se devuelve el tipo
+*/
+int recibir_handshake(int socket);
 
 /**
 * @NAME: cambioDeProcesoActivo
 */
 int cambioDeProcesoActivo(int program_id);
 
-#endif /* UMC_LIBRARY_H_ */
+#endif /* UMC_INTERFAZ_H_ */
