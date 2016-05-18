@@ -21,6 +21,7 @@
 #define TIPO_SWAP 3
 #define PEDIDO_INIT_PROGRAMA 1
 #define PEDIDO_FINALIZAR_PROGRAMA 2
+#define PEDIDO_LECTURA 1
 
 int listener;
 int swap_socket;
@@ -32,7 +33,15 @@ pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 char* iniciarPrograma(char* pedido){
-	return 0;
+	int almacenado = solicitarAlmacenamientoASwap(pedido);
+	if(almacenado == 0){
+		return "No se pudo almacenar el programa en SWAP\n";
+	}
+	almacenado = almacenarEnMemoriaPrincipal(pedido);
+	if(almacenado == 0){
+		return "No se pudo almacenar el programa en memoria principal\n";
+	}
+	return "Almacenado OK!";
 }
 
 char* finalizarPrograma(char* pedido){
@@ -43,7 +52,17 @@ int getPedidoType(char*){
 	return 0;
 }
 
-char* procesarPedido(char* pedido){
+char* leerPaginas(char* pedido){
+	int estaEnMemoriaPrincipal = 0;
+	if(estaEnMemoriaPrincipal){
+
+	} else{
+		solicitarLecturaASwap(pedido);
+	}
+	return 0;
+}
+
+char* delegarPedidoNucleo(char* pedido){
 	char* respuesta;
 	int pedido_type = getPedidoType(pedido);
 
@@ -53,6 +72,17 @@ char* procesarPedido(char* pedido){
 	if(pedido_type == PEDIDO_FINALIZAR_PROGRAMA){
 		respuesta = finalizarPrograma(pedido);
 	}
+	return respuesta;
+}
+
+char* delegarPedidoCPU(char* pedido){
+	char* respuesta;
+	int pedido_type = getPedidoType(pedido);
+
+	if(pedido_type == PEDIDO_LECTURA){
+		respuesta = leerPaginas(pedido);
+	}
+
 	return respuesta;
 }
 
@@ -71,15 +101,13 @@ void *gestionarNucleo(void* socket){
 		   exit(1);
 		}
 
-		respuesta = procesarPedido(pedido);
+		respuesta = delegarPedidoNucleo(pedido);
 
-		if (send(socket, "Soy UMC", 50, 0) == -1) {
+		if (send(socket, respuesta, 50, 0) == -1) {
 			 perror("send");
 			 exit(1);
 		 }
-
 	}
-
 
 	return 0;
 }
@@ -88,6 +116,24 @@ void *gestionarCPU(void* socket){
 
 	printf("Creado hilo de gestión de CPU\n");
 	printf("De socket: %d\n", (int)socket);
+
+	int bytes_recibidos;
+	char pedido[50];
+	char* respuesta;
+
+	while(1){
+		if ((bytes_recibidos = recv((int)socket, pedido, 50, 0)) == -1) {
+		   perror("recv");
+		   exit(1);
+		}
+
+		respuesta = procesarPedido(pedido);
+
+		if (send(socket, respuesta, 50, 0) == -1) {
+			 perror("send");
+			 exit(1);
+		 }
+	}
 
 	return 0;
 }
