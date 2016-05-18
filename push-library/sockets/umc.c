@@ -13,14 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef UMC_H_
-#define UMC_H_
+#include "../sockets/umc.h"
 
-	/**
-	* @NAME: enviarSolicitudDeProgramaNuevo
-	* @DESC: devuelve 0 si OK
-	*/
-
-uint32_t recibirSolicitudDeProgramaNuevo();
-
-#endif /* UMC_H_ */
+uint32_t recibirSolicitudDeProgramaNuevo(){
+	return 0;
+}

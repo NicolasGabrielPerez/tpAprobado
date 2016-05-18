@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "../comunicacion/umc.h"
+#include "../sockets/consola.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +26,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-uint32_t recibirSolicitudDeProgramaNuevo(){
+#include "../sockets/umc.h"
+
+int enviarSolicitudDeProgramaNuevo(){
 	return 0;
 }

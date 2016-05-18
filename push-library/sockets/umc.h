@@ -13,14 +13,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef CONSOLA_H_
-#define CONSOLA_H_
+#ifndef UMC_H_
+#define UMC_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 	/**
 	* @NAME: enviarSolicitudDeProgramaNuevo
 	* @DESC: devuelve 0 si OK
 	*/
 
-uint32_t enviarSolicitudDeProgramaNuevo();
+uint32_t recibirSolicitudDeProgramaNuevo();
 
-#endif /* CONSOLA_H_ */
+#endif /* UMC_H_ */

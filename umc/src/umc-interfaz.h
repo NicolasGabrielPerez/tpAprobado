@@ -16,6 +16,16 @@
 #ifndef UMC_INTERFAZ_H_
 #define UMC_INTERFAZ_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <commons/collections/list.h>
 
 typedef struct {

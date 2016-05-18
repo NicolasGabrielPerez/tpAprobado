@@ -13,7 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "consola.h"
+#ifndef SOCKETS_H_
+#define SOCKETS_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,8 +26,33 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include "../comunicacion/umc.h"
 
-uint32_t enviarSolicitudDeProgramaNuevo(){
-	return 0;
-}
+	/**
+	* @NAME: temporal_get_string_time
+	* @DESC: get sockaddr, IPv4 or IPv6
+	*/
+
+void *get_in_addr(struct sockaddr *sa);
+
+	/**
+	* @NAME: crear_socket_cliente
+	* @DESC: conecta con esa ip y puerto, y devuelve el socket
+	*/
+int crear_socket_cliente(char* ip, char* port);
+
+	/**
+	* @NAME: handshake
+	* @DESC: envía mensaje y recibe mensaje
+	* 		devuelve el mensaje recibido
+	* @PARAM:
+	* 	send_message: mensaje a enviar
+	*/
+char* handshake(int sockfd, char* send_messaage);
+
+	/**
+	* @NAME: crear_puerto_escucha
+	* @DESC: crea y devuelve puerto escucha
+	*/
+int crear_puerto_escucha(char* port);
+
+#endif /* SOCKETS_H_ */

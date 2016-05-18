@@ -13,7 +13,8 @@
 #include <commons/config.h>
 #include <commons/log.h>
 #include <commons/collections/list.h>
-#include <comunicacion/sockets.h>
+#include <sockets/sockets.h>
+
 #include "ansiop.h"
 
 static const char* DEFINICION_VARIABLES = "variables a, b, c";
@@ -97,44 +98,45 @@ int main(int argc, char **argv) {
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 
 	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
-	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
+	//int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
 
 	printf("UMC FD: %d\n", socket_umc);
-	printf("NUCLEO FD: %d\n", socket_nucleo);
+	//printf("NUCLEO FD: %d\n", socket_nucleo);
 
 	//Hago handshake con umc
-	if(handshake(socket_umc, "PRUEBA") != 0){
-		puts("Error en handshake con la umc");
-	}
+	handshake(socket_umc, "Soy cpu");
+//	if(handshake(socket_umc, "PRUEBA") != 0){
+//		puts("Error en handshake con la umc");
+//	}
 
 	//Hago handskae con nucleo
-	if(handshake(socket_nucleo, "PRUEBA") != 0){
-		puts("Error en handshake con la umc");
-	}
+//	if(handshake(socket_nucleo, "PRUEBA") != 0){
+//		puts("Error en handshake con la umc");
+//	}
 
 	//Quiero recibir de núcleo, lo que le pasó consola
-	if ((nbytes = recv(socket_nucleo, buf, 50, 0)) <= 0) {
-	   // got error or connection closed by client
-	   if (nbytes == 0) {
-		   // connection closed
-		   printf("socket %d hung up\n", socket_nucleo);
-	   } else {
-		   perror("recv");
-	   }
-	   close(socket_nucleo); // bye!
-   } else {
-	   //se recibió mensaje
-	   printf("Se recibieron %d bytes\n", nbytes);
-	   printf("Se recibió: %s\n", buf);
-
-  } // END handle data from client
-
-
-	if (send(socket_umc, buf, nbytes, 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
-		 perror("send");
-    };
-
-	puts("Ya le hice un envio a UMC. Termino mi ejecucion.");
+//	if ((nbytes = recv(socket_nucleo, buf, 50, 0)) <= 0) {
+//	   // got error or connection closed by client
+//	   if (nbytes == 0) {
+//		   // connection closed
+//		   printf("socket %d hung up\n", socket_nucleo);
+//	   } else {
+//		   perror("recv");
+//	   }
+//	   close(socket_nucleo); // bye!
+//   } else {
+//	   //se recibió mensaje
+//	   printf("Se recibieron %d bytes\n", nbytes);
+//	   printf("Se recibió: %s\n", buf);
+//
+//  } // END handle data from client
+//
+//
+//	if (send(socket_umc, buf, nbytes, 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
+//		 perror("send");
+//    };
+//
+//	puts("Ya le hice un envio a UMC. Termino mi ejecucion.");
 
 	return EXIT_SUCCESS;
 

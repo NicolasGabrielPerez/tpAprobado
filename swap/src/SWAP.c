@@ -8,8 +8,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <commons/config.h>
-#include <comunicacion/sockets.h>
-
+#include <sockets/sockets.h>
 #include "swap-library.h"
 
 int esperarConexionUMC(int umc_listener){

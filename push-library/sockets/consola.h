@@ -13,35 +13,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SOCKETS_H_
-#define SOCKETS_H_
+#ifndef CONSOLA_H_
+#define CONSOLA_H_
 
 	/**
-	* @NAME: temporal_get_string_time
-	* @DESC: get sockaddr, IPv4 or IPv6
+	* @NAME: enviarSolicitudDeProgramaNuevo
+	* @DESC: devuelve 0 si OK
 	*/
 
-void *get_in_addr(struct sockaddr *sa);
+int enviarSolicitudDeProgramaNuevo();
 
-	/**
-	* @NAME: crear_socket_cliente
-	* @DESC: conecta con esa ip y puerto, y devuelve el socket
-	*/
-int crear_socket_cliente(char* ip, char* port);
-
-	/**
-	* @NAME: handshake
-	* @DESC: envía mensaje y recibe mensaje
-	* 		devuelve el mensaje recibido
-	* @PARAM:
-	* 	send_message: mensaje a enviar
-	*/
-char* handshake(int sockfd, char* send_messaage);
-
-	/**
-	* @NAME: crear_puerto_escucha
-	* @DESC: crea y devuelve puerto escucha
-	*/
-int crear_puerto_escucha(char* port);
-
-#endif /* SOCKETS_H_ */
+#endif /* CONSOLA_H_ */

@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <commons/config.h>
-#include <comunicacion/sockets.h>
+#include <sockets/sockets.h>
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once
 
