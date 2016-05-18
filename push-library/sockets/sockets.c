@@ -161,28 +161,28 @@ int crear_puerto_escucha(char* port){
 
 // nuevo para enviar y recivir estructuras dinamicas
 
-void send_dinamic(int sockfd, void* estructura, double tamañoEstructura){
+void send_dinamic(int sockfd, void* estructura, double tamanioEstructura){
 
-int tamaño_dato_double;
+	int tamanio_dato_double;
 
-	if (send(sockfd, tamañoEstructura, tamaño_dato_double, 0) == -1) {
+	if (send(sockfd, estructura, tamanio_dato_double, 0) == -1) {
 		  perror("send");
 	}
-	if (send(sockfd,estructura, tamañoEstructura, 0) == -1) {
+	if (send(sockfd,estructura, tamanioEstructura, 0) == -1) {
 		  perror("send");
-		}
+	}
 }
 
-void recv_dinamic(int sockfd, double tamañoDouble, int *bufer){
+void recv_dinamic(int sockfd, double tamanioDouble, int *bufer){
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 
 
 
-	if ((tamañoDouble = recv(sockfd, numbytes, tamañoDouble, 0)) == -1) {
+	if ((tamanioDouble = recv(sockfd, numbytes, tamanioDouble, 0)) == -1) {
 				perror("recv");
 				exit(1);
 		}
-	bufer = malloc(tamañoDouble);
+	bufer = malloc(tamanioDouble);
 	if ((numbytes = recv(sockfd, bufer, numbytes, 0)) == -1) {
 			perror("recv");
 			exit(1);

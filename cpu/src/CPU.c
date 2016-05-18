@@ -13,14 +13,14 @@
 #include <commons/config.h>
 #include <commons/log.h>
 #include <commons/collections/list.h>
-#include <sockets/sockets.h>
+#include "sockets.h"
 
 #include "ansiop.h"
 
-static const char* DEFINICION_VARIABLES = "variables a, b, c";
-static const char* ASIGNACION = "a = b + 12";
-static const char* IMPRIMIR = "print b";
-static const char* IMPRIMIR_TEXTO = "textPrint foo\n";
+//static const char* DEFINICION_VARIABLES = "variables a, b, c";
+//static const char* ASIGNACION = "a = b + 12";
+//static const char* IMPRIMIR = "print b";
+//static const char* IMPRIMIR_TEXTO = "textPrint foo\n";
 
 int socketNucleo = 0;
 int socketUmc = 0;
@@ -30,57 +30,24 @@ AnSISOP_funciones functions = {
 	.AnSISOP_obtenerPosicionVariable= obtenerPosicionVariable,
 	.AnSISOP_dereferenciar	= dereferenciar,
 	.AnSISOP_asignar	= asignar,
-	.AnSISOP_imprimir	= imprimir,
+	.AnSISOP_obtenerValorCompartida = obtenerValorCompartida,
+	.AnSISOP_asignarValorCompartida = asignarValorCompartida,
+	.AnSISOP_irAlLabel = irAlLabel,
+	.AnSISOP_llamarSinRetorno = llamarSinRetorno,
+	.AnSISOP_llamarConRetorno = llamarConRetorno,
+	.AnSISOP_finalizar = finalizar,
+	.AnSISOP_retornar = retornar,
+	.AnSISOP_imprimir = imprimir,
 	.AnSISOP_imprimirTexto	= imprimirTexto,
+	.AnSISOP_entradaSalida	= entradaSalida
 };
-AnSISOP_kernel kernel_functions = { };
+AnSISOP_kernel kernel_functions = {
+		.AnSISOP_wait	= wait,
+		.AnSISOP_signal	= signal
+};
 
-// get sockaddr, IPv4 or IPv6:
-void *get_in_addr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
-    }
-
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
-}
-
-void correrDefinirVariables() {
-	printf("Ejecutando '%s'\n", DEFINICION_VARIABLES);
-	analizadorLinea(strdup(DEFINICION_VARIABLES), &functions, &kernel_functions);
-	printf("================\n");
-}
-
-
-void correrAsignar() {
-	printf("Ejecutando '%s'\n", ASIGNACION);
-	analizadorLinea(strdup(ASIGNACION), &functions, &kernel_functions);
-	printf("================\n");
-}
-
-
-void correrImprimir() {
-	printf("Ejecutando '%s'\n", IMPRIMIR);
-	analizadorLinea(strdup(IMPRIMIR), &functions, &kernel_functions);
-	printf("================\n");
-}
-
-
-
-void correrImprimirTexto() {
-	printf("Ejecutando '%s'", IMPRIMIR_TEXTO);
-	analizadorLinea(strdup(IMPRIMIR_TEXTO), &functions, &kernel_functions);
-	printf("================\n");
-}
 
 int main(int argc, char **argv) {
-	//correrDefinirVariables();
-	//correrAsignar();
-	//correrImprimir();
-	//correrImprimirTexto();
-	//initConfig();
-
-//	sendMessage();
 
 	char buf[50];
 	int nbytes;

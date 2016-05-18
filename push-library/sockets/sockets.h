@@ -44,13 +44,13 @@ char* handshake(int sockfd, char* send_messaage);
 	*/
 int crear_puerto_escucha(char* port);
 
-int recv_dinamic(int sockfd, double tamañoDouble, int *bufer);
+void recv_dinamic(int sockfd, double tamanioDouble, int *bufer);
 		/**
 		 * @NAME: recv_dinamic
 		 * @DESC; recive de sockfd una estructura de tamaño tamañoDoble y devuelve el putntero
 		 *bufer
 		 */
-void send_dinamic(int sockfd, int estructura, double tamañoEstructura);
+void send_dinamic(int sockfd, void* estructura, double tamanioEstructura);
 		/**
 		 * @name: send_dinamic
 		 * @DESC: envia a sockfd una estructura de tamañoEstructura
