@@ -20,7 +20,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <sockets/sockets.h>
+#include <comunicacion/sockets.h>
 
 void imprimirClaveValor(char** claves, char** valores){
 	char* clave;

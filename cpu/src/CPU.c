@@ -13,8 +13,7 @@
 #include <commons/config.h>
 #include <commons/log.h>
 #include <commons/collections/list.h>
-#include <sockets/sockets.h>
-
+#include <comunicacion/sockets.h>
 #include "ansiop.h"
 
 static const char* DEFINICION_VARIABLES = "variables a, b, c";
