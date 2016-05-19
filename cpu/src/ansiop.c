@@ -1,100 +1,137 @@
 #include "ansiop.h"
 
+#include "commons/collections/list.h"
+#include "commons/collections/dictionary.h"
 
-static const int CONTENIDO_VARIABLE = 20;
-static const int POSICION_MEMORIA = 0x10;
+#include "pcb.h"
 
+PCB* pcb;
 
 t_puntero definirVariable(t_nombre_variable variable) {
 
 	//Reservar memoria, hay que enviar a la UMC?
+	//umcDefine(variable);
 
-	//Agregar al stack la variable
-	//Falta PCB
+	t_puntero memoryAddr;
 
+	//Agregar al pcb la variable
+	t_list* stack = pcb->stack;
+	StackContent* stackContent = list_get(stack, pcb->indexStack);
+	dictionary_put(stackContent->arguments, &variable, &memoryAddr);
 
-	//retornar posicion de memoria de la nueva variable
-
-
-	printf("definir la variable %c\n", variable);
-	return POSICION_MEMORIA;
+	printf("Definiendo variable %c\n", variable);
+	return memoryAddr;
 }
 
 
 t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
-	//Devuelve posicion de memoria
-	//Falta PCB
+
+	t_list* stack = pcb->stack;
+	StackContent* stackContent = list_get(stack, pcb->indexStack);
+	t_puntero memoryAddr = (int) dictionary_get(stackContent->arguments, &variable);
 
 	printf("Obtener posicion de %c\n", variable);
-	return POSICION_MEMORIA;
+	return memoryAddr;
 }
 
 
 t_valor_variable dereferenciar(t_puntero puntero) {
-	printf("Dereferenciar %d y su valor es: %d\n", puntero, CONTENIDO_VARIABLE);
-	return CONTENIDO_VARIABLE;
+
+
+	//umcGet(puntero);
+
+	t_valor_variable value;
+
+	printf("Dereferenciar %d y su valor es: %d\n", puntero, value);
+	return value;
 }
 
 
 void asignar(t_puntero puntero, t_valor_variable variable) {
+
+	//umcSet(puntero, variable);
+
+	t_list* stack = pcb->stack;
+	StackContent* stackContent = list_get(stack, pcb->indexStack);
+	dictionary_put(stackContent->arguments, &variable, &puntero);
+
 	printf("Asignando en %d el valor %d\n", puntero, variable);
 }
 
 t_valor_variable obtenerValorCompartida(t_nombre_compartida valor) {
-	printf("Imprimir %d\n", valor);
+
 
 	return 0;
 }
 
 
 t_valor_variable asignarValorCompartida(t_nombre_compartida variable, t_valor_variable valor) {
-	printf("Imprimir %d\n", valor);
 
 	return 0;
 }
 
 
 void irAlLabel(t_nombre_etiqueta etiqueta) {
-	printf("Imprimir %d\n", etiqueta);
+
+
 }
 
 
 void llamarConRetorno(t_nombre_etiqueta etiqueta) {
-	printf("Imprimir %d\n", etiqueta);
+
+	//Push
+	StackContent* content; //= stack_content_create();
+	t_list* stack = pcb->stack;
+	pcb->indexStack++;
+	list_add(stack, content);
 }
 
 void llamarSinRetorno(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
+	//Push
+	StackContent* content; //= stack_content_create();
+	t_list* stack = pcb->stack;
+	pcb->indexStack++;
+	list_add(stack, content);
 }
 
 void finalizar() {
-	printf("Imprimir ");
+
+	//Informar fin de programa al nucleo
+
 }
 
 void retornar(t_valor_variable valor) {
-	printf("Imprimir %d\n", valor);
+
+	//Pop
+	t_list* stack = pcb->stack;
+	StackContent* content = list_get(stack, pcb->indexStack);
+	pcb->indexStack--;
+
+	//stack_content_free(content);
 }
 
 void imprimir(t_valor_variable valor) {
-	printf("Imprimir %d\n", valor);
+	printf("Imprimiendo: %d\n", valor);
 }
 
 
 void imprimirTexto(char* texto) {
-	printf("ImprimirTexto: %s", texto);
+	printf("Imprimiendo texto: %s\n", texto);
 }
 
 void entradaSalida(t_nombre_dispositivo valor, int tiempo) {
-	printf("Imprimir %d\n", valor);
+
+
 }
 
 
 void wait(t_nombre_semaforo id) {
-
+	wait(id);
 }
 
 
 void signal(t_nombre_semaforo id) {
-
+	signal(id);
 }
