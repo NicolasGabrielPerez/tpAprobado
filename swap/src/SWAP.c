@@ -62,7 +62,11 @@ int main(void) {
 		return EXIT_FAILURE;
 	}
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto usado escuchar a la umc
-	int swap_size = config_get_int_value(config, "SWAP_SIZE");
+	int page_size =config_get_int_value(config, "TAMANIO_PAGINA");
+	int cantidad_page =config_get_int_value(config, "CANTIDAD_PAGINAS");
+//	int retardo_fragmentacion =config_get_int_value(config, "RETARDO_COMPACTACION");
+	int swap_size = page_size * cantidad_page;
+
 
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 	printf("Config: SWAP_SIZE=%d\n", swap_size);
