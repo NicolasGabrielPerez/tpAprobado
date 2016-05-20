@@ -26,7 +26,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "../sockets/umc.h"
+#include "consola.h"
 
 int enviarSolicitudDeProgramaNuevo(){
 	return 0;

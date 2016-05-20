@@ -13,14 +13,4 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "../sockets/consola.h"
-
-int serializarInt(char** serializado, int32_t value){
-	memcpy(*serializado, value, sizeof(int32_t));  // sValue +1?
-	return strlen(*serializado);
-}
-
-int serializarString(char** serializado, char* value){
-	memcpy(*serializado, value, strlen(value));
-	return strlen(*serializado);
-}
+#include "estructuras.h"

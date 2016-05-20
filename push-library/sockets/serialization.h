@@ -13,25 +13,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef UMC_H_
-#define UMC_H_
-
+#ifndef SERIALIZATION_H_
+#define SERIALIZATION_H_
+#include <commons/string.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
 
-	/**
-	* @NAME: enviarSolicitudDeProgramaNuevo
-	* @DESC: devuelve 0 si OK
-	*/
+/**
+* @NAME: serializarInt
+* @DESC: serializado es la estructura donde se van copiando los bytes serializados
+* devuelve cantidad de bytes serializados
+*/
+int serializarInt(char* serializado, int32_t value);
 
-uint32_t recibirSolicitudDeProgramaNuevo();
+/**
+* @NAME: serializarString
+* @DESC: serializado es la estructura donde se van copiando los bytes serializados
+* devuelve cantidad de bytes serializados
+* */
+int serializarString(char* serializado, char* value);
 
-#endif /* UMC_H_ */
+/**
+* @NAME: serializarPCB
+* @DESC: devuelve puntero a serializado
+*/
+char* serializarPCB(PCB pcb);
+
+#endif /* SERIALIZATION */
