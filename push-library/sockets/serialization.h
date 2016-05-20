@@ -17,25 +17,32 @@
 #define SERIALIZATION_H_
 #include <commons/string.h>
 #include <stdio.h>
+#include "estructuras.h"
 
 /**
 * @NAME: serializarInt
 * @DESC: serializado es la estructura donde se van copiando los bytes serializados
 * devuelve cantidad de bytes serializados
 */
-int serializarInt(char* serializado, int32_t value);
+char* serializarInt(char* serializado, int32_t value);
 
 /**
 * @NAME: serializarString
 * @DESC: serializado es la estructura donde se van copiando los bytes serializados
 * devuelve cantidad de bytes serializados
 * */
-int serializarString(char* serializado, char* value);
+char* serializarString(char* serializado, char* value);
 
 /**
 * @NAME: serializarPCB
 * @DESC: devuelve puntero a serializado
 */
-char* serializarPCB(PCB pcb);
+char* serializarPCB(PCB* pcb);
+
+/**
+* @NAME: deserializarPCB
+* @DESC: devuelve puntero a pcb deserializado
+*/
+PCB* deserializarPCB(char* serializado);
 
 #endif /* SERIALIZATION */

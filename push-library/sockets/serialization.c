@@ -16,33 +16,6 @@
 #include "serialization.h"
 #include "estructuras.h"
 
-char* serializarInt(char* posicionDeEscritura, int32_t value){
-	int inputSize = sizeof(int32_t);
-	memcpy(posicionDeEscritura, value, inputSize);
-	return posicionDeEscritura + inputSize;
-}
-
-int serializarString(char** serializado, char* value){
-	memcpy(serializado, value, strlen(value));
-	return strlen(serializado);
-}
-
-char* serializarPCB(PCB* pcb){
-	int size = sizeOfPCB(pcb);
-	char* serializado = malloc(size);
-
-	serializado = serializarInt(serializado, pcb->identifier);
-	serializado = serializarInt(serializado, pcb->programCounter);
-	serializado = serializarInt(serializado, pcb->pageCode);
-
-	appendIndexCode(serializado, &(pcb->indexCode));
-	appendIndexTag(serializado, &(pcb->indexCode));
-
-	serializado = serializarInt(serializado, pcb->indexStack);
-
-	return serializado;
-}
-
 //El serializado viene con memoria YA RESERVADA
 char* appendIndexCode(char* serializado, IndexCode* indexCode){
 	serializado = serializarInt(serializado, indexCode->offsetStart);
@@ -57,17 +30,6 @@ char* appendIndexTag(char* serializado, IndexTag* indexCode){
 	return serializado;
 }
 
-int sizeOfPCB(PCB* pcb){
-	int size = 0;
-	size += sizeof(int32_t); //identifier;
-	size += sizeof(int32_t); //programaCounter
-	size += sizeof(int32_t); //pageCode
-	size += sizeof(int32_t); //indexStack
-	size += sizeOfIndexCode(pcb->indexCode);
-	size += sizeOfIndexTag(pcb->indexTag);
-	return size;
-}
-
 int sizeOfIndexCode(IndexCode* indexCode){
 	int size = 0;
 	size += sizeof(int32_t); //offsetStart
@@ -80,3 +42,50 @@ int sizeOfIndexTag(IndexTag* indexTag){
 	int size = 0;
 	return size;
 }
+
+int sizeOfPCB(PCB* pcb){
+	int size = 0;
+	size += sizeof(int32_t); //identifier;
+	size += sizeof(int32_t); //programaCounter
+	size += sizeof(int32_t); //pageCode
+	size += sizeof(int32_t); //indexStack
+	size += sizeOfIndexCode(&pcb->indexCode);
+	size += sizeOfIndexTag(&pcb->indexTag);
+	return size;
+}
+
+
+
+char* serializarInt(char* posicionDeEscritura, int32_t value){
+	int inputSize = sizeof(int32_t);
+	memcpy(posicionDeEscritura, value, inputSize);
+	return posicionDeEscritura + inputSize;
+}
+
+char* serializarString(char* posicionDeEscritura, char* value){
+	int inputSize = strlen(value) + 1;
+	memcpy(posicionDeEscritura, value, inputSize);
+	return posicionDeEscritura + inputSize;
+}
+
+char* serializarPCB(PCB* pcb){
+	int size = sizeOfPCB(pcb);
+	char* serializado = malloc(size);
+
+	serializado = serializarInt(serializado, pcb->identifier);
+	serializado = serializarInt(serializado, pcb->programCounter);
+	serializado = serializarInt(serializado, pcb->pageCode);
+
+	serializado = appendIndexCode(serializado, &pcb->indexCode);
+	serializado = appendIndexTag(serializado, &pcb->indexTag);
+
+	serializado = serializarInt(serializado, pcb->indexStack);
+
+	return serializado;
+}
+
+PCB* deserializarPCB(char* serializado){
+	int32_t identifier = serializado;
+}
+
+
