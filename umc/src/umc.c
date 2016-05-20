@@ -11,7 +11,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-//#include "../../../push-library/sockets/sockets.h"
+#include "../../../push-library/sockets/sockets.h"
 #include <pthread.h>
 #include <sockets/sockets.h>
 #include "umc-interfaz.h"
@@ -44,11 +44,7 @@ char* iniciarPrograma(char* pedido){
 	return "Almacenado OK!";
 }
 
-char* finalizarPrograma(char* pedido){
-	return 0;
-}
-
-int getPedidoType(char*){
+int getPedidoType(char* pedido){
 	return 0;
 }
 

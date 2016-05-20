@@ -17,6 +17,7 @@
 #define SERIALIZATION_H_
 #include <commons/string.h>
 #include <stdio.h>
+#include <string.h>
 #include "estructuras.h"
 
 /**

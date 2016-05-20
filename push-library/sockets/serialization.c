@@ -25,8 +25,8 @@ char* appendIndexCode(char* serializado, IndexCode* indexCode){
 }
 
 //El serializado viene con memoria YA RESERVADA
-char* appendIndexTag(char* serializado, IndexTag* indexCode){
-
+char* appendIndexTag(char* serializado, IndexTag* indexTag){
+	serializado = serializarInt(serializado, indexTag->data);
 	return serializado;
 }
 
@@ -84,8 +84,47 @@ char* serializarPCB(PCB* pcb){
 	return serializado;
 }
 
+char* deserializarIndexCodeEnPCB(PCB* pcb, char* serializado){
+	char* siguiente = serializado;
+
+	memcpy(pcb->indexCode.offsetStart, siguiente, sizeof(int32_t));
+	siguiente += sizeof(int32_t);
+
+	memcpy(pcb->indexCode.offsetEnd, siguiente, sizeof(int32_t));
+	siguiente += sizeof(int32_t);
+
+	return siguiente;
+}
+
+char* deserializarIndexTagEnPCB(PCB* pcb, char* serializado){
+	char* siguiente = serializado;
+
+	memcpy(pcb->indexTag.data, siguiente, sizeof(int32_t));
+	siguiente += sizeof(int32_t);
+
+	return siguiente;
+}
+
 PCB* deserializarPCB(char* serializado){
-	int32_t identifier = serializado;
+	PCB* pcb = malloc(sizeof(PCB));
+	char* siguiente = serializado;
+
+	memcpy(&pcb->identifier, siguiente, sizeof(int32_t));
+	siguiente += sizeof(int32_t);
+
+	memcpy(&pcb->programCounter, siguiente, sizeof(int32_t));
+	siguiente += sizeof(int32_t);
+
+	memcpy(&pcb->pageCode, siguiente, sizeof(int32_t));
+	siguiente += sizeof(int32_t);
+
+	siguiente = deserializarIndexCodeEnPCB(pcb, serializado);
+
+	siguiente = deserializarIndexTagEnPCB(pcb, serializado);
+
+	memcpy(&pcb->indexStack, siguiente, sizeof(int32_t));
+
+	return pcb;
 }
 
 

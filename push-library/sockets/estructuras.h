@@ -34,7 +34,7 @@ typedef struct StackContent {
 } StackContent;
 
 typedef struct IndexTag {
-
+	int data;
 //Estructura auxiliar utilizada para conocer las líneas de
 //código correspondientes al inicio de los procedimientos
 //y a las etiquetas. Esto que seria exactamente?
