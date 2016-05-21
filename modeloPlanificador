@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <commons/collections/list.h>
+
+void planificador(void* lista_PCB, int fin_quantum,int new_PCB){
+
+	lista_PCB queue_create();
+	int planifique = 1;
+	while(planifique){
+		void queue_push(lista_PCB , void *new_PCB);
+		int anterior = new_PCB;
+		if (fin_quantum = 1) {
+			void elemento = queue_peek(lista_PCB);
+			//enviar elemento a CPU
+			void *queue_pop(lista_PCB *);
+		}
+		if (anterior /= new_PCB){
+			void queue_push(lista_PCB *, void *new_PCB);
+
+		}
+	}
+}
