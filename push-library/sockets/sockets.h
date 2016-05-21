@@ -55,4 +55,10 @@ char* handshake(int sockfd, char* send_messaage);
 	*/
 int crear_puerto_escucha(char* port);
 
+/**
+	* @NAME: aceptarNuevaConexion
+	* @DESC: queda a la espera de una nueva conexion como server, la acepta y devuelve el socket
+	*/
+int aceptarNuevaConexion(int listener);
+
 #endif /* SOCKETS_H_ */
