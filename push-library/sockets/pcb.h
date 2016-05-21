@@ -17,6 +17,44 @@
 #define PCB_H_
 
 
+typedef struct stackContent {
 
+	t_dictionary* arguments; //Diccionario
+	t_list* variables; //Lista
+	t_puntero returnAddress;
+	t_puntero returnVariable;
+} StackContent;
+
+typedef struct indexTag {
+
+//Estructura auxiliar utilizada para conocer las líneas de
+//código correspondientes al inicio de los procedimientos
+//y a las etiquetas. Esto que seria exactamente?
+
+} IndexTag;
+
+typedef struct indexCode {
+	int offsetStart;
+	int offsetEnd;
+} IndexCode;
+
+
+typedef struct pcb {
+	int identifier;
+	int programCounter;
+	int pageCode;
+	IndexCode* indexCode;
+	IndexTag* indexTag;
+	int indexStack;
+	t_list* stack;
+
+} PCB;
+
+
+PCB* init_pcb();
+void free_pcb(PCB* pcb);
+
+StackContent* init_stackContent();
+void free_stackContent(StackContent* stackContent);
 
 #endif

@@ -1,18 +1,11 @@
 #include "ansiop.h"
 
-#include "commons/collections/list.h"
-#include "commons/collections/dictionary.h"
-
-#include "pcb.h"
-
-PCB* pcb;
-
 t_puntero definirVariable(t_nombre_variable variable) {
 
 	//Reservar memoria, hay que enviar a la UMC?
 	//umcDefine(variable);
 
-	t_puntero memoryAddr;
+	t_puntero memoryAddr = 0xab;
 
 	//Agregar al pcb la variable
 	t_list* stack = pcb->stack;
@@ -41,7 +34,7 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 	//umcGet(puntero);
 
-	t_valor_variable value;
+	t_valor_variable value = 5;
 
 	printf("Dereferenciar %d y su valor es: %d\n", puntero, value);
 	return value;

@@ -17,10 +17,10 @@
 
 #include "ansiop.h"
 
-//static const char* DEFINICION_VARIABLES = "variables a, b, c";
-//static const char* ASIGNACION = "a = b + 12";
-//static const char* IMPRIMIR = "print b";
-//static const char* IMPRIMIR_TEXTO = "textPrint foo\n";
+static const char* DEFINICION_VARIABLES = "variables a, b, c";
+static const char* ASIGNACION = "a = b + 12";
+static const char* IMPRIMIR = "print b";
+static const char* IMPRIMIR_TEXTO = "textPrint foo\n";
 
 int socketNucleo = 0;
 int socketUmc = 0;
@@ -47,7 +47,7 @@ AnSISOP_kernel kernel_functions = {
 };
 
 
-int main(int argc, char **argv) {
+/*int main(int argc, char **argv) {
 
 	char buf[50];
 	int nbytes;
@@ -106,4 +106,16 @@ int main(int argc, char **argv) {
 
 	return EXIT_SUCCESS;
 
+}*/
+
+
+int main(int argc, char **argv) {
+
+
+	analizadorLinea(strdup(DEFINICION_VARIABLES), &functions, &kernel_functions);
+	analizadorLinea(strdup(ASIGNACION), &functions, &kernel_functions);
+	analizadorLinea(strdup(IMPRIMIR), &functions, &kernel_functions);
+	analizadorLinea(strdup(IMPRIMIR_TEXTO), &functions, &kernel_functions);
+
+	return EXIT_SUCCESS;
 }

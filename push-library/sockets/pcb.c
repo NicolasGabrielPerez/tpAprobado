@@ -25,39 +25,43 @@
 #include "serialization.h"
 
 
-typedef struct StackContent {
+PCB* init_pcb() {
 
-	t_dictionary arguments; //Diccionario
-	t_list variables; //Lista
-	t_puntero returnAddress;
-	t_puntero returnVariable;
-};
+	PCB* pcb = malloc(sizeof(PCB));
+	pcb->indexStack = 0;
+	pcb->stack = list_create();
 
-typedef struct IndexTag {
+	StackContent* stackContent = init_stackContent();
+	list_add(pcb->stack, stackContent);
 
-//Estructura auxiliar utilizada para conocer las líneas de
-//código correspondientes al inicio de los procedimientos
-//y a las etiquetas. Esto que seria exactamente?
+	return pcb;
+}
 
-} IndexTag;
+void free_pcb(PCB* pcb) {
 
-typedef struct IndexCode {
-	int offsetStart;
-	int offsetEnd;
-} IndexCode;
+	int i = 0;
+	for(i = 0; i < pcb->indexStack; i++) {
+		StackContent* stackContent = list_get(pcb->stack, i);
+		free_stackContent(stackContent);
+	}
 
+	list_destroy(pcb->stack);
+	free(pcb);
+}
 
-typedef struct PCB {
-	int identifier;
-	int programCounter;
-	int pageCode;
-	IndexCode indexCode;
-	IndexTag indexTag;
-	int indexStack;
+StackContent* init_stackContent() {
 
-} PCB;
+	StackContent* stackContent = malloc(sizeof(StackContent));
+	stackContent->arguments = dictionary_create();
 
+	return stackContent;
+}
 
+void free_stackContent(StackContent* stackContent) {
+
+	dictionary_destroy(stackContent->arguments);
+	free(stackContent);
+}
 
 //Lo que viene lo saque de aca pero no tuve tiempo de implementarlo
 //http://stackoverflow.com/questions/6002528/c-serialization-techniques

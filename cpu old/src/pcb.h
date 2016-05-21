@@ -51,4 +51,10 @@ typedef struct pcb {
 } PCB;
 
 
+PCB* init_pcb();
+void free_pcb(PCB* pcb);
+
+StackContent* init_stackContent();
+void free_stackContent(StackContent* stackContent);
+
 #endif

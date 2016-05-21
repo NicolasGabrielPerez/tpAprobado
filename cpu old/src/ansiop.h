@@ -1,10 +1,18 @@
 #ifndef DUMMY_ANSISOP_H_
 	#define DUMMY_ANSISOP_H_
 
-	#include <parser/parser.h>
+
 	#include <stdio.h>
 
+	#include "commons/collections/list.h"
+	#include "commons/collections/dictionary.h"
+	#include <parser/parser.h>
 
+
+	#include "pcb.h"
+
+
+	PCB* pcb;
 
 	t_puntero definirVariable(t_nombre_variable variable);
 	t_puntero obtenerPosicionVariable(t_nombre_variable variable);

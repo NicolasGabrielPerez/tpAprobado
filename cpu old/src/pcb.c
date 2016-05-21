@@ -25,6 +25,43 @@
 #include "serialization.h"
 
 
+PCB* init_pcb() {
+
+	PCB* pcb = malloc(sizeof(PCB));
+	pcb->indexStack = 0;
+	pcb->stack = list_create();
+
+	StackContent* stackContent = init_stackContent();
+	list_add(pcb->stack, stackContent);
+
+	return pcb;
+}
+
+void free_pcb(PCB* pcb) {
+
+	int i = 0;
+	for(i = 0; i < pcb->indexStack; i++) {
+		StackContent* stackContent = list_get(pcb->stack, i);
+		free_stackContent(stackContent);
+	}
+
+	list_destroy(pcb->stack);
+	free(pcb);
+}
+
+StackContent* init_stackContent() {
+
+	StackContent* stackContent = malloc(sizeof(StackContent));
+	stackContent->arguments = dictionary_create();
+
+	return stackContent;
+}
+
+void free_stackContent(StackContent* stackContent) {
+
+	dictionary_destroy(stackContent->arguments);
+	free(stackContent);
+}
 
 //Lo que viene lo saque de aca pero no tuve tiempo de implementarlo
 //http://stackoverflow.com/questions/6002528/c-serialization-techniques
