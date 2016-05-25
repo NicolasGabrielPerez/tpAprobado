@@ -15,6 +15,9 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/socket.h>
+
 
 #include "nucleoFunctions.h"
 
@@ -23,6 +26,31 @@
 int socket_nucleo;
 
 u_int32_t BUFFER_SIZE_NUCLEO = 1024;
+
+
+int receiveData(char* bufferResult) {
+	//Devuelve la cantidad de bytes recibidos y un buffer
+
+	int nbytes = 0;
+	if ((nbytes = recv(socket_nucleo, bufferResult, BUFFER_SIZE_NUCLEO, 0)) <= 0) {
+	   // got error or connection closed by client
+	   if (nbytes == 0) {
+		   // connection closed
+		   printf("socket %d hung up\n", socket_nucleo);
+	   } else {
+		   perror("recv");
+	   }
+	   close(socket_nucleo); // bye!
+	} else {
+	   //se recibió mensaje
+	   printf("Se recibieron %d bytes\n", nbytes);
+	   printf("Se recibió: %s\n", bufferResult);
+
+	   return nbytes;
+	}
+	return 0;
+}
+
 
 void nucleo_init(t_config* config) {
 
@@ -40,6 +68,24 @@ void nucleo_init(t_config* config) {
 
 void nucleo_delete(){
 	close(socket_nucleo);
+}
+
+
+PCB* nucleo_recibirInstruccion() {
+
+	char buffer[BUFFER_SIZE_NUCLEO];
+	int bytesReceived = receiveData(buffer);
+
+	PCB* pcb = init_pcb();
+	return pcb;
+}
+
+void nucleo_notificarIO(t_nombre_dispositivo valor, u_int32_t tiempo) {
+	char buf[BUFFER_SIZE_NUCLEO];
+	int nbytes = 10;
+	if (send(socket_nucleo, buf, nbytes, 0) == -1) {
+		 perror("Error al notificar entrada/salida");
+	};
 }
 
 void nucleo_notificarFinDeQuantum(int quantumCount) {

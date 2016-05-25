@@ -15,6 +15,8 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/socket.h>
 
 #include "umcFunctions.h"
 
@@ -42,15 +44,14 @@ void umc_delete() {
 	close(socket_umc);
 }
 
-void umc_set(t_puntero page, t_puntero offset, u_int32_t size) {
-	char buf[BUFFER_SIZE_UMC];
+void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 	int nbytes = 10;
-	if (send(socket_umc, buf, nbytes, 0) == -1) {
+	if (send(socket_umc, buffer, nbytes, 0) == -1) {
 		 perror("Error insertando memoria");
 	};
 }
 
-char* umc_get(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
+char* umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
 
 	char buf[BUFFER_SIZE_UMC];
 	int nbytes = 10;

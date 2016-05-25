@@ -18,7 +18,7 @@ t_puntero definirVariable(t_nombre_variable variable) {
 	//Agregar al pcb la variable
 	t_list* stack = pcb->stack;
 	StackContent* stackContent = list_get(stack, pcb->indexStack);
-	dictionary_put(stackContent->arguments, key, value);
+	dictionary_put(stackContent->variables, key, value);
 
 	printf("Definiendo variable %c\n", variable);
 	return memoryAddr;
@@ -30,7 +30,7 @@ t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
 	t_list* stack = pcb->stack;
 	StackContent* stackContent = list_get(stack, pcb->indexStack);
-	t_puntero* memoryAddr = (t_puntero*) dictionary_get(stackContent->arguments, &variable);
+	t_puntero* memoryAddr = (t_puntero*) dictionary_get(stackContent->variables, &variable);
 
 	printf("Obtener posicion de %c\n", variable);
 	return *memoryAddr;
@@ -71,42 +71,51 @@ t_valor_variable asignarValorCompartida(t_nombre_compartida variable, t_valor_va
 
 void irAlLabel(t_nombre_etiqueta etiqueta) {
 
-
 }
 
+void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
+	t_list* stack = pcb->stack;
+
+	//Get current stack content
+	StackContent* currentStackContent = list_get(stack, pcb->indexStack);
+
+	//Push
+	StackContent* newStackContent = init_stackContent();
+	newStackContent->returnAddress = pcb->indexCode;
+	newStackContent->returnVariable = 0xff;
+
+	pcb->indexStack++;
+	list_add(stack, newStackContent);
+}
 
 void llamarConRetorno(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
-	//Push
-	StackContent* content; //= stack_content_create();
-	t_list* stack = pcb->stack;
-	pcb->indexStack++;
-	list_add(stack, content);
+	callFunction(etiqueta, donde_retornar);
 }
 
 void llamarSinRetorno(t_nombre_etiqueta etiqueta) {
-
-	//Push
-	StackContent* content; //= stack_content_create();
-	t_list* stack = pcb->stack;
-	pcb->indexStack++;
-	list_add(stack, content);
+	callFunction(etiqueta, pcb->indexCode);
 }
 
 void finalizar() {
-
-	//Informar fin de programa al nucleo
-
+	nucleo_notificarFinDePrograma(pcb);
 }
 
 void retornar(t_valor_variable valor) {
 
-	//Pop
+	//Obtener contentido
 	t_list* stack = pcb->stack;
 	StackContent* content = list_get(stack, pcb->indexStack);
-	pcb->indexStack--;
 
+	//Asignar variable de retorno y program counter
+	pcb->indexCode = content->returnAddress;
+	pcb->programCounter = 0;
+	valor = content->returnVariable;
+
+	//Pop
 	free_stackContent(content);
+	list_remove(stack, pcb->indexStack);
+	pcb->indexStack--;
 }
 
 void imprimir(t_valor_variable valor) {
@@ -119,8 +128,7 @@ void imprimirTexto(char* texto) {
 }
 
 void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {
-
-
+	nucleo_notificarIO(valor, tiempo);
 }
 
 

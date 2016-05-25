@@ -58,7 +58,11 @@ AnSISOP_kernel kernel_functions = {
 };
 
 
-void doQuantum(PCB* pcb) {
+
+//Devuelve un booleano si tiene que salir del programa.
+int doQuantum(PCB* pcb) {
+
+	int hasToExit = 0;
 
 	//Incrementar Program Counter
 	pcb->programCounter++;
@@ -95,6 +99,8 @@ void doQuantum(PCB* pcb) {
 
 		quantumCount = 0;
 	}
+
+	return hasToExit;
 }
 
 
@@ -168,17 +174,15 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-
 	nucleo_init(config);
 	umc_init(config);
 
-	pcb = init_pcb();
+	int hasToExit = 0;
+	while(hasToExit == 0) {
+		pcb = nucleo_recibirInstruccion();
+		hasToExit = doQuantum(pcb);
+	}
 
-	doQuantum(pcb);
-	doQuantum(pcb);
-	doQuantum(pcb);
-
-	free_pcb(pcb);
 	umc_delete();
 	nucleo_delete();
 

@@ -52,7 +52,10 @@ void free_pcb(PCB* pcb) {
 StackContent* init_stackContent() {
 
 	StackContent* stackContent = malloc(sizeof(StackContent));
+	stackContent->variables = dictionary_create();
 	stackContent->arguments = dictionary_create();
+	stackContent->returnAddress = 3;
+	stackContent->returnVariable = 2;
 
 	return stackContent;
 }
@@ -60,6 +63,7 @@ StackContent* init_stackContent() {
 void free_stackContent(StackContent* stackContent) {
 
 	dictionary_destroy_and_destroy_elements(stackContent->arguments, free);
+	dictionary_destroy_and_destroy_elements(stackContent->variables, free);
 	free(stackContent);
 }
 

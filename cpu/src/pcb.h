@@ -20,8 +20,8 @@
 
 typedef struct stackContent {
 
-	t_dictionary* arguments; //Diccionario
-	t_list* variables; //Lista
+	t_dictionary* arguments; //Argumentos de la funcion
+	t_dictionary* variables; //Variables locales
 	t_puntero returnAddress;
 	t_puntero returnVariable;
 } StackContent;
@@ -43,7 +43,7 @@ typedef struct indexCode {
 typedef struct pcb {
 	int identifier;
 	int programCounter;
-	int pageCode;
+	int pageCount;
 	IndexCode* indexCode;
 	IndexTag* indexTag;
 	int indexStack;
