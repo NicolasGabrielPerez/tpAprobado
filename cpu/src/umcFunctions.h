@@ -17,18 +17,13 @@
 #define UMC_FUNCTIONS_H_
 
 #include <parser/parser.h>
+#include <commons/config.h>
 
-
-void umc_init();
+void umc_init(t_config* config);
 void umc_delete();
 
-t_puntero umcDefine(t_nombre_variable var);
-
-t_valor_variable umcGet(t_puntero var);
-
-void umcSet(t_puntero memoryAddr, t_nombre_variable var);
-
-void umcRemove(t_puntero memoryAddr, t_nombre_variable var);
+void umc_set(t_puntero page, t_puntero offset, u_int32_t size);
+char* umc_get(t_puntero page, t_puntero offset, u_int32_t size, char* buffer);
 
 
 #endif

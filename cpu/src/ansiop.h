@@ -32,7 +32,7 @@
 	void imprimir(t_valor_variable valor);
 	void imprimirTexto(char* texto);
 
-	void entradaSalida(t_nombre_dispositivo valor, int tiempo);
+	void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo);
 
 	void wait(t_nombre_semaforo id);
 	void signal(t_nombre_semaforo id);

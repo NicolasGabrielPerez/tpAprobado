@@ -18,6 +18,25 @@
 
 #include "nucleoFunctions.h"
 
+int socket_nucleo;
+
+void nucleo_init(t_config* config) {
+
+	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
+	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
+
+	socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
+	printf("NUCLEO FD: %d\n", socket_nucleo);
+
+	//Hago handskae con nucleo
+	if(handshake(socket_nucleo, "PRUEBA") != 0){
+		puts("Error en handshake con la umc");
+	}
+}
+
+void nucleo_delete(){
+
+}
 
 void nucleo_notificarFinDeQuantum(int quantumCount) {
 

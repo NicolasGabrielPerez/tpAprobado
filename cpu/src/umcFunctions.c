@@ -18,29 +18,33 @@
 
 #include "umcFunctions.h"
 
+int socket_umc;
 
-void nucleo_init() {
+void umc_init(t_config* config){
+
+	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
+	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
+
+	socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
+	printf("UMC FD: %d\n", socket_umc);
+
+	//Hago handshake con umc
+	if(handshake(socket_umc, "PRUEBA") != 0){
+		puts("Error en handshake con la umc");
+	}
+}
+
+void umc_delete() {
 
 }
 
-void nucleo_delete() {
+void umc_set(t_puntero page, t_puntero offset, u_int32_t size) {
+
 
 }
 
-t_puntero umcDefine(t_nombre_variable var) {
+char* umc_get(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 
-	return 0;
-}
-
-t_valor_variable umcGet(t_puntero var){
-
-	return 0;
-}
-
-void umcSet(t_puntero memoryAddr, t_nombre_variable var){
-
-}
-
-void umcRemove(t_puntero memoryAddr, t_nombre_variable var) {
-
+	char* result = "resultado";
+	return result;
 }

@@ -17,10 +17,12 @@
 #define NUCLEO_FUNCTIONS_H_
 
 #include <parser/parser.h>
+#include <commons/config.h>
+
 #include "pcb.h"
 
 
-void nucleo_init();
+void nucleo_init(t_config* config);
 void nucleo_delete();
 
 void nucleo_notificarFinDeQuantum(int quantumCount);

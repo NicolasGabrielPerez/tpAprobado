@@ -118,7 +118,7 @@ void imprimirTexto(char* texto) {
 	printf("Imprimiendo texto: %s\n", texto);
 }
 
-void entradaSalida(t_nombre_dispositivo valor, int tiempo) {
+void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {
 
 
 }

@@ -7,12 +7,16 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+
 #include <parser/metadata_program.h>
 #include <parser/parser.h>
 #include <parser/sintax.h>
+
 #include <commons/config.h>
 #include <commons/log.h>
 #include <commons/collections/list.h>
+
+#include <sockets/sockets.h>
 
 #include "ansiop.h"
 #include "nucleoFunctions.h"
@@ -22,14 +26,14 @@ static char* ASIGNACION = "a = b + 12";
 static char* IMPRIMIR = "print b";
 static char* IMPRIMIR_TEXTO = "textPrint foo\n";
 
-int UMC_PAGE_SIZE = 4;
-int QUANTUM_SIZE = 3;
+u_int32_t UMC_PAGE_SIZE = 4;
+u_int32_t QUANTUM_SIZE = 3;
 
-int quantumCount = 0;
+u_int32_t quantumCount = 0;
 
 
-int socketNucleo = 0;
-int socketUmc = 0;
+u_int32_t socketNucleo = 0;
+u_int32_t socketUmc = 0;
 
 AnSISOP_funciones functions = {
 	.AnSISOP_definirVariable	= definirVariable,
@@ -93,16 +97,16 @@ void doQuantum(PCB* pcb) {
 }
 
 
-/*int main(int argc, char **argv) {
-
-	char buf[50];
-	int nbytes;
+int main(int argc, char **argv) {
 
 	t_config* config = config_create("cpu.config");
 	if(config==NULL){
 		printf("No se pudo leer la configuración");
 		return EXIT_FAILURE;
 	}
+
+	char buf[50];
+	int nbytes;
 
 	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
@@ -152,8 +156,9 @@ void doQuantum(PCB* pcb) {
 
 	return EXIT_SUCCESS;
 
-}*/
+}
 
+/*
 int main(int argc, char **argv) {
 
 
@@ -166,4 +171,4 @@ int main(int argc, char **argv) {
 	free_pcb(pcb);
 
 	return EXIT_SUCCESS;
-}
+}*/
