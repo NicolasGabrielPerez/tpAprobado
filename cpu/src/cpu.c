@@ -16,10 +16,11 @@
 #include <commons/log.h>
 #include <commons/collections/list.h>
 
-#include <sockets/sockets.h>
+#include "sockets.h"
 
 #include "ansiop.h"
 #include "nucleoFunctions.h"
+#include "umcFunctions.h"
 
 static char* DEFINICION_VARIABLES = "variables a, b, c";
 static char* ASIGNACION = "a = b + 12";
@@ -97,6 +98,7 @@ void doQuantum(PCB* pcb) {
 }
 
 
+/*
 int main(int argc, char **argv) {
 
 	t_config* config = config_create("cpu.config");
@@ -156,11 +158,19 @@ int main(int argc, char **argv) {
 
 	return EXIT_SUCCESS;
 
-}
+}*/
 
-/*
 int main(int argc, char **argv) {
 
+	t_config* config = config_create("cpu.config");
+	if(config==NULL){
+		printf("No se pudo leer la configuración");
+		return EXIT_FAILURE;
+	}
+
+
+	nucleo_init(config);
+	umc_init(config);
 
 	pcb = init_pcb();
 
@@ -169,6 +179,8 @@ int main(int argc, char **argv) {
 	doQuantum(pcb);
 
 	free_pcb(pcb);
+	umc_delete();
+	nucleo_delete();
 
 	return EXIT_SUCCESS;
-}*/
+}

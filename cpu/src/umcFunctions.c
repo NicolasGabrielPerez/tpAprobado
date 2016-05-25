@@ -18,7 +18,11 @@
 
 #include "umcFunctions.h"
 
+#include "sockets.h"
+
 int socket_umc;
+
+u_int32_t BUFFER_SIZE_UMC = 1024;
 
 void umc_init(t_config* config){
 
@@ -35,16 +39,41 @@ void umc_init(t_config* config){
 }
 
 void umc_delete() {
-
+	close(socket_umc);
 }
 
 void umc_set(t_puntero page, t_puntero offset, u_int32_t size) {
-
-
+	char buf[BUFFER_SIZE_UMC];
+	int nbytes = 10;
+	if (send(socket_umc, buf, nbytes, 0) == -1) {
+		 perror("Error insertando memoria");
+	};
 }
 
 char* umc_get(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 
-	char* result = "resultado";
+	char buf[BUFFER_SIZE_UMC];
+	int nbytes = 10;
+	if (send(socket_umc, buf, nbytes, 0) == -1) {
+		perror("Error obteniendo memoria");
+	};
+
+	//Quiero recibir de núcleo, lo que le pasó consola
+	if ((nbytes = recv(socket_umc, buf, BUFFER_SIZE_UMC, 0)) <= 0) {
+	   // got error or connection closed by client
+	   if (nbytes == 0) {
+		   // connection closed
+		   printf("socket %d hung up\n", socket_umc);
+	   } else {
+		   perror("recv");
+	   }
+	   close(socket_umc); // bye!
+	} else {
+	   //se recibió mensaje
+	   printf("Se recibieron %d bytes\n", nbytes);
+	   printf("Se recibió: %s\n", buf);
+	}
+
+	char* result = buf;
 	return result;
 }

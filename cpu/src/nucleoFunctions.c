@@ -18,7 +18,11 @@
 
 #include "nucleoFunctions.h"
 
+#include "sockets.h"
+
 int socket_nucleo;
+
+u_int32_t BUFFER_SIZE_NUCLEO = 1024;
 
 void nucleo_init(t_config* config) {
 
@@ -35,25 +39,45 @@ void nucleo_init(t_config* config) {
 }
 
 void nucleo_delete(){
-
+	close(socket_nucleo);
 }
 
 void nucleo_notificarFinDeQuantum(int quantumCount) {
-
+	char buf[BUFFER_SIZE_NUCLEO];
+	int nbytes = 10;
+	if (send(socket_nucleo, buf, nbytes, 0) == -1) {
+		 perror("Error al notificar fin de quantum");
+	};
 }
 
 void nucleo_notificarFinDePrograma(PCB* pcb) {
-
+	char buf[BUFFER_SIZE_NUCLEO];
+	int nbytes = 10;
+	if (send(socket_nucleo, buf, nbytes, 0) == -1) {
+		 perror("Error al notificar fin de programa");
+	};
 }
 
 void nucleo_notificarFinDeRafaga(PCB* pcb) {
-
+	char buf[BUFFER_SIZE_NUCLEO];
+	int nbytes = 10;
+	if (send(socket_nucleo, buf, nbytes, 0) == -1) {
+		 perror("Error al notificar fin de rafaga");
+	};
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {
-
+	char buf[BUFFER_SIZE_NUCLEO];
+	int nbytes = 10;
+	if (send(socket_nucleo, buf, nbytes, 0) == -1) {
+		 perror("Error al notificar wait");
+	};
 }
 
 void nucleo_signal(t_nombre_semaforo semaforo) {
-
+	char buf[BUFFER_SIZE_NUCLEO];
+	int nbytes = 10;
+	if (send(socket_nucleo, buf, nbytes, 0) == -1) {
+		 perror("Error al notificar signal");
+	};
 }
