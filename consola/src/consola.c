@@ -71,7 +71,6 @@ send_dinamic( socket_nucleo, paquete, len);
 
 
 
-
 	puts("Terminé felizmente");
 
 	return EXIT_SUCCESS;
