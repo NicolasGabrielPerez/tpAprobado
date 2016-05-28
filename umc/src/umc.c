@@ -16,14 +16,14 @@
 #include <pthread.h>
 #include "umc-structs.h"
 
-#define HEADER_HANDSHAKE 100
-#define HEADER_INIT_PROGRAMA 200
-#define HEADER_SOLICITAR_PAGINAS 300
-#define HEADER_ALMACENAR_PAGINAS 400
-#define HEADER_CAMBIO_PROCESO_ACTIVO 500
-#define HEADER_FIN_PROGRAMA 600
+int32_t HEADER_HANDSHAKE = 100;
+int32_t HEADER_INIT_PROGRAMA = 200;
+int32_t HEADER_SOLICITAR_PAGINAS = 300;
+int32_t HEADER_ALMACENAR_PAGINAS = 400;
+int32_t HEADER_CAMBIO_PROCESO_ACTIVO = 500;
+int32_t HEADER_FIN_PROGRAMA = 600;
 
-#define HEADER_SIZE 1
+int32_t HEADER_SIZE = sizeof(int32_t);
 
 #define TIPO_NUCLEO 1
 #define TIPO_CPU 2
@@ -31,6 +31,9 @@
 #define PEDIDO_INIT_PROGRAMA 1
 #define PEDIDO_FINALIZAR_PROGRAMA 2
 #define PEDIDO_LECTURA 1
+
+int32_t RESPUESTA_OK = 10;
+int32_t RESPUESTA_FAIL = -10;
 
 int RESPUESTA_SIZE = sizeof(int32_t);
 
@@ -49,7 +52,7 @@ int marco_size;
 int stack_size;
 
 char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
-	if (send(swap_socket, HEADER_INIT_PROGRAMA, sizeof(int32_t), 0) == -1) {
+	if (send(swap_socket, &HEADER_INIT_PROGRAMA, sizeof(int32_t), 0) == -1) {
 		perror("send");
 		exit(1);
 	}
@@ -61,19 +64,36 @@ char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
 		perror("send");
 		exit(1);
 	}
-	if (send(socket, codFuente, cantPaginas*marco_size, 0) == -1) {
+	if (send(swap_socket, codFuente, (*cantPaginas)*marco_size, 0) == -1) {
 		perror("send");
 		exit(1);
 	}
 	char* respuestaSwap = malloc(RESPUESTA_SIZE);
-	if (recv(socket, respuestaSwap, RESPUESTA_SIZE, 0) == -1) {
+	if (recv(swap_socket, respuestaSwap, RESPUESTA_SIZE, 0) == -1) {
 		perror("recv");
 		exit(1);
 	}
 	return respuestaSwap;
 }
 
-char* initPrograma(int socket){
+char* finalizarProgramaSwap(int* pid){
+	if (send(swap_socket, &HEADER_FIN_PROGRAMA, sizeof(int32_t), 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+	if (send(swap_socket, pid, sizeof(int32_t), 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+	char* respuestaSwap = malloc(RESPUESTA_SIZE);
+	if (recv(swap_socket, respuestaSwap, RESPUESTA_SIZE, 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	return respuestaSwap;
+}
+
+char* initPrograma(int nucleo_socket){
 	int bytes_recibidos;
 	int32_t pid;
 	int32_t cantPaginas;
@@ -81,23 +101,34 @@ char* initPrograma(int socket){
 	char* codFuente;
 	char* respuesta;
 
-	if ((bytes_recibidos = recv(socket, &pid, sizeof(int32_t), 0)) == -1) {
+	if ((bytes_recibidos = recv(nucleo_socket, &pid, sizeof(int32_t), 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
-	if ((bytes_recibidos = recv(socket, &cantPaginas, sizeof(int32_t), 0)) == -1) {
+	if ((bytes_recibidos = recv(nucleo_socket, &cantPaginas, sizeof(int32_t), 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
 	codFuente_size = cantPaginas*marco_size;
 	codFuente = malloc(codFuente_size);
-	if ((bytes_recibidos = recv(socket, codFuente, codFuente_size, 0)) == -1) {
+	if ((bytes_recibidos = recv(nucleo_socket, codFuente, codFuente_size, 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
-	respuesta = initProgramaSwap(pid, cantPaginas, codFuente);
+	respuesta = initProgramaSwap(&pid, &cantPaginas, codFuente);
+
+	int32_t respuestaInt;
+	memcpy(&respuestaInt, respuesta, RESPUESTA_SIZE);
+
+	if(respuestaInt == RESPUESTA_FAIL){
+		return 0;
+	} else {
+		return string_itoa(RESPUESTA_FAIL);
+	}
+
 	free(codFuente);
-	if (send(socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
+
+	if (send(nucleo_socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
 		perror("send");
 		exit(1);
 	}
@@ -105,37 +136,41 @@ char* initPrograma(int socket){
 	return 0;
 }
 
-char* finalizarPrograma(){
-	int bytes_recibidos;
+char* finalizarPrograma(int nucleo_socket){
 	int32_t pid;
-	int32_t cantPaginas;
-	int codFuente_size;
-	char* codFuente;
 	char* respuesta;
 
-	if ((bytes_recibidos = recv(socket, &pid, sizeof(int32_t), 0)) == -1) {
+	if (recv(nucleo_socket, &pid, sizeof(int32_t), 0) == -1) {
 		perror("recv");
 		exit(1);
 	}
-	if ((bytes_recibidos = recv(socket, &cantPaginas, sizeof(int32_t), 0)) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	codFuente_size = cantPaginas*marco_size;
-	codFuente = malloc(codFuente_size);
-	if ((bytes_recibidos = recv(socket, codFuente, codFuente_size, 0)) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	respuesta = initPrograma(pid, cantPaginas, codFuente);
-	free(codFuente);
-	if (send(socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
+
+	respuesta = finalizarProgramaSwap(&pid);
+
+	if (send(nucleo_socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
 		perror("send");
 		exit(1);
 	}
 
 	return 0;
 
+}
+
+void almacenarPaginas(int cpu_socket){
+
+}
+
+void solicitarPaginas(int cpu_socket){
+
+}
+
+void cambioDeProcesoActivo(int cpu_socket, int* pidActivo){
+	int32_t pid;
+	if (recv(cpu_socket, &pid, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	*pidActivo = pid;
 }
 
 void *gestionarCPU(void* socket){
@@ -144,23 +179,23 @@ void *gestionarCPU(void* socket){
 
 	int pidActivo = 0;
 	int32_t headerInt;
-	char* header;
+	char* header = malloc(HEADER_SIZE);
 	while(1){
-		if (recv(socket, header, HEADER_SIZE, 0) == -1) {
+		if (recv((int)socket, header, HEADER_SIZE, 0) == -1) {
 			perror("recv");
 			exit(1);
 		}
 		memcpy(&headerInt, header, sizeof(int32_t));
 		if(headerInt==HEADER_ALMACENAR_PAGINAS){
-			almacenarPaginas(socket);
+			almacenarPaginas((int)socket);
 			continue;
 		}
 		if(headerInt==HEADER_SOLICITAR_PAGINAS){
-			solicitarPaginas(socket);
+			solicitarPaginas((int)socket);
 			continue;
 		}
 		if(headerInt==HEADER_CAMBIO_PROCESO_ACTIVO){
-			solicitarPaginas(socket, &pidActivo);
+			cambioDeProcesoActivo((int)socket, &pidActivo);
 			continue;
 		}
 	}
@@ -173,19 +208,19 @@ void *gestionarNucleo(void* socket){
 	printf("De socket: %d\n", (int)socket);
 
 	int32_t headerInt;
-	char* header;
+	char* header = malloc(HEADER_SIZE);
 	while(1){
-		if (recv(socket, header, HEADER_SIZE, 0) == -1) {
+		if (recv((int)socket, header, HEADER_SIZE, 0) == -1) {
 			perror("recv");
 			exit(1);
 		}
 		memcpy(&headerInt, header, sizeof(int32_t));
 		if(headerInt==HEADER_INIT_PROGRAMA){
-			initPrograma(socket);
+			initPrograma((int)socket);
 			continue;
 		}
 		if(headerInt==HEADER_FIN_PROGRAMA){
-			finalizarPrograma(socket);
+			finalizarPrograma((int)socket);
 			continue;
 		}
 	}
@@ -194,7 +229,7 @@ void *gestionarNucleo(void* socket){
 }
 
 int makeHandshake(int new_socket){
-	int tipo;
+	int tipo = 0;
 	//recibir Header == HEADER_HANDSHAKE
 	if(tipo==-1){
 		puts("Hubo error recibiendo handshake\n");
@@ -268,8 +303,8 @@ void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 		entrada->ocupado = 0;
 		entrada->pid = 0;
 		entrada->referenciado = 0;
-		entrada->direccion_real = memoria_bloque(i*marco_size);
-		entradas[i] = entrada;
+		entrada->direccion_real = &memoria_bloque[i*marco_size];
+		entradas[i] = *entrada;
 	}
 }
 
@@ -279,8 +314,8 @@ void initTLB(int cantidad_entradas_tlb, int marco_size){
 
 void initSwap(char* puerto_swap){
 	swap_socket = crear_socket_cliente("utnso40", puerto_swap);
-	char* cantPaginas = string_itoa(marco_size);
-	handshake(swap_socket, marco_size);
+	//char* cantPaginas = string_itoa(marco_size);
+	//handshake(swap_socket, marco_size);
 	crearHiloDeComponente(TIPO_SWAP, swap_socket);
 }
 
