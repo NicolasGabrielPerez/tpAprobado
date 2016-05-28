@@ -18,6 +18,9 @@
 
 #define HEADER_HANDSHAKE 100
 #define HEADER_INIT_PROGRAMA 200
+#define HEADER_SOLICITAR_PAGINAS 300
+#define HEADER_ALMACENAR_PAGINAS 400
+#define HEADER_CAMBIO_PROCESO_ACTIVO 500
 #define HEADER_FIN_PROGRAMA 600
 
 #define HEADER_SIZE 1
@@ -108,6 +111,36 @@ char* finalizarPrograma(){
 
 	return 0;
 
+}
+
+void *gestionarCPU(void* socket){
+	printf("Creado hilo de gestión de CPU\n");
+	printf("De socket: %d\n", (int)socket);
+
+	int pidActivo = 0;
+	int32_t headerInt;
+	char* header;
+	while(1){
+		if (recv(socket, header, HEADER_SIZE, 0) == -1) {
+			perror("recv");
+			exit(1);
+		}
+		memcpy(&headerInt, header, sizeof(int32_t));
+		if(headerInt==HEADER_ALMACENAR_PAGINAS){
+			almacenarPaginas(socket);
+			continue;
+		}
+		if(headerInt==HEADER_SOLICITAR_PAGINAS){
+			solicitarPaginas(socket);
+			continue;
+		}
+		if(headerInt==HEADER_CAMBIO_PROCESO_ACTIVO){
+			solicitarPaginas(socket, &pidActivo);
+			continue;
+		}
+	}
+
+	return 0;
 }
 
 void *gestionarNucleo(void* socket){
