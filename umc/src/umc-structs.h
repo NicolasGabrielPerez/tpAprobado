@@ -1,6 +1,8 @@
 #ifndef UMC_STRUCTS_H_
 #define UMC_STRUCTS_H_
 
+#include <commons/collections/queue.h>
+
 typedef struct{
 	int nroFrame;
 	char* direccion_real;
@@ -29,5 +31,16 @@ typedef struct{
 	int cantPaginas;
 	char* codigoFuente;
 } pedido_init;
+
+typedef struct{
+	int pid;
+	int nroPagina;
+	int frame;
+} tlb_entry;
+
+typedef struct{
+	tlb_entry* entradas;
+	t_queue* usedPages; //cola de indices de las entradas
+} tlb;
 
 #endif /* UMC_STRUCTS_H_ */

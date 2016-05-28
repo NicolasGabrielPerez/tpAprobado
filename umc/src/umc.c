@@ -41,7 +41,10 @@ int listener;
 int swap_socket;
 int cantidad_de_marcos;
 
-tabla_de_frames memoria_principal;
+int* TLBEnable = 0;
+tlb* TLB;
+
+tabla_de_frames* tablaDeFrames;
 char* memoria_bloque;
 
 pthread_attr_t attr;
@@ -295,7 +298,7 @@ void manejarNuevasConexiones(){
 void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 	memoria_bloque = malloc(cantMarcos*marco_size); //char* que va a tener el contenido de todas las paginas
 
-	tabla_de_frame_entry* entradas = malloc(sizeof(tabla_de_frame_entry)*cantMarcos);
+	tablaDeFrames = malloc(sizeof(tabla_de_frame_entry)*cantMarcos);
 	int i;
 	for(i=0; i<cantMarcos; i++) {
 		tabla_de_frame_entry* entrada = malloc(sizeof(tabla_de_frame_entry));
@@ -304,12 +307,27 @@ void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 		entrada->pid = 0;
 		entrada->referenciado = 0;
 		entrada->direccion_real = &memoria_bloque[i*marco_size];
-		entradas[i] = *entrada;
+		tablaDeFrames->entradas[i] = *entrada;
+		free(entrada);
 	}
+
 }
 
-void initTLB(int cantidad_entradas_tlb, int marco_size){
+void initTLB(int cantidad_entradas_tlb){
 	if(cantidad_entradas_tlb==0) return;
+
+	TLB = malloc(cantidad_entradas_tlb*sizeof(tlb_entry));
+	int i;
+	for(i=0;i<cantidad_entradas_tlb;i++){
+		tlb_entry* entrada = malloc(sizeof(tlb_entry));
+		entrada->frame = 0;
+		entrada->nroPagina = 0;
+		entrada->pid = 0;
+		TLB->entradas[i] = *entrada;
+		free(entrada);
+	}
+	TLB-> usedPages = queue_create();
+	*TLBEnable = 1;
 }
 
 void initSwap(char* puerto_swap){
@@ -340,7 +358,7 @@ int main(void) {
 	printf("Config: PUERTO_SWAP=%s\n", puerto_swap);
 
 	initiMemoriaPrincipal(cantidad_de_marcos, marco_size);
-	initTLB(cantidad_entradas_tlb, marco_size);
+	initTLB(cantidad_entradas_tlb);
 
 	initSwap(puerto_swap);
 
