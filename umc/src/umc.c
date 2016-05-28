@@ -47,12 +47,14 @@ tlb* TLB;
 tabla_de_frames* tablaDeFrames;
 char* memoria_bloque;
 
+t_list* tablasDePaginas;
+
 pthread_attr_t attr;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-int marco_size;
-int stack_size;
+int marco_size; //cant bytes
+int marcos_x_proc; //cant paginas
 
 char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
 	if (send(swap_socket, &HEADER_INIT_PROGRAMA, sizeof(int32_t), 0) == -1) {
@@ -96,6 +98,36 @@ char* finalizarProgramaSwap(int* pid){
 	return respuestaSwap;
 }
 
+tabla_de_paginas* buscarPorPID(t_list* tablas, int pidABuscar){
+	int i;
+	for(i=0; i<list_size(tablas);i++){
+		tabla_de_paginas* actual = list_get(tablas, i);
+		printf("pid actual:%d\n", actual->pid);
+		if(actual->pid == pidABuscar){
+			return actual;
+		}
+	}
+	return NULL;
+};
+
+char* initProgramaUMC(int pid, int cantPaginas){
+	// verificar que no exista pid
+	if(buscarPorPID(tablasDePaginas, pid)!=NULL){
+		return string_itoa(RESPUESTA_FAIL);
+	}
+	// verificar que cantPaginas + stackSize < MAX
+	if((cantPaginas) > marcos_x_proc){
+		return string_itoa(RESPUESTA_FAIL);
+	}
+	// crear tabla de paginas
+	tabla_de_paginas* tablaDePaginas = malloc(sizeof(tabla_de_paginas));
+	tablaDePaginas->entradas = malloc(cantPaginas*sizeof(int32_t));
+	tablaDePaginas->pid = pid;
+
+	list_add(tablasDePaginas, tablaDePaginas);
+	return string_itoa(RESPUESTA_OK);
+}
+
 char* initPrograma(int nucleo_socket){
 	int bytes_recibidos;
 	int32_t pid;
@@ -118,15 +150,19 @@ char* initPrograma(int nucleo_socket){
 		perror("recv");
 		exit(1);
 	}
+
+	//TODO
+	// reservar stack
+
 	respuesta = initProgramaSwap(&pid, &cantPaginas, codFuente);
 
 	int32_t respuestaInt;
 	memcpy(&respuestaInt, respuesta, RESPUESTA_SIZE);
 
-	if(respuestaInt == RESPUESTA_FAIL){
-		return 0;
+	if(respuestaInt == RESPUESTA_OK){
+		respuesta = initProgramaUMC(pid, cantPaginas);
 	} else {
-		return string_itoa(RESPUESTA_FAIL);
+		respuesta = string_itoa(RESPUESTA_FAIL);
 	}
 
 	free(codFuente);
@@ -311,12 +347,15 @@ void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 		tablaDeFrames->entradas[i] = *entrada;
 		free(entrada);
 	}
+
+	tablasDePaginas = list_create();
 }
 
 void initTLB(int cantidad_entradas_tlb){
 	if(cantidad_entradas_tlb==0) return;
 
-	TLB = malloc(cantidad_entradas_tlb*sizeof(tlb_entry));
+	TLB = malloc(sizeof(tlb));
+	TLB->entradas = malloc(sizeof(tlb_entry)*cantidad_entradas_tlb);
 	int i;
 	for(i=0;i<cantidad_entradas_tlb;i++){
 		tlb_entry* entrada = malloc(sizeof(tlb_entry));
@@ -348,10 +387,9 @@ int main(void) {
 	char* puerto_swap = config_get_string_value(config, "PUERTO_SWAP"); //puerto escucha de swap
 	cantidad_de_marcos = config_get_int_value(config, "MARCOS");
 	marco_size = config_get_int_value(config, "MARCO_SIZE");
-	// int ip_marcos_x_proc = config_get_int_value(config, "MARCOS_X_PROC");
+	marcos_x_proc = config_get_int_value(config, "MARCOS_X_PROC");
 	int cantidad_entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
 	// int retardo = config_get_int_value(config, "RETARDO");
-	stack_size = config_get_int_value(config, "STACK_SIZE_X_PROGRAMA");
 
 	printf("Config: PUERTO_CPU_NUCLEO=%s\n", puerto_cpu_nucleo);
 	printf("Config: IP_SWAP=%s\n", ip_swap);

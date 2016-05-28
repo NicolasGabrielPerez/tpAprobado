@@ -24,6 +24,7 @@ typedef struct{
 
 typedef struct{
 	tabla_de_paginas_entry* entradas;
+	int pid;
 } tabla_de_paginas;
 
 typedef struct{
