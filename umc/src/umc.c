@@ -298,7 +298,8 @@ void manejarNuevasConexiones(){
 void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 	memoria_bloque = malloc(cantMarcos*marco_size); //char* que va a tener el contenido de todas las paginas
 
-	tablaDeFrames = malloc(sizeof(tabla_de_frame_entry)*cantMarcos);
+	tablaDeFrames = malloc(sizeof(tablaDeFrames));
+	tablaDeFrames->entradas = malloc(sizeof(tabla_de_frame_entry)*cantMarcos);
 	int i;
 	for(i=0; i<cantMarcos; i++) {
 		tabla_de_frame_entry* entrada = malloc(sizeof(tabla_de_frame_entry));
@@ -310,7 +311,6 @@ void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 		tablaDeFrames->entradas[i] = *entrada;
 		free(entrada);
 	}
-
 }
 
 void initTLB(int cantidad_entradas_tlb){
