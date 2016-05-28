@@ -3,6 +3,7 @@
 #include <commons/config.h>
 #include <commons/collections/list.h>
 #include <commons/collections/dictionary.h>
+#include <commons/string.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -13,6 +14,7 @@
 #include <arpa/inet.h>
 #include <sockets/sockets.h>
 #include <pthread.h>
+#include "umc-structs.h"
 
 #define HEADER_HANDSHAKE 100
 #define HEADER_INIT_PROGRAMA 200
@@ -24,12 +26,22 @@
 #define PEDIDO_INIT_PROGRAMA 1
 #define PEDIDO_FINALIZAR_PROGRAMA 2
 #define PEDIDO_LECTURA 1
+
+int RESPUESTA_SIZE = sizeof(int32_t);
+
 int listener;
 int swap_socket;
+int cantidad_de_marcos;
+
+tabla_de_frames memoria_principal;
+char* memoria_bloque;
 
 pthread_attr_t attr;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+int marco_size;
+int stack_size;
 
 void *gestionarNucleo(void* socket){
 	printf("Creado hilo de gestión de NUCLEO\n");
@@ -42,7 +54,7 @@ void *gestionarNucleo(void* socket){
 			perror("recv");
 			exit(1);
 		}
-		respuesta = delegarPedidoNucleo(pedido);
+		//respuesta = delegarPedidoNucleo(pedido);
 		if (send(socket, respuesta, 50, 0) == -1) {
 			perror("send");
 			exit(1);
@@ -51,19 +63,37 @@ void *gestionarNucleo(void* socket){
 	return 0;
 }
 
+char* initPrograma(int32_t pid, int32_t cantPaginas, char* codFuente){
+	return 0;
+}
+
 void *gestionarCPU(void* socket){
 	printf("Creado hilo de gestión de CPU\n");
 	printf("De socket: %d\n", (int)socket);
 	int bytes_recibidos;
-	char pedido[50];
+	int32_t pid;
+	int32_t cantPaginas;
+	int codFuente_size;
+	char* codFuente;
 	char* respuesta;
 	while(1){
-		if ((bytes_recibidos = recv((int)socket, pedido, 50, 0)) == -1) {
+		if ((bytes_recibidos = recv((int*)socket, &pid, sizeof(int32_t), 0)) == -1) {
 			perror("recv");
 			exit(1);
 		}
-		respuesta = procesarPedido(pedido);
-		if (send(socket, respuesta, 50, 0) == -1) {
+		if ((bytes_recibidos = recv(socket, &cantPaginas, sizeof(int32_t), 0)) == -1) {
+			perror("recv");
+			exit(1);
+		}
+		codFuente_size = cantPaginas*marco_size;
+		codFuente = malloc(codFuente_size);
+		if ((bytes_recibidos = recv(socket, codFuente, codFuente_size, 0)) == -1) {
+			perror("recv");
+			exit(1);
+		}
+		respuesta = initPrograma(pid, cantPaginas, codFuente);
+		free(codFuente);
+		if (send(socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
 			perror("send");
 			exit(1);
 		}
@@ -78,13 +108,16 @@ int makeHandshake(int new_socket){
 		puts("Hubo error recibiendo handshake\n");
 		return -1;
 	}
-	if(devolver_handshake(new_socket, tipo) == -1){
-		puts("Hubo error en el handshake");
-		return -1;
-		}
-		return tipo;
-	}
-	int crearHiloDeComponente(int tipo, int new_socket){
+//	if(devolver_handshake(new_socket, tipo) == -1){
+//		puts("Hubo error en el handshake");
+//		return -1;
+//		}
+//		return tipo;
+//	}
+	return 1;
+}
+
+int crearHiloDeComponente(int tipo, int new_socket){
 	pthread_t newThread;
 	int creacion;
 	if(tipo==TIPO_NUCLEO){
@@ -132,17 +165,30 @@ void manejarNuevasConexiones(){
 	}
 }
 
-void initiMemoriaPrincipal(int marcos, int marco_size){
-	char memory_block[marcos*marco_size];
+void initiMemoriaPrincipal(int cantMarcos, int marco_size){
+	memoria_bloque = malloc(cantMarcos*marco_size); //char* que va a tener el contenido de todas las paginas
+
+	tabla_de_frame_entry* entradas = malloc(sizeof(tabla_de_frame_entry)*cantMarcos);
+	int i;
+	for(i=0; i<cantMarcos; i++) {
+		tabla_de_frame_entry* entrada = malloc(sizeof(tabla_de_frame_entry));
+		entrada->nroFrame = i;
+		entrada->ocupado = 0;
+		entrada->pid = 0;
+		entrada->referenciado = 0;
+		entrada->direccion_real = memoria_bloque(i*marco_size);
+		entradas[i] = entrada;
+	}
 }
 
 void initTLB(int cantidad_entradas_tlb, int marco_size){
 	if(cantidad_entradas_tlb==0) return;
 }
 
-void initSwap(int puerto_swap){
+void initSwap(char* puerto_swap){
 	swap_socket = crear_socket_cliente("utnso40", puerto_swap);
-	handshake(swap_socket, "soy umc");
+	char* cantPaginas = string_itoa(marco_size);
+	handshake(swap_socket, marco_size);
 	crearHiloDeComponente(TIPO_SWAP, swap_socket);
 }
 
@@ -155,11 +201,13 @@ int main(void) {
 	char* puerto_cpu_nucleo = config_get_string_value(config, "PUERTO_CPU_NUCLEO"); //puerto escucha de Nucleo y CPU
 	char* ip_swap = config_get_string_value(config, "IP_SWAP");
 	char* puerto_swap = config_get_string_value(config, "PUERTO_SWAP"); //puerto escucha de swap
-	int cantidad_de_marcos = config_get_int_value(config, "MARCOS");
-	int marco_size = config_get_int_value(config, "MARCO_SIZE");
+	cantidad_de_marcos = config_get_int_value(config, "MARCOS");
+	marco_size = config_get_int_value(config, "MARCO_SIZE");
 	// int ip_marcos_x_proc = config_get_int_value(config, "MARCOS_X_PROC");
 	int cantidad_entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
 	// int retardo = config_get_int_value(config, "RETARDO");
+	stack_size = config_get_int_value(config, "STACK_SIZE_X_PROGRAMA");
+
 	printf("Config: PUERTO_CPU_NUCLEO=%s\n", puerto_cpu_nucleo);
 	printf("Config: IP_SWAP=%s\n", ip_swap);
 	printf("Config: PUERTO_SWAP=%s\n", puerto_swap);
@@ -172,7 +220,7 @@ int main(void) {
 	listener = crear_puerto_escucha(puerto_cpu_nucleo);
 	printf("Creado listener: %d\n", listener);
 
-	pthread_attr_init(&*attr);
+	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
 	//TODO
