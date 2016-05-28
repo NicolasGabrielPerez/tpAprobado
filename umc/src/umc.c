@@ -48,6 +48,31 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int marco_size;
 int stack_size;
 
+char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
+	if (send(swap_socket, HEADER_INIT_PROGRAMA, sizeof(int32_t), 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+	if (send(swap_socket, pid, sizeof(int32_t), 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+	if (send(swap_socket, cantPaginas, sizeof(int32_t), 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+	if (send(socket, codFuente, cantPaginas*marco_size, 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+	char* respuestaSwap = malloc(RESPUESTA_SIZE);
+	if (recv(socket, respuestaSwap, RESPUESTA_SIZE, 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	return respuestaSwap;
+}
+
 char* initPrograma(int socket){
 	int bytes_recibidos;
 	int32_t pid;
@@ -70,7 +95,7 @@ char* initPrograma(int socket){
 		perror("recv");
 		exit(1);
 	}
-	respuesta = initPrograma(pid, cantPaginas, codFuente);
+	respuesta = initProgramaSwap(pid, cantPaginas, codFuente);
 	free(codFuente);
 	if (send(socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
 		perror("send");
