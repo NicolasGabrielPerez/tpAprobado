@@ -20,6 +20,8 @@
 #define HEADER_INIT_PROGRAMA 200
 #define HEADER_FIN_PROGRAMA 600
 
+#define HEADER_SIZE 1
+
 #define TIPO_NUCLEO 1
 #define TIPO_CPU 2
 #define TIPO_SWAP 3
@@ -43,61 +45,93 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int marco_size;
 int stack_size;
 
-void *gestionarNucleo(void* socket){
-	printf("Creado hilo de gestión de NUCLEO\n");
-	printf("De socket: %d\n", (int)socket);
-	int bytes_recibidos;
-	char pedido[50];
-	char* respuesta;
-	while(1){
-		if ((bytes_recibidos = recv((int)socket, pedido, 50, 0)) == -1) {
-			perror("recv");
-			exit(1);
-		}
-		//respuesta = delegarPedidoNucleo(pedido);
-		if (send(socket, respuesta, 50, 0) == -1) {
-			perror("send");
-			exit(1);
-		}
-	}
-	return 0;
-}
-
-char* initPrograma(int32_t pid, int32_t cantPaginas, char* codFuente){
-	return 0;
-}
-
-void *gestionarCPU(void* socket){
-	printf("Creado hilo de gestión de CPU\n");
-	printf("De socket: %d\n", (int)socket);
+char* initPrograma(int socket){
 	int bytes_recibidos;
 	int32_t pid;
 	int32_t cantPaginas;
 	int codFuente_size;
 	char* codFuente;
 	char* respuesta;
+
+	if ((bytes_recibidos = recv(socket, &pid, sizeof(int32_t), 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	if ((bytes_recibidos = recv(socket, &cantPaginas, sizeof(int32_t), 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	codFuente_size = cantPaginas*marco_size;
+	codFuente = malloc(codFuente_size);
+	if ((bytes_recibidos = recv(socket, codFuente, codFuente_size, 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	respuesta = initPrograma(pid, cantPaginas, codFuente);
+	free(codFuente);
+	if (send(socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+
+	return 0;
+}
+
+char* finalizarPrograma(){
+	int bytes_recibidos;
+	int32_t pid;
+	int32_t cantPaginas;
+	int codFuente_size;
+	char* codFuente;
+	char* respuesta;
+
+	if ((bytes_recibidos = recv(socket, &pid, sizeof(int32_t), 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	if ((bytes_recibidos = recv(socket, &cantPaginas, sizeof(int32_t), 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	codFuente_size = cantPaginas*marco_size;
+	codFuente = malloc(codFuente_size);
+	if ((bytes_recibidos = recv(socket, codFuente, codFuente_size, 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	respuesta = initPrograma(pid, cantPaginas, codFuente);
+	free(codFuente);
+	if (send(socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+
+	return 0;
+
+}
+
+void *gestionarNucleo(void* socket){
+	printf("Creado hilo de gestión de Nucleo\n");
+	printf("De socket: %d\n", (int)socket);
+
+	int32_t headerInt;
+	char* header;
 	while(1){
-		if ((bytes_recibidos = recv((int*)socket, &pid, sizeof(int32_t), 0)) == -1) {
+		if (recv(socket, header, HEADER_SIZE, 0) == -1) {
 			perror("recv");
 			exit(1);
 		}
-		if ((bytes_recibidos = recv(socket, &cantPaginas, sizeof(int32_t), 0)) == -1) {
-			perror("recv");
-			exit(1);
+		memcpy(&headerInt, header, sizeof(int32_t));
+		if(headerInt==HEADER_INIT_PROGRAMA){
+			initPrograma(socket);
+			continue;
 		}
-		codFuente_size = cantPaginas*marco_size;
-		codFuente = malloc(codFuente_size);
-		if ((bytes_recibidos = recv(socket, codFuente, codFuente_size, 0)) == -1) {
-			perror("recv");
-			exit(1);
-		}
-		respuesta = initPrograma(pid, cantPaginas, codFuente);
-		free(codFuente);
-		if (send(socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
-			perror("send");
-			exit(1);
+		if(headerInt==HEADER_FIN_PROGRAMA){
+			finalizarPrograma(socket);
+			continue;
 		}
 	}
+
 	return 0;
 }
 
