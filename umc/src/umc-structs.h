@@ -3,7 +3,7 @@
 
 #include <commons/collections/queue.h>
 
-typedef struct{
+typedef struct tabla_de_frame_entry{
 	int nroFrame;
 	char* direccion_real;
 	int pid;
@@ -11,35 +11,29 @@ typedef struct{
 	int ocupado;
 } tabla_de_frame_entry;
 
-typedef struct{
+typedef struct tabla_de_frames{
 	tabla_de_frame_entry* entradas;
 } tabla_de_frames;
 
-typedef struct{
+typedef struct tabla_de_paginas_entry{
 	int nroPagina;
 	int presente;
 	int modificado;
 	int nroFrame;
 } tabla_de_paginas_entry;
 
-typedef struct{
+typedef struct tabla_de_paginas{
 	t_list* entradas;
 	int pid;
 } tabla_de_paginas;
 
-typedef struct{
-	int pid;
-	int cantPaginas;
-	char* codigoFuente;
-} pedido_init;
-
-typedef struct{
+typedef struct tlb_entry{
 	int pid;
 	int nroPagina;
 	int frame;
 } tlb_entry;
 
-typedef struct{
+typedef struct tlb{
 	tlb_entry* entradas;
 	t_queue* usedPages; //cola de indices de las entradas
 } tlb;
