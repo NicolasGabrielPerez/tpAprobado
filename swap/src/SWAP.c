@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <commons/config.h>
+#include <commons/string.h>
 #include <commons/bitarray.h>
 #include <commons/txt.h>
 #include <sockets/sockets.h>
@@ -22,6 +23,7 @@ int32_t RESPUESTA_OK = 10;
 int32_t RESPUESTA_FAIL = -10;
 
 int32_t HEADER_HANDSHAKE = 100;
+int32_t HEADER_INIT_PROGRAMA = 200;
 int32_t HEADER_SOLICITAR_PAGINAS = 300;
 int32_t HEADER_ALMACENAR_PAGINAS = 400;
 int32_t HEADER_FIN_PROGRAMA = 600;
@@ -32,6 +34,51 @@ char* buscarPagina(int nroPagina, int pid){
 
 char* escribirPagina(int nroPagina, int pid, char* buffer){
 	return 0;
+}
+
+int hayEspacioDisponible(int cantPaginas){
+	return 0;
+}
+
+void escribirPaginas(int pid, int cantPaginas, char* codFuente){
+	return;
+}
+
+void recibirInitPrograma(){
+	int32_t pid;
+	int32_t cantPaginas;
+	char* codFuente = malloc(page_size * cantPaginas);
+	char* respuesta;
+
+	if (recv(umc_socket, &pid, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if (recv(umc_socket, &cantPaginas, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if (recv(umc_socket, codFuente, page_size * cantPaginas, 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if(!hayEspacioDisponible(cantPaginas)){
+		respuesta = string_itoa(RESPUESTA_FAIL);
+		goto enviarRespuesta;
+	}
+
+	escribirPaginas(pid, cantPaginas, codFuente);
+	respuesta = string_itoa(RESPUESTA_OK);
+
+	enviarRespuesta:
+		if (send(umc_socket, respuesta, sizeof(int32_t), 0) == -1) {
+				perror("send");
+				exit(1);
+		}
+
 }
 
 void recibirPedidoPagina(){
@@ -142,6 +189,10 @@ void initSwap(int swap_size){
 }
 
 void operarSegunHeader(int32_t header){
+	if(header == HEADER_INIT_PROGRAMA){
+		recibirInitPrograma();
+		return;
+	}
 	if(header == HEADER_SOLICITAR_PAGINAS){
 		recibirPedidoPagina();
 		return;
