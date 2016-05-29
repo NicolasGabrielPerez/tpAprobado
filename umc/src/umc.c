@@ -218,6 +218,17 @@ char* obtenerBytes(char* pagina, int offset, int tamanio){
 	return bytes;
 }
 
+tabla_de_frame_entry* obtenerEntradaDeFrame(int nroFrame){
+	int i;
+	for(i=0; i<list_size(tablaDeFrames->entradas);i++){
+		tabla_de_frame_entry* actual = list_get(tablaDeFrames->entradas, i);
+		if(actual->nroFrame == nroFrame){
+			return actual;
+		}
+	}
+	return NULL;
+}
+
 char* obtenerDeMemoriaPrincipal(int frame, int offset, int tamanio){
 	int i;
 	for(i=0; i<list_size(tablaDeFrames->entradas);i++){
@@ -227,10 +238,45 @@ char* obtenerDeMemoriaPrincipal(int frame, int offset, int tamanio){
 		}
 	}
 	return NULL;
+}
 
+bool paginaNoPresente(void* entrada){
+	tabla_de_paginas_entry* entradaDePagina = (tabla_de_paginas_entry*) entrada;
+	return !entradaDePagina->presente;
+}
+
+tabla_de_paginas_entry* obtenerEntrada(int pid, int nroPagina){
+	tabla_de_paginas* tablaDePaginas = buscarPorPID(tablasDePaginas, pid);
+	tabla_de_paginas_entry* entrada = buscarEntradaPorPagina(tablaDePaginas, nroPagina);
+	return entrada;
+}
+
+int obtenerFrameDisponible(){
+	int i;
+	for(i=0; i<list_size(tablaDeFrames->entradas);i++){
+		tabla_de_frame_entry* actual = list_get(tablaDeFrames->entradas, i);
+		if(!actual->ocupado){
+			return actual->nroFrame;
+		}
+	};
+	return -1;
+}
+
+void cargarEnMemoriaPrincipal(char* pagina, int nroFrame){
+	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(nroFrame);
+	memcpy(entrada->direccion_real, pagina, marco_size);
 }
 
 void cargarPagina(int nroPagina, int pid, char* pagina){
+	tabla_de_paginas_entry* entrada = obtenerEntrada(pid, nroPagina);
+	int nroFrameACargar = obtenerFrameDisponible();
+	if(nroFrameACargar == -1){
+		puts("Error: memoria llena");
+		return;
+	}
+	cargarEnMemoriaPrincipal(pagina, nroFrameACargar);
+	entrada->nroFrame = nroFrameACargar;
+	entrada->presente = 1;
 	return;
 }
 
@@ -443,7 +489,6 @@ void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 		tabla_de_frame_entry* entrada = malloc(sizeof(tabla_de_frame_entry));
 		entrada->nroFrame = i;
 		entrada->ocupado = 0;
-		entrada->pid = 0;
 		entrada->referenciado = 0;
 		entrada->direccion_real = &memoria_bloque[i*marco_size];
 		list_add(tablaDeFrames->entradas, entrada);

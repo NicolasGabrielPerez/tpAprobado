@@ -6,7 +6,6 @@
 typedef struct tabla_de_frame_entry{
 	int nroFrame;
 	char* direccion_real;
-	int pid;
 	int referenciado; //valor de referencia para algoritmos de reemplazo Clock
 	int ocupado;
 } tabla_de_frame_entry;
