@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <commons/string.h>
 
 #include "umcFunctions.h"
 
@@ -24,14 +25,18 @@
 
 int socket_umc;
 
-u_int32_t BUFFER_SIZE_UMC = 1024;
+const u_int32_t BUFFER_SIZE_UMC = 1024;
+const u_int32_t HEADER_SIZE_UMC = sizeof(int32_t);
 
 void umc_init(t_config* config){
 
+
+
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
+	char* ip_umc = config_get_string_value(config, "IP_UMC");
 	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
 
-	socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
+	socket_umc = crear_socket_cliente(ip_umc, puerto_umc); //socket usado para conectarse a la umc
 	printf("UMC FD: %d\n", socket_umc);
 
 	//Hago handshake con umc
@@ -42,6 +47,25 @@ void umc_init(t_config* config){
 
 void umc_delete() {
 	close(socket_umc);
+}
+
+void umc_process_active(int32_t processId) {
+
+	char* bufferHeader[HEADER_SIZE_UMC];
+	memcpy(bufferHeader, &processId, sizeof(int32_t));
+
+	int bytesHeader = HEADER_SIZE_UMC;
+	if (send(socket_umc, bufferHeader, bytesHeader, 0) == -1) {
+		 perror("Error enviando header proceso activo");
+	};
+
+	const int bytesPayload = sizeof(int32_t);
+	char bufferPayload[bytesPayload];
+	memcpy(bufferPayload, &processId, sizeof(int32_t));
+
+	if (send(socket_umc, bufferPayload, bytesPayload, 0) == -1) {
+		perror("Error enviando payload proceso activo");
+	};
 }
 
 void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {

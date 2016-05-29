@@ -22,6 +22,8 @@
 void umc_init(t_config* config);
 void umc_delete();
 
+
+void umc_process_active(int processId);
 void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer);
 char* umc_get(t_puntero page, t_puntero offset, u_int32_t size);
 
