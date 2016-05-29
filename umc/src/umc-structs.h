@@ -23,7 +23,7 @@ typedef struct{
 } tabla_de_paginas_entry;
 
 typedef struct{
-	tabla_de_paginas_entry* entradas;
+	t_list* entradas;
 	int pid;
 } tabla_de_paginas;
 

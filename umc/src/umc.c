@@ -110,25 +110,37 @@ tabla_de_paginas* buscarPorPID(t_list* tablas, int pidABuscar){
 	return NULL;
 };
 
+tabla_de_paginas_entry* buscarEntradaPorPagina(tabla_de_paginas* tablaDePaginas, int nroPagina){
+	int i;
+	for(i=0; i<list_size(tablaDePaginas->entradas);i++){
+		tabla_de_paginas_entry* actual = list_get(tablaDePaginas->entradas, i);
+		printf("nroPagina actual:%d\n", actual->nroPagina);
+		if(actual->nroPagina == nroPagina){
+			return actual;
+		}
+	}
+	return NULL;
+};
+
 char* initProgramaUMC(int pid, int cantPaginas){
 	// verificar que no exista pid
 	if(buscarPorPID(tablasDePaginas, pid)!=NULL){
 		return string_itoa(RESPUESTA_FAIL);
 	}
 	// verificar que cantPaginas + stackSize < MAX
-	if((cantPaginas) > marcos_x_proc){
+	if(cantPaginas > marcos_x_proc){
 		return string_itoa(RESPUESTA_FAIL);
 	}
 	// crear tabla de paginas
 	tabla_de_paginas* tablaDePaginas = malloc(sizeof(tabla_de_paginas));
-	tablaDePaginas->entradas = malloc(cantPaginas*sizeof(int32_t));
+	tablaDePaginas->entradas = list_create();
 	tablaDePaginas->pid = pid;
 
 	list_add(tablasDePaginas, tablaDePaginas);
 	return string_itoa(RESPUESTA_OK);
 }
 
-char* initPrograma(int nucleo_socket){
+char* recbirInitPrograma(int nucleo_socket){
 	int bytes_recibidos;
 	int32_t pid;
 	int32_t cantPaginas;
@@ -151,9 +163,6 @@ char* initPrograma(int nucleo_socket){
 		exit(1);
 	}
 
-	//TODO
-	// reservar stack
-
 	respuesta = initProgramaSwap(&pid, &cantPaginas, codFuente);
 
 	int32_t respuestaInt;
@@ -175,7 +184,7 @@ char* initPrograma(int nucleo_socket){
 	return 0;
 }
 
-char* finalizarPrograma(int nucleo_socket){
+char* recibirFinalizarPrograma(int nucleo_socket){
 	int32_t pid;
 	char* respuesta;
 
@@ -195,15 +204,98 @@ char* finalizarPrograma(int nucleo_socket){
 
 }
 
-void almacenarPaginas(int cpu_socket){
+char* pedirPaginaASwap(int nroPagina, int pid){
+	return 0;
+}
+
+void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 
 }
 
-void solicitarPaginas(int cpu_socket){
-
+char* obtenerBytes(char* pagina, int offset, int tamanio){
+	return 0;
 }
 
-void cambioDeProcesoActivo(int cpu_socket, int* pidActivo){
+char* obtenerDeMemoriaPrincipal(frame, offset, tamanio){
+	return 0;
+}
+
+void cargarPagina(int nroPagina, int pid, char* pagina){
+	return;
+}
+
+int actualizarTLB(int nroPagina, int pid){
+	return 0;
+}
+
+int buscarEnTLB(int nroPagina, int pid){
+	return 0;
+}
+
+void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
+	char* bytesAEnviar;
+	int32_t nroPagina;
+	int32_t offset;
+	int32_t tamanio;
+
+	if (recv(cpu_socket, &nroPagina, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if (recv(cpu_socket, &offset, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if (recv(cpu_socket, &tamanio, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if(TLBEnable){
+		//Buscar en TLB. Si esta, ir a buscar a memoria y enviar bytes
+		int frame = buscarEnTLB(nroPagina, pidActivo);
+		bytesAEnviar = obtenerDeMemoriaPrincipal(frame, offset, tamanio);
+		goto enviarBytes;
+	}
+
+	// else: buscar en Tabla de Paginas del pid
+	tabla_de_paginas* tablaDePaginas = buscarPorPID(tablasDePaginas, pidActivo);
+	tabla_de_paginas_entry* entrada = buscarEntradaPorPagina(tablaDePaginas, nroPagina);
+	if(entrada==NULL){
+		bytesAEnviar = string_itoa(RESPUESTA_FAIL); //no existe tal nroPagina para tal pid
+		goto enviarBytes;
+	}
+	if(entrada->presente){
+		// esta en tabla de paginas ⇒ ir a buscar a Memoria Principal
+		bytesAEnviar = obtenerDeMemoriaPrincipal(entrada->nroFrame, offset, tamanio);
+		// y actualizar TLB
+		if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+	}
+
+	// no esta ⇒ pedir a Swap
+	char* paginaSolicitada = pedirPaginaASwap(nroPagina, pidActivo);
+	if(paginaSolicitada==NULL){
+		bytesAEnviar = string_itoa(RESPUESTA_FAIL); //no existe tal nroPagina para tal pid
+		goto enviarBytes;
+	}
+	// TODO cargar pagina y actualizar tabla de paginas
+	// reemplazar si es necesario (Clock y clock modificado)
+	cargarPagina(nroPagina, pidActivo, paginaSolicitada);
+	bytesAEnviar = obtenerBytes(paginaSolicitada, offset, tamanio);
+
+	//Actualizar TLB
+	if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+
+	enviarBytes:
+		if (send(cpu_socket, bytesAEnviar, tamanio, 0) == -1) {
+				perror("send");
+				exit(1);
+		}
+}
+
+void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){
 	int32_t pid;
 	if (recv(cpu_socket, &pid, sizeof(int32_t), 0) == -1) {
 		perror("recv");
@@ -226,15 +318,15 @@ void *gestionarCPU(void* socket){
 		}
 		memcpy(&headerInt, header, sizeof(int32_t));
 		if(headerInt==HEADER_ALMACENAR_PAGINAS){
-			almacenarPaginas((int)socket);
+			recibirAlmacenarPaginas((int)socket, pidActivo);
 			continue;
 		}
 		if(headerInt==HEADER_SOLICITAR_PAGINAS){
-			solicitarPaginas((int)socket);
+			recibirSolicitarPaginas((int)socket, pidActivo);
 			continue;
 		}
 		if(headerInt==HEADER_CAMBIO_PROCESO_ACTIVO){
-			cambioDeProcesoActivo((int)socket, &pidActivo);
+			recibirCambioDeProcesoActivo((int)socket, &pidActivo);
 			continue;
 		}
 	}
@@ -255,11 +347,11 @@ void *gestionarNucleo(void* socket){
 		}
 		memcpy(&headerInt, header, sizeof(int32_t));
 		if(headerInt==HEADER_INIT_PROGRAMA){
-			initPrograma((int)socket);
+			recbirInitPrograma((int)socket);
 			continue;
 		}
 		if(headerInt==HEADER_FIN_PROGRAMA){
-			finalizarPrograma((int)socket);
+			recibirFinalizarPrograma((int)socket);
 			continue;
 		}
 	}
