@@ -12,7 +12,7 @@ typedef struct tabla_de_frame_entry{
 } tabla_de_frame_entry;
 
 typedef struct tabla_de_frames{
-	tabla_de_frame_entry* entradas;
+	t_list* entradas;
 } tabla_de_frames;
 
 typedef struct tabla_de_paginas_entry{

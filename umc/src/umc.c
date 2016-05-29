@@ -216,8 +216,16 @@ char* obtenerBytes(char* pagina, int offset, int tamanio){
 	return 0;
 }
 
-char* obtenerDeMemoriaPrincipal(frame, offset, tamanio){
-	return 0;
+char* obtenerDeMemoriaPrincipal(int frame, int offset, int tamanio){
+	int i;
+	for(i=0; i<list_size(tablaDeFrames->entradas);i++){
+		tabla_de_frame_entry* actual = list_get(tablaDeFrames->entradas, i);
+		if(actual->nroFrame == frame){
+			return actual->direccion_real;
+		}
+	}
+	return NULL;
+
 }
 
 void cargarPagina(int nroPagina, int pid, char* pagina){
@@ -427,7 +435,7 @@ void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 	memoria_bloque = malloc(cantMarcos*marco_size); //char* que va a tener el contenido de todas las paginas
 
 	tablaDeFrames = malloc(sizeof(tablaDeFrames));
-	tablaDeFrames->entradas = malloc(sizeof(tabla_de_frame_entry)*cantMarcos);
+	tablaDeFrames->entradas = list_create();
 	int i;
 	for(i=0; i<cantMarcos; i++) {
 		tabla_de_frame_entry* entrada = malloc(sizeof(tabla_de_frame_entry));
@@ -436,7 +444,7 @@ void initiMemoriaPrincipal(int cantMarcos, int marco_size){
 		entrada->pid = 0;
 		entrada->referenciado = 0;
 		entrada->direccion_real = &memoria_bloque[i*marco_size];
-		tablaDeFrames->entradas[i] = *entrada;
+		list_add(tablaDeFrames->entradas, entrada);
 		free(entrada);
 	}
 
