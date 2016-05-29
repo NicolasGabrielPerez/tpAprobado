@@ -213,7 +213,9 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 }
 
 char* obtenerBytes(char* pagina, int offset, int tamanio){
-	return 0;
+	char* bytes = malloc(tamanio);
+	memcpy(bytes, pagina+offset, tamanio);
+	return bytes;
 }
 
 char* obtenerDeMemoriaPrincipal(int frame, int offset, int tamanio){
@@ -221,7 +223,7 @@ char* obtenerDeMemoriaPrincipal(int frame, int offset, int tamanio){
 	for(i=0; i<list_size(tablaDeFrames->entradas);i++){
 		tabla_de_frame_entry* actual = list_get(tablaDeFrames->entradas, i);
 		if(actual->nroFrame == frame){
-			return actual->direccion_real;
+			return obtenerBytes(actual->direccion_real, offset, tamanio);
 		}
 	}
 	return NULL;
