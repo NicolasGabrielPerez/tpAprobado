@@ -21,7 +21,6 @@
 
 #include "pcb.h"
 
-
 void nucleo_init(t_config* config);
 void nucleo_delete();
 

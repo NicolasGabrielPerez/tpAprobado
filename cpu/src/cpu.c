@@ -168,6 +168,9 @@ int main(int argc, char **argv) {
 
 int main(int argc, char **argv) {
 
+
+	//system("dd  if=/dev/zero of=sample.txt bs=2M count=1");
+
 	t_config* config = config_create("cpu.config");
 	if(config==NULL){
 		printf("No se pudo leer la configuración");

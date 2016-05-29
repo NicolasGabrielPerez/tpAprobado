@@ -25,12 +25,23 @@
 
 int socket_umc;
 
+int32_t HEADER_HANDSHAKE = 100;
+int32_t HEADER_SOLICITAR_PAGINAS = 300;
+int32_t HEADER_ALMACENAR_PAGINAS = 400;
+int32_t HEADER_CAMBIO_PROCESO_ACTIVO = 500;
+
+int32_t RESPUESTA_OK = 10;
+int32_t RESPUESTA_FAIL = -10;
+
+int32_t TIPO_CPU = 10;
+
 const u_int32_t BUFFER_SIZE_UMC = 1024;
 const u_int32_t HEADER_SIZE_UMC = sizeof(int32_t);
 
 void umc_init(t_config* config){
 
-
+	//Hacer HANDSHAKE: HEADER_HANDSHAKE
+	//Enviar tipo: CPU
 
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
 	char* ip_umc = config_get_string_value(config, "IP_UMC");
@@ -40,9 +51,20 @@ void umc_init(t_config* config){
 	printf("UMC FD: %d\n", socket_umc);
 
 	//Hago handshake con umc
-	if(handshake(socket_umc, "PRUEBA") != 0){
-		puts("Error en handshake con la umc");
-	}
+	char* bufferHandshake[HEADER_SIZE_UMC];
+	memcpy(bufferHandshake, HEADER_HANDSHAKE, sizeof(int32_t));
+	int bytesHandshake = HEADER_SIZE_UMC;
+	if (send(socket_umc, bufferHandshake, bytesHandshake, 0) == -1) {
+			perror("Error enviando handshake umc");
+	};
+
+	// Envio mi tipo: CPUs
+	char* bufferType[HEADER_SIZE_UMC];
+	memcpy(bufferType, TIPO_CPU, sizeof(int32_t));
+	int bytesType = HEADER_SIZE_UMC;
+	if (send(socket_umc, bufferType, bytesType, 0) == -1) {
+		perror("Error enviando tipo a umc");
+	};
 }
 
 void umc_delete() {
@@ -50,6 +72,11 @@ void umc_delete() {
 }
 
 void umc_process_active(int32_t processId) {
+
+	//Envio header: HEADER_CAMBIO_PROCESO_ACTIVO
+	//Enviar processID
+	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
+	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
 	char* bufferHeader[HEADER_SIZE_UMC];
 	memcpy(bufferHeader, &processId, sizeof(int32_t));
@@ -69,6 +96,15 @@ void umc_process_active(int32_t processId) {
 }
 
 void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
+
+	//Envio header: HEADER_ALMACENAR_PAGINAS
+	//Enviar page
+	//Enviar offset
+	//Enviar size
+	//Enviar buffer
+	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
+	//En caso de fallo, hacer un receive adicional con un codigo int32.
+
 	int nbytes = 10;
 	if (send(socket_umc, buffer, nbytes, 0) == -1) {
 		 perror("Error insertando memoria");
@@ -76,6 +112,14 @@ void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 }
 
 char* umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
+
+	//Envio header: HEADER_SOLICITAR_PAGINAS
+	//Enviar page
+	//Enviar offset
+	//Enviar size
+	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
+	//En caaso de OK, recibir los datos char*
+	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
 	char buf[BUFFER_SIZE_UMC];
 	int nbytes = 10;
