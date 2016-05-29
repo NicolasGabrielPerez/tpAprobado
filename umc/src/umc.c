@@ -208,13 +208,9 @@ char* pedirPaginaASwap(int nroPagina, int pid){
 	return 0;
 }
 
-void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
-
-}
-
-char* obtenerBytes(char* pagina, int offset, int tamanio){
+char* obtenerBytes(char* contenido, int offset, int tamanio){
 	char* bytes = malloc(tamanio);
-	memcpy(bytes, pagina+offset, tamanio);
+	memcpy(bytes, contenido+offset, tamanio);
 	return bytes;
 }
 
@@ -229,7 +225,12 @@ tabla_de_frame_entry* obtenerEntradaDeFrame(int nroFrame){
 	return NULL;
 }
 
-char* obtenerDeMemoriaPrincipal(int frame, int offset, int tamanio){
+void escribirEnFrame(char* buffer, int offset, int tamanio, int frame){
+	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(frame);
+	memcpy(entrada->direccion_real + offset, buffer, tamanio);
+}
+
+char* obtenerBytesDeMemoriaPrincipal(int frame, int offset, int tamanio){
 	int i;
 	for(i=0; i<list_size(tablaDeFrames->entradas);i++){
 		tabla_de_frame_entry* actual = list_get(tablaDeFrames->entradas, i);
@@ -245,7 +246,7 @@ bool paginaNoPresente(void* entrada){
 	return !entradaDePagina->presente;
 }
 
-tabla_de_paginas_entry* obtenerEntrada(int pid, int nroPagina){
+tabla_de_paginas_entry* obtenerEntradaDePagina(int pid, int nroPagina){
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(tablasDePaginas, pid);
 	tabla_de_paginas_entry* entrada = buscarEntradaPorPagina(tablaDePaginas, nroPagina);
 	return entrada;
@@ -268,7 +269,7 @@ void cargarEnMemoriaPrincipal(char* pagina, int nroFrame){
 }
 
 void cargarPagina(int nroPagina, int pid, char* pagina){
-	tabla_de_paginas_entry* entrada = obtenerEntrada(pid, nroPagina);
+	tabla_de_paginas_entry* entrada = obtenerEntradaDePagina(pid, nroPagina);
 	int nroFrameACargar = obtenerFrameDisponible();
 	if(nroFrameACargar == -1){
 		puts("Error: memoria llena");
@@ -286,6 +287,81 @@ int actualizarTLB(int nroPagina, int pid){
 
 int buscarEnTLB(int nroPagina, int pid){
 	return 0;
+}
+
+
+void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
+	int32_t nroPagina;
+	int32_t offset;
+	int32_t tamanio;
+	char* buffer;
+	char* respuesta;
+
+	if (recv(cpu_socket, &nroPagina, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if (recv(cpu_socket, &offset, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if (recv(cpu_socket, &tamanio, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	buffer = malloc(tamanio);
+	if (recv(cpu_socket, buffer, tamanio, 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if(TLBEnable){
+		//Buscar en TLB. Si esta, ir a buscar a memoria y enviar bytes
+		int frame = buscarEnTLB(nroPagina, pidActivo);
+		if(frame!=-1){
+			escribirEnFrame(buffer, offset, tamanio, frame);
+			respuesta = string_itoa(RESPUESTA_OK);
+			goto enviarBytes;
+		}
+	}
+
+	// else: buscar en Tabla de Paginas del pid
+	tabla_de_paginas* tablaDePaginas = buscarPorPID(tablasDePaginas, pidActivo);
+	tabla_de_paginas_entry* entrada = buscarEntradaPorPagina(tablaDePaginas, nroPagina);
+	if(entrada==NULL){
+		respuesta = string_itoa(RESPUESTA_FAIL); //no existe tal nroPagina para tal pid
+		goto enviarBytes;
+	}
+	if(entrada->presente){
+		// esta en tabla de paginas ⇒ ir a buscar a Memoria Principal
+		escribirEnFrame(buffer, offset, tamanio, entrada->nroFrame);
+		// y actualizar TLB
+		if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+	}
+
+	// no esta ⇒ pedir a Swap
+	char* paginaSolicitada = pedirPaginaASwap(nroPagina, pidActivo);
+	if(paginaSolicitada==NULL){
+		respuesta = string_itoa(RESPUESTA_FAIL); //no existe tal nroPagina para tal pid
+		goto enviarBytes;
+	}
+	// TODO cargar pagina y actualizar tabla de paginas
+	// reemplazar si es necesario (Clock y clock modificado)
+	cargarPagina(nroPagina, pidActivo, paginaSolicitada);
+	escribirEnFrame(buffer, offset, tamanio, entrada->nroFrame);
+	respuesta = string_itoa(RESPUESTA_OK);
+
+	//Actualizar TLB
+	if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+
+	enviarBytes:
+		if (send(cpu_socket, respuesta, tamanio, 0) == -1) {
+				perror("send");
+				exit(1);
+		}
 }
 
 void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
@@ -312,8 +388,10 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 	if(TLBEnable){
 		//Buscar en TLB. Si esta, ir a buscar a memoria y enviar bytes
 		int frame = buscarEnTLB(nroPagina, pidActivo);
-		bytesAEnviar = obtenerDeMemoriaPrincipal(frame, offset, tamanio);
-		goto enviarBytes;
+		if(frame!=-1){
+			bytesAEnviar = obtenerBytesDeMemoriaPrincipal(frame, offset, tamanio);
+			goto enviarBytes;
+		}
 	}
 
 	// else: buscar en Tabla de Paginas del pid
@@ -325,7 +403,7 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 	}
 	if(entrada->presente){
 		// esta en tabla de paginas ⇒ ir a buscar a Memoria Principal
-		bytesAEnviar = obtenerDeMemoriaPrincipal(entrada->nroFrame, offset, tamanio);
+		bytesAEnviar = obtenerBytesDeMemoriaPrincipal(entrada->nroFrame, offset, tamanio);
 		// y actualizar TLB
 		if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
 	}
