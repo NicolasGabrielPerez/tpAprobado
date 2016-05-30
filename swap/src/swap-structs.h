@@ -13,21 +13,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef SWAP_STRUCTS_H_
+#define SWAP_STRUCTS_H_
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sockets/sockets.h>
+#include <commons/collections/list.h>
+#include <commons/bitarray.h>
+#include <commons/config.h>
+#include <commons/txt.h>
+#include <commons/string.h>
 
-#include "swap-library.h"
+extern int paginaSize;
 
-t_swap_block* init_swap(int size){
-	char* memory_block = malloc(size);
-	if(memory_block == 0){
-		return NULL;
-	}
+	typedef struct frame_entry{
+		int pid;
+		int nroPagina;
+		int nroFrame;
+	} frame_entry;
 
-	t_swap_block* swap = malloc(sizeof(t_swap_block));
+	typedef struct swap_admin{
+		t_list* framesEntries;
+		t_bitarray* bitMap;
+	} swap_admin;
 
-	swap->memory_block = memory_block;
-	swap->size = size;
-	swap->disponible = size;
-	return swap;
-}
+	/**
+	* @NAME: initSwap
+	* Lee configuracion
+	* Crea la estructura swap_admin
+	*/
+	int initSwap(t_config* config);
+
+#endif /* SWAP_STRUCTS_H_ */

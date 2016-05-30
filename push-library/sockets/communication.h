@@ -6,6 +6,15 @@
 
 #include "pcb.h"
 
+	extern int32_t HEADER_SIZE ;
+	extern int32_t RESPUESTA_OK;
+	extern int32_t RESPUESTA_FAIL;
+
+	extern int32_t HEADER_HANDSHAKE;
+	extern int32_t HEADER_INIT_PROGRAMA;
+	extern int32_t HEADER_SOLICITAR_PAGINAS;
+	extern int32_t HEADER_ALMACENAR_PAGINAS;
+	extern int32_t HEADER_FIN_PROGRAMA;
 
 //CPU a UMC
 typedef struct cpu_to_umc {

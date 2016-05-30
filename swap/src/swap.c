@@ -1,0 +1,78 @@
+#include "swap-structs.h"
+#include "interfazUmc.h"
+
+char* buscarPagina(int nroPagina, int pid){
+	return 0;
+}
+
+char* escribirPagina(int nroPagina, int pid, char* buffer){
+	return 0;
+}
+
+int hayEspacioDisponible(int cantPaginas){
+	return 0;
+}
+
+void escribirPaginas(int pid, int cantPaginas, char* codFuente){
+	return;
+}
+
+void operarSegunHeader(int32_t header){
+	if(header == HEADER_INIT_PROGRAMA){
+		recibirInitPrograma();
+		return;
+	}
+	if(header == HEADER_SOLICITAR_PAGINAS){
+		recibirPedidoPagina();
+		return;
+	}
+	if(header == HEADER_ALMACENAR_PAGINAS){
+		recibirEscrituraPagina();
+		return;
+	}
+	if(header == HEADER_FIN_PROGRAMA){
+		recibirFinPrograma();
+		return;
+	}
+}
+
+int main(void) {
+	t_config* config = config_create("swap.config");
+	if(config==NULL){
+		printf("No se pudo leer la configuración");
+		return EXIT_FAILURE;
+	}
+
+	int init_swap = initSwap(config);
+	if(init_swap==-1) return EXIT_FAILURE;
+
+	int init_umc = initUmc(config);
+	if(init_umc==-1) return EXIT_FAILURE;
+
+	int bytes_recibidos = 1;
+	char* header = malloc(HEADER_SIZE);
+	int32_t headerInt;
+	while(bytes_recibidos){
+		puts("Esperando conexiones...");
+
+		bytes_recibidos = recv(umc_socket, header, HEADER_SIZE, 0);
+
+		if(bytes_recibidos == -1) {
+		   perror("recv");
+		   exit(1);
+		}
+
+		 if (bytes_recibidos == 0) {
+		   // connection closed
+		   puts("umc hung up\n");
+	   }
+
+	   memcpy(&headerInt, header, sizeof(int32_t));
+	   operarSegunHeader(headerInt);
+	}
+
+	close(umc_socket); // bye!
+
+	puts("Terminé felizmente");
+	return EXIT_SUCCESS;
+}
