@@ -44,12 +44,12 @@ char* generarComandoDD(){
 	return command;
 }
 
-void crearPartcion(){
+void ejectuarCrearPartcion(){
 	system(generarComandoDD());
 }
 
 int crearParticion(){
-	crearPartcion();
+	ejectuarCrearPartcion();
 	swapAdmin->particion = txt_open_for_append(particionFileName);
 	txt_write_in_file(swapAdmin->particion, '\0');
 
@@ -81,11 +81,9 @@ int crearAdminStructs(){
 }
 
 int initSwap(t_config* config){
-
 	setConfig(config);
 
 	if(crearParticion() == EXIT_FAILURE) return EXIT_FAILURE;
-
 	if(crearAdminStructs() == EXIT_FAILURE) return EXIT_FAILURE;
 
 	return EXIT_SUCCESS;
