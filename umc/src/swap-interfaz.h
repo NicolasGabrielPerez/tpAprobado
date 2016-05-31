@@ -4,6 +4,7 @@
 #include "umc-structs.h"
 
 	extern int swap_socket;
+	extern pthread_mutex_t swap_semaphore;
 
 	void initSwap(t_config* config);
 
