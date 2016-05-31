@@ -1,12 +1,15 @@
 #ifndef COMMUNICATION_H_
 #define COMMUNICATION_H_
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <parser/parser.h>
 #include "commons/collections/list.h"
 
 #include "pcb.h"
 
 	extern int32_t HEADER_SIZE ;
+	extern int32_t RESPUESTA_SIZE;
 	extern int32_t RESPUESTA_OK;
 	extern int32_t RESPUESTA_FAIL;
 
@@ -15,6 +18,13 @@
 	extern int32_t HEADER_SOLICITAR_PAGINAS;
 	extern int32_t HEADER_ALMACENAR_PAGINAS;
 	extern int32_t HEADER_FIN_PROGRAMA;
+	extern int32_t HEADER_CAMBIO_PROCESO_ACTIVO;
+
+	extern int32_t TIPO_CONSOLA;
+	extern int32_t TIPO_NUCLEO;
+	extern int32_t TIPO_UMC;
+	extern int32_t TIPO_SWAP;
+	extern int32_t TIPO_CPU;
 
 //CPU a UMC
 typedef struct cpu_to_umc {

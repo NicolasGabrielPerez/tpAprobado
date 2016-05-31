@@ -16,6 +16,8 @@
 #ifndef SERIALIZATION_H_
 #define SERIALIZATION_H_
 
+#include <stdlib.h>
+
 typedef struct Buffer {
     void *data;
     int next;
