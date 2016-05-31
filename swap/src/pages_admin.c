@@ -13,12 +13,26 @@ char* buscarPagina(int nroPagina, int pid){
 	return leerDeFrame(frameEntry);
 }
 
-char* escribirPagina(int nroPagina, int pid, char* buffer){
-	return 0;
+int escribirPagina(int nroPagina, int pid, char* buffer){
+	frame_entry* frameEntry = buscarFrameEntry(nroPagina, pid);
+	int offset = frameEntry->nroFrame * paginaSize;
+	fseek(swapAdmin->particion, SEEK_SET + offset, 0);
+	fwrite(buffer, paginaSize, 1, swapAdmin->particion);
+	return EXIT_SUCCESS;;
+}
+
+int cantidadDisponibles(){
+	int i;
+	int contador = 0;
+	int bitArraySize = bitarray_get_max_bit(swapAdmin->bitMap);
+	for(i=0;i<bitArraySize;i++){
+		if(!bitarray_test_bit(swapAdmin->bitMap, i)) contador++;
+	}
+	return contador;
 }
 
 int hayEspacioDisponible(int cantPaginas){
-	return 0;
+	return cantidadDisponibles() >= cantPaginas;
 }
 
 void escribirPaginas(int pid, int cantPaginas, char* codFuente){
