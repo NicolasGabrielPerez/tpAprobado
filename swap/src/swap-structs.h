@@ -32,8 +32,6 @@
 #include <commons/txt.h>
 #include <commons/string.h>
 
-extern int paginaSize;
-
 	typedef struct frame_entry{
 		int pid;
 		int nroPagina;
@@ -43,7 +41,11 @@ extern int paginaSize;
 	typedef struct swap_admin{
 		t_list* framesEntries;
 		t_bitarray* bitMap;
+		FILE* particion;
 	} swap_admin;
+
+	extern int paginaSize;
+	extern swap_admin* swapAdmin;
 
 	/**
 	* @NAME: initSwap
@@ -51,5 +53,7 @@ extern int paginaSize;
 	* Crea la estructura swap_admin
 	*/
 	int initSwap(t_config* config);
+
+	frame_entry* buscarFrameEntry(int nroPagina, int pid);
 
 #endif /* SWAP_STRUCTS_H_ */

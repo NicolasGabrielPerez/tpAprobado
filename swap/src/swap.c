@@ -1,21 +1,6 @@
 #include "swap-structs.h"
 #include "interfazUmc.h"
-
-char* buscarPagina(int nroPagina, int pid){
-	return 0;
-}
-
-char* escribirPagina(int nroPagina, int pid, char* buffer){
-	return 0;
-}
-
-int hayEspacioDisponible(int cantPaginas){
-	return 0;
-}
-
-void escribirPaginas(int pid, int cantPaginas, char* codFuente){
-	return;
-}
+#include "pages_admin.h"
 
 void operarSegunHeader(int32_t header){
 	if(header == HEADER_INIT_PROGRAMA){

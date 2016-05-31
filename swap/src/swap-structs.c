@@ -23,7 +23,6 @@ int cantPaginas;
 int swapSize; //en bytes
 int retardo_fragmentacion;
 char* particionFileName;
-FILE* particion;
 
 swap_admin* swapAdmin;
 
@@ -51,8 +50,8 @@ void crearPartcion(){
 
 int crearParticion(){
 	crearPartcion();
-	particion = txt_open_for_append(particionFileName);
-	txt_write_in_file(particion, '\0');
+	swapAdmin->particion = txt_open_for_append(particionFileName);
+	txt_write_in_file(swapAdmin->particion, '\0');
 
 	return EXIT_SUCCESS;
 }
@@ -90,4 +89,13 @@ int initSwap(t_config* config){
 	if(crearAdminStructs() == EXIT_FAILURE) return EXIT_FAILURE;
 
 	return EXIT_SUCCESS;
+}
+
+frame_entry* buscarFrameEntry(int nroPagina, int pid){
+	int i;
+	for(i=0;i<list_size(swapAdmin->framesEntries);i++){
+		frame_entry* actual = list_get(swapAdmin->framesEntries, i);
+		if(actual->pid == pid && actual->nroPagina == nroPagina) return actual;
+	}
+	return NULL;
 }
