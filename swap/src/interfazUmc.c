@@ -17,7 +17,6 @@ void recibirInitPrograma(){
 	int32_t pid;
 	int32_t cantPaginas;
 	char* codFuente;
-	char* respuesta;
 
 	if (recv(umc_socket, &pid, sizeof(int32_t), 0) == -1) {
 		perror("recv");
@@ -36,27 +35,23 @@ void recibirInitPrograma(){
 		exit(1);
 	}
 
-	if(!hayEspacioDisponible(cantPaginas)
-			|| existePid(pid)){
-		respuesta = string_itoa(RESPUESTA_FAIL);
-		goto enviarRespuesta;
+	if(!hayEspacioDisponible(cantPaginas)){
+		enviarFAIL(umc_socket, ESPACIO_NO_DISPONIBLE);
+		return;
+	}
+	if(existePid(pid)){
+		enviarFAIL(umc_socket, PID_YA_EXISTE);
+		return;
 	}
 
 	initPaginas(pid, cantPaginas, codFuente);
-	respuesta = string_itoa(RESPUESTA_OK);
 
-	enviarRespuesta:
-		if (send(umc_socket, respuesta, sizeof(int32_t), 0) == -1) {
-				perror("send");
-				exit(1);
-		}
-
+	enviarOKSinContenido(umc_socket);
 }
 
 void recibirPedidoPagina(){
 	int32_t nroPagina;
 	int32_t pid;
-	char* respuesta;
 
 	if (recv(umc_socket, &nroPagina, sizeof(int32_t), 0) == -1) {
 		perror("recv");
@@ -68,19 +63,14 @@ void recibirPedidoPagina(){
 		exit(1);
 	}
 
-	respuesta = getPagina(nroPagina, pid);
-
-	if (send(umc_socket, respuesta, paginaSize, 0) == -1) {
-			perror("send");
-			exit(1);
-	}
+	response* paginaResult = getPagina(nroPagina, pid);
+	enviarResultado(paginaResult, umc_socket);
 }
 
 void recibirEscrituraPagina(){
 	int32_t nroPagina;
 	int32_t pid;
 	char* buffer = malloc(paginaSize);
-	char* respuesta = malloc(RESPUESTA_SIZE);
 
 	if (recv(umc_socket, &nroPagina, sizeof(int32_t), 0) == -1) {
 		perror("recv");
@@ -97,14 +87,8 @@ void recibirEscrituraPagina(){
 		exit(1);
 	}
 
-	if(escribirPagina(nroPagina, pid, buffer)==RESPUESTA_OK){
-		if (send(umc_socket, respuesta, paginaSize, 0) == -1) {
-				perror("send");
-				exit(1);
-		};
-	}
-
-
+	response* escrituraResult = escribirPagina(nroPagina, pid, buffer);
+	enviarResultado(escrituraResult, umc_socket);
 }
 
 void recibirFinPrograma(){
@@ -125,12 +109,8 @@ void recibirFinPrograma(){
 		return;
 	}
 
-	finalizarPrograma(pid);
-	respuesta = string_itoa(RESPUESTA_OK);
-	if (send(umc_socket, respuesta, sizeof(int32_t), 0) == -1) {
-			perror("send");
-			exit(1);
-	};
+	response* finalizarResult = finalizarPrograma(pid);
+	enviarResultado(finalizarResult, umc_socket);
 }
 
 void makeHandshake(){

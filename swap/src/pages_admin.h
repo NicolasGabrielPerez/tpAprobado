@@ -12,12 +12,12 @@
 
 	void initPaginas(int pid, int cantPaginas, char* codFuente);
 
-	char* getPagina(int nroPagina, int pid);
+	response* getPagina(int nroPagina, int pid);
 
-	int escribirPagina(int nroPagina, int pid, char* buffer);
+	response* escribirPagina(int nroPagina, int pid, char* buffer);
 
 	int hayEspacioDisponible(int cantPaginas);
 
-	void finalizarPrograma(int pid);
+	response* finalizarPrograma(int pid);
 
 #endif /* PAGES_ADMIN_H_ */

@@ -1,13 +1,12 @@
 #include "nucleo-interfaz.h"
 #include "swap-interfaz.h"
 
-char* recbirInitPrograma(int nucleo_socket){
+void recbirInitPrograma(int nucleo_socket){
 	int bytes_recibidos;
 	int32_t pid;
 	int32_t cantPaginas;
 	int codFuente_size;
 	char* codFuente;
-	char* respuesta;
 
 	if ((bytes_recibidos = recv(nucleo_socket, &pid, sizeof(int32_t), 0)) == -1) {
 		perror("recv");
@@ -24,28 +23,13 @@ char* recbirInitPrograma(int nucleo_socket){
 		exit(1);
 	}
 
-	respuesta = initProgramaSwap(&pid, &cantPaginas, codFuente);
-
-	int32_t respuestaInt;
-	memcpy(&respuestaInt, respuesta, RESPUESTA_SIZE);
-
-	if(respuestaInt == RESPUESTA_OK){
-		respuesta = initProgramaUMC(pid, cantPaginas);
-	} else {
-		respuesta = string_itoa(RESPUESTA_FAIL);
-	}
+	response* swapResponse = initProgramaSwap(&pid, &cantPaginas, codFuente);
+	enviarResponse(nucleo_socket, swapResponse);
 
 	free(codFuente);
-
-	if (send(nucleo_socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
-		perror("send");
-		exit(1);
-	}
-
-	return 0;
 }
 
-char* recibirFinalizarPrograma(int nucleo_socket){
+void recibirFinalizarPrograma(int nucleo_socket){
 	int32_t pid;
 	char* respuesta;
 
@@ -54,13 +38,8 @@ char* recibirFinalizarPrograma(int nucleo_socket){
 		exit(1);
 	}
 
-	respuesta = finalizarProgramaSwap(&pid);
+	//TODO borrar de Memoria Principal
 
-	if (send(nucleo_socket, respuesta, RESPUESTA_SIZE, 0) == -1) {
-		perror("send");
-		exit(1);
-	}
-
-	return 0;
-
+	response* swapResponse = finalizarProgramaSwap(&pid);
+	enviarResponse(nucleo_socket, swapResponse);
 }

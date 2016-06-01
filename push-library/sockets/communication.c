@@ -91,6 +91,16 @@ response* createResponse(int ok, int codError, int contenidoSize, char* contenid
 	return respuesta;
 }
 
+//Creador de response con campo ok=1, el resto en 0
+response* createOKResponse(){
+	return createResponse(1,0,0,0);
+}
+
+//Creador de response con campo ok=0, codError=codError, el resto en 0
+response* createFAILResponse(int codError){
+	return createResponse(0,codError,0,0);;
+}
+
 int enviarResponse(int socket, response* respuesta){
 	int respuestaSize;
 	char* respuestaSerializada = serializarResponse(respuesta, &respuestaSize);
@@ -114,4 +124,12 @@ int enviarOKConContenido(int socket, int contenidoSize, char* contenido){
 int enviarFAIL(int socket, int codError){
 	response* respuesta = createResponse(0,codError,0,0);
 	return enviarResponse(socket, respuesta);
+}
+
+void enviarResultado(response* response, int socket){
+	if(response->ok){
+		enviarOKConContenido(socket, response->contenidoSize, response->contenido);
+	} else{
+		enviarFAIL(socket, response->codError);
+	}
 }

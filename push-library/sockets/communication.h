@@ -14,6 +14,7 @@
 
 #include "pcb.h"
 #include "serialization.h"
+#include "error_codes.h"
 
 	extern int32_t HEADER_SIZE ;
 	extern int32_t RESPUESTA_SIZE;
@@ -36,6 +37,13 @@
 
 	response* recibirResponse(int socket);
 
+	//Creador de response con campo ok=1, el resto en 0
+	response* createOKResponse();
+
+	//Creador de response con campo ok=0, codError=codError, el resto en 0
+	response* createFAILResponse(int codError);
+
+	//Constructor de response con todos los campos customizables
 	response* createResponse(int ok, int codError, int contenidoSize, char* contenido);
 
 	void deleteResponse(response* response);
@@ -45,6 +53,8 @@
 	int enviarOKConContenido(int socket, int contenidoSize, char* contenido);
 
 	int enviarFAIL(int socket, int codError);
+
+	void enviarResultado(response* response, int socket);
 
 //CPU a UMC
 typedef struct cpu_to_umc {

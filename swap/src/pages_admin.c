@@ -13,12 +13,15 @@ char* buscarPagina(int nroPagina, int pid){
 	return leerDeFrame(frameEntry);
 }
 
-int escribirPagina(int nroPagina, int pid, char* buffer){
+response* escribirPagina(int nroPagina, int pid, char* buffer){
 	frame_entry* frameEntry = buscarFrameEntry(nroPagina, pid);
+	if(frameEntry==NULL){
+		return createFAILResponse(PID_NO_EXISTE);
+	}
 	int offset = frameEntry->nroFrame * paginaSize;
 	fseek(swapAdmin->particion, SEEK_SET + offset, 0);
 	fwrite(buffer, paginaSize, 1, swapAdmin->particion);
-	return EXIT_SUCCESS;;
+	return createOKResponse();
 }
 
 int frameDisponible(int nroFrame){
@@ -104,7 +107,7 @@ void initPaginas(int pid, int cantPaginas, char* codFuente){
 	escribirPaginas(pid, cantPaginas, codFuente, espacioContiguoStart);
 }
 
-char* getPagina(int nroPagina, int pid){
+response* getPagina(int nroPagina, int pid){
 	return NULL;
 }
 
@@ -112,12 +115,16 @@ void liberarFrame(int nroFrame){
 	bitarray_clean_bit(swapAdmin->bitMap, nroFrame);
 }
 
-void finalizarPrograma(int pid){
+response* finalizarPrograma(int pid){
 	t_list* entries = buscarEntries(pid);
+	if(entries==NULL){
+		return createFAILResponse(PID_NO_EXISTE);
+	}
 	int i;
 	for(i=0;i<list_size(entries);i++){
 		frame_entry* frameEntry = list_get(entries, i);
 		frameEntry->pid = 0;
 		liberarFrame(frameEntry->nroFrame);
 	}
+	return createOKResponse();
 }

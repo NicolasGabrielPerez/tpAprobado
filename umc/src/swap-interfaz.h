@@ -2,6 +2,7 @@
 #define SWAP_INTERFAZ_H_
 
 #include "umc-structs.h"
+#include <sockets/communication.h>
 
 	extern int swap_socket;
 	extern pthread_mutex_t swap_semaphore;
@@ -9,10 +10,10 @@
 	//Hace handshake con swap
 	void initSwap(t_config* config);
 
-	char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente);
+	response* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente);
 
-	char* finalizarProgramaSwap(int* pid);
+	response* finalizarProgramaSwap(int* pid);
 
-	char* pedirPaginaASwap(int nroPagina, int pid);
+	response* pedirPaginaASwap(int nroPagina, int pid);
 
 #endif /* SWAP_INTERFAZ_H_ */

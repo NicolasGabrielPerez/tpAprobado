@@ -27,7 +27,7 @@ void initSwap(t_config* config){
 	exit(1);
 }
 
-char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
+response* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
 	pthread_mutex_lock(&swap_semaphore);
 	if (send(swap_socket, &HEADER_INIT_PROGRAMA, sizeof(int32_t), 0) == -1) {
 		perror("send");
@@ -45,16 +45,12 @@ char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
 		perror("send");
 		exit(1);
 	}
-	char* respuestaSwap = malloc(RESPUESTA_SIZE);
-	if (recv(swap_socket, respuestaSwap, RESPUESTA_SIZE, 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	response* swapResponse = recibirResponse(swap_socket);
 	pthread_mutex_unlock(&swap_semaphore);
-	return respuestaSwap;
+	return swapResponse;
 }
 
-char* finalizarProgramaSwap(int* pid){
+response* finalizarProgramaSwap(int* pid){
 	pthread_mutex_lock(&swap_semaphore);
 	if (send(swap_socket, &HEADER_FIN_PROGRAMA, sizeof(int32_t), 0) == -1) {
 		perror("send");
@@ -69,11 +65,12 @@ char* finalizarProgramaSwap(int* pid){
 		perror("recv");
 		exit(1);
 	}
+	response* swapResponse = recibirResponse(swap_socket);
 	pthread_mutex_unlock(&swap_semaphore);
-	return respuestaSwap;
+	return swapResponse;
 }
 
-char* pedirPaginaASwap(int nroPagina, int pid){
+response* pedirPaginaASwap(int nroPagina, int pid){
 	pthread_mutex_lock(&swap_semaphore);
 	if (send(swap_socket, &HEADER_SOLICITAR_PAGINAS, sizeof(int32_t), 0) == -1) {
 		perror("send");
@@ -87,23 +84,7 @@ char* pedirPaginaASwap(int nroPagina, int pid){
 		perror("send");
 		exit(1);
 	}
-	char* respuestaSwap = malloc(RESPUESTA_SIZE);
-	if (recv(swap_socket, respuestaSwap, RESPUESTA_SIZE, 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	int32_t* respuestaInt = malloc(sizeof(int32_t));
-	memcpy(respuestaInt, respuestaSwap, sizeof(int32_t));
-	if(*respuestaInt==RESPUESTA_OK){
-		char* pagina = malloc(marco_size);
-		if (recv(swap_socket, pagina, marco_size, 0) == -1) {
-			perror("recv");
-			exit(1);
-		}
-		return pagina;
-	} else{
-		return string_itoa(RESPUESTA_FAIL);
-	}
+	response* swapResponse = recibirResponse(swap_socket);
 	pthread_mutex_unlock(&swap_semaphore);
-	return respuestaSwap;
+	return swapResponse;
 }
