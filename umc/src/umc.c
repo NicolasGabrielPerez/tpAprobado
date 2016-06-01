@@ -85,29 +85,6 @@ int crearHiloDeComponente(int tipo, int new_socket){
 	return creacion;
 }
 
-int aceptarNuevaConexion(){
-	int new_socket;
-	struct sockaddr_storage remoteaddr; // client address
-	socklen_t addrlen;
-	char remoteIP[INET6_ADDRSTRLEN];
-	// handle new connections
-	addrlen = sizeof remoteaddr;
-	new_socket = accept(listener,
-	(struct sockaddr *)&remoteaddr,
-	&addrlen);
-	puts("Conexion aceptada");
-	if (new_socket == -1) {
-	perror("accept");
-	}
-	printf("umc: new connection from %s on "
-	"socket %d\n",
-	inet_ntop(remoteaddr.ss_family,
-	get_in_addr((struct sockaddr*)&remoteaddr),
-	remoteIP, INET6_ADDRSTRLEN),
-	listener);
-	return new_socket;
-}
-
 int makeHandshake(int socket){
 	char* header = malloc(HEADER_SIZE);
 	if (recv((int)socket, header, HEADER_SIZE, 0) == -1) {
@@ -140,7 +117,7 @@ int makeHandshake(int socket){
 }
 
 void manejarNuevasConexiones(){
-	int new_socket = aceptarNuevaConexion();
+	int new_socket = aceptarNuevaConexion(listener);
 	int tipo = makeHandshake(new_socket);
 	if(tipo == -1){
 		puts("Hubo error en handshake");
