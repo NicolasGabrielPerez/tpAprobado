@@ -37,3 +37,30 @@ void reserve_space(Buffer *b, size_t bytes) {
         b->size *= 2;
     }
 }
+
+char* serializar_Int(char* posicionDeEscritura, int32_t* value){
+	int inputSize = sizeof(int32_t);
+	memcpy(posicionDeEscritura, value, inputSize);
+	return posicionDeEscritura + inputSize;
+}
+
+char* serializar_String(char* posicionDeEscritura, int size, char* value){
+	memcpy(posicionDeEscritura, value, size);
+	return posicionDeEscritura + size;
+}
+
+char* serializarResponse(response* response, int* responseSize){
+	*responseSize = sizeof(int32_t)*3 + response->contenidoSize;
+	char* respuestaSerializada = malloc(*responseSize);
+	char* siguiente = respuestaSerializada;
+
+	siguiente = serializar_Int(siguiente, &response->ok);
+	siguiente = serializar_Int(siguiente, &response->codError);
+	siguiente = serializar_Int(siguiente, &response->contenidoSize);
+
+	if(response->contenidoSize>0){
+		siguiente = serializar_String(siguiente, response->contenidoSize, response->contenido);
+	}
+
+	return respuestaSerializada;
+}

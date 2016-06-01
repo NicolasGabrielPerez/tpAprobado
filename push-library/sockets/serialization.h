@@ -17,13 +17,21 @@
 #define SERIALIZATION_H_
 
 #include <stdlib.h>
+#include <string.h>
 
-typedef struct Buffer {
-    void *data;
-    int next;
-    size_t size;
-} Buffer;
+	typedef struct Buffer {
+		void *data;
+		int next;
+		size_t size;
+	} Buffer;
 
+	typedef struct response{
+		int32_t ok;
+		int32_t codError;
+		int32_t contenidoSize;
+		char* contenido;
+	} response;
 
+	char* serializarResponse(response* response, int* responseSize);
 
 #endif
