@@ -21,18 +21,21 @@ int escribirPagina(int nroPagina, int pid, char* buffer){
 	return EXIT_SUCCESS;;
 }
 
-int cantPaginasDisponibles(){
+int frameDisponible(int nroFrame){
+	return !bitarray_test_bit(swapAdmin->bitMap, nroFrame);
+}
+
+int cantFramesDisponibles(){
 	int i;
 	int contador = 0;
-	int bitArraySize = bitarray_get_max_bit(swapAdmin->bitMap);
-	for(i=0;i<bitArraySize;i++){
-		if(!bitarray_test_bit(swapAdmin->bitMap, i)) contador++;
+	for(i=0;i<cantPaginasSwap;i++){
+		if(frameDisponible(i)) contador++;
 	}
 	return contador;
 }
 
 int hayEspacioDisponible(int cantPaginas){
-	return cantPaginasDisponibles() >= cantPaginas;
+	return cantFramesDisponibles() >= cantPaginas;
 }
 
 int existePid(int pid){
@@ -62,10 +65,6 @@ void escribirPaginas(int pid, int cantPaginas, char* codFuente, int espacioConti
 	escribirEnParticion(espacioContiguoStart, codFuente, cantPaginas*paginaSize);
 }
 
-int frameDisponible(int nroFrame){
-	return !bitarray_test_bit(swapAdmin->bitMap, nroFrame);
-}
-
 int hayEspacioContiguo(int indice, int cantPaginas){
 	int i;
 	int end = indice+cantPaginas;
@@ -82,7 +81,7 @@ int hayEspacioContiguo(int indice, int cantPaginas){
 
 int getEspacioContiguoStart(int cantPaginas){
 	int i;
-	for(int i=0;i<cantPaginasSwap;i++){
+	for(i=0;i<cantPaginasSwap;i++){
 		if(hayEspacioContiguo(i, cantPaginas)) return i;
 	}
 	return -1;
