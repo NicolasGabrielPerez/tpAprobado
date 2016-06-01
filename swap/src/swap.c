@@ -3,6 +3,10 @@
 #include "pages_admin.h"
 
 void operarSegunHeader(int32_t header){
+	if(header == HEADER_HANDSHAKE){
+		makeHandshake();
+		return;
+	}
 	if(header == HEADER_INIT_PROGRAMA){
 		recibirInitPrograma();
 		return;
@@ -38,7 +42,7 @@ int main(void) {
 	char* header = malloc(HEADER_SIZE);
 	int32_t headerInt;
 	while(bytes_recibidos){
-		puts("Esperando conexiones...");
+		printf("Esperando conexiones...\n");
 
 		bytes_recibidos = recv(umc_socket, header, HEADER_SIZE, 0);
 
@@ -49,7 +53,7 @@ int main(void) {
 
 		 if (bytes_recibidos == 0) {
 		   // connection closed
-		   puts("umc hung up\n");
+		   printf("umc hung up\n");
 	   }
 
 	   memcpy(&headerInt, header, sizeof(int32_t));
@@ -58,6 +62,6 @@ int main(void) {
 
 	close(umc_socket); // bye!
 
-	puts("Terminé felizmente");
+	puts("Terminé felizmente\n");
 	return EXIT_SUCCESS;
 }

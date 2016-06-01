@@ -35,7 +35,8 @@ void setConfig(t_config* config){
 }
 
 char* generarComandoDD(){
-	char* command = "dd if=/dev/zero of=";
+	char* command = string_new();
+	string_append(&command, "dd if=/dev/zero of=");
 	string_append(&command, particionFileName);
 	string_append(&command, " bs=");
 	string_append(&command, string_itoa(paginaSize));

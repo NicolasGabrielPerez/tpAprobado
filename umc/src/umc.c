@@ -142,6 +142,7 @@ int main(void) {
 	initTLB(config);
 
 	initSwap(config);
+
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 	crearHiloDeComponente(TIPO_SWAP, swap_socket);
@@ -155,11 +156,11 @@ int main(void) {
 	// Crear hilo para consola
 
 	while(1){
-		puts("Esperando conexiones...");
+		printf("Esperando conexiones...");
 		manejarNuevasConexiones(); //Nucleo o CPU
 	}
 
 	close(listener); // bye!
-	puts("Terminé felizmente");
+	printf("Terminé felizmente");
 	return EXIT_SUCCESS;
 }

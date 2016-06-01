@@ -3,6 +3,7 @@
 
 #include "pages_admin.h"
 #include <sockets/communication.h>
+#include <sockets/serialization.h>
 
 	extern int umc_socket;
 

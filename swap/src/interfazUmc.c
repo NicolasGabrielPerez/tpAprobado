@@ -3,42 +3,7 @@
 int umc_socket;
 
 int esperarConexionUMC(int umc_listener){
-	int umc_socket;
-	int bytes_recibidos;
-	char* header = malloc(HEADER_SIZE);
-	struct sockaddr_storage remoteaddr; // client address
-	socklen_t addrlen;
-	char remoteIP[INET6_ADDRSTRLEN];
-
-	   // handle new connections
-	   addrlen = sizeof remoteaddr;
-	   umc_socket = accept(umc_listener,
-		   (struct sockaddr *)&remoteaddr,
-		   &addrlen);
-
-	   puts("Conexion aceptada");
-	   if (umc_socket == -1) {
-		   perror("accept");
-	   } else {
-
-			printf("umc: new connection from %s on "
-				"socket %d\n",
-				inet_ntop(remoteaddr.ss_family,
-					get_in_addr((struct sockaddr*)&remoteaddr),
-					remoteIP, INET6_ADDRSTRLEN),
-					umc_listener);
-
-			printf("El fd es: %d", umc_socket);
-			if ((bytes_recibidos = recv(umc_socket, header, HEADER_SIZE, 0)) == -1) {
-			   perror("recv");
-			   exit(1);
-		   }
-
-			makeHandshake();
-	   }
-
-	   free(header);
-	   return umc_socket;
+	return aceptarNuevaConexion(umc_listener);
 }
 
 int initUmc(t_config* config){
@@ -169,6 +134,7 @@ void recibirFinPrograma(){
 }
 
 void makeHandshake(){
-
+	char mensajeInicial[10] = "Soy Swap!";
+	enviarOKConContenido(umc_socket, sizeof(mensajeInicial), mensajeInicial);
 }
 

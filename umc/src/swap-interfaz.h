@@ -6,6 +6,7 @@
 	extern int swap_socket;
 	extern pthread_mutex_t swap_semaphore;
 
+	//Hace handshake con swap
 	void initSwap(t_config* config);
 
 	char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente);

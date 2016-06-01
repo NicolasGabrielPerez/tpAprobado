@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <sockets/sockets.h>
 #include <sockets/communication.h>
+#include <sockets/serialization.h>
 #include <pthread.h>
 #include <commons/collections/list.h>
 #include <commons/bitarray.h>

@@ -2,12 +2,29 @@
 int swap_socket;
 pthread_mutex_t swap_semaphore = PTHREAD_MUTEX_INITIALIZER;
 
+response* handshakeSwap(){
+	if (send(swap_socket, &HEADER_HANDSHAKE, sizeof(int32_t), 0) == -1) {
+		perror("send");
+		exit(1);
+	}
+	return recibirResponse(swap_socket);
+}
+
 void initSwap(t_config* config){
-	//char* ip_swap = config_get_string_value(config, "IP_SWAP");
+	char* ip_swap = config_get_string_value(config, "IP_SWAP");
 	char* puerto_swap = config_get_string_value(config, "PUERTO_SWAP"); //puerto escucha de swap
-	swap_socket = crear_socket_cliente("utnso40", puerto_swap);
-	//char* cantPaginas = string_itoa(marco_size);
-	//handshake(swap_socket, marco_size);
+	swap_socket = crear_socket_cliente(ip_swap, puerto_swap);
+
+	response* swapInitResponse = handshakeSwap();
+
+	if(swapInitResponse->ok){
+		printf("Respuesta incial de Swap: %s\n", swapInitResponse->contenido);
+		return;
+	} else{
+		printf("Error %d", swapInitResponse->codError);
+	}
+
+	exit(1);
 }
 
 char* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
