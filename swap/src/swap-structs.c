@@ -107,3 +107,13 @@ frame_entry* buscarFrameEntry(int nroPagina, int pid){
 	}
 	return NULL;
 }
+
+t_list* buscarEntries(int pid){
+	t_list* result = list_create();
+	int i;
+	for(i=0;i<list_size(swapAdmin->framesEntries);i++){
+		frame_entry* actual = list_get(swapAdmin->framesEntries, i);
+		if(actual->pid == pid) list_add(result, actual);
+	}
+	return result;
+}

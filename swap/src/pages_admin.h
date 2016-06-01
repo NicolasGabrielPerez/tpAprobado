@@ -18,14 +18,6 @@
 
 	int hayEspacioDisponible(int cantPaginas);
 
-	void recibirInitPrograma();
-
-	void recibirPedidoPagina();
-
-	void recibirEscrituraPagina();
-
-	void recibirFinPrograma();
-
-	void makeHandshake();
+	void finalizarPrograma(int pid);
 
 #endif /* PAGES_ADMIN_H_ */

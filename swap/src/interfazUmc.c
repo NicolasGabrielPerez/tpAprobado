@@ -115,7 +115,7 @@ void recibirEscrituraPagina(){
 	int32_t nroPagina;
 	int32_t pid;
 	char* buffer = malloc(paginaSize);
-	char* respuesta;
+	char* respuesta = malloc(RESPUESTA_SIZE);
 
 	if (recv(umc_socket, &nroPagina, sizeof(int32_t), 0) == -1) {
 		perror("recv");
@@ -143,7 +143,29 @@ void recibirEscrituraPagina(){
 }
 
 void recibirFinPrograma(){
+	int32_t pid;
+	char* respuesta = malloc(RESPUESTA_SIZE);
 
+	if (recv(umc_socket, &pid, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+
+	if(!existePid(pid)){
+		respuesta = string_itoa(RESPUESTA_FAIL);
+		if (send(umc_socket, respuesta, sizeof(int32_t), 0) == -1) {
+				perror("send");
+				exit(1);
+		};
+		return;
+	}
+
+	finalizarPrograma(pid);
+	respuesta = string_itoa(RESPUESTA_OK);
+	if (send(umc_socket, respuesta, sizeof(int32_t), 0) == -1) {
+			perror("send");
+			exit(1);
+	};
 }
 
 void makeHandshake(){

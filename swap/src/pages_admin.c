@@ -107,3 +107,17 @@ void initPaginas(int pid, int cantPaginas, char* codFuente){
 char* getPagina(int nroPagina, int pid){
 	return NULL;
 }
+
+void liberarFrame(int nroFrame){
+	bitarray_clean_bit(swapAdmin->bitMap, nroFrame);
+}
+
+void finalizarPrograma(int pid){
+	t_list* entries = buscarEntries(pid);
+	int i;
+	for(i=0;i<list_size(entries);i++){
+		frame_entry* frameEntry = list_get(entries, i);
+		frameEntry->pid = 0;
+		liberarFrame(frameEntry->nroFrame);
+	}
+}

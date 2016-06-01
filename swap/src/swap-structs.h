@@ -60,4 +60,6 @@
 
 	frame_entry* getFrameEntryPorNroFrame(int nroFrame);
 
+	t_list* buscarEntries(int pid);
+
 #endif /* SWAP_STRUCTS_H_ */
