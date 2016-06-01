@@ -3,10 +3,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <parser/parser.h>
-#include "commons/collections/list.h"
+#include <commons/collections/list.h>
 
 #include "pcb.h"
+#include "serialization.h"
 
 	extern int32_t HEADER_SIZE ;
 	extern int32_t RESPUESTA_SIZE;
@@ -26,6 +33,18 @@
 	extern int32_t TIPO_SWAP;
 	extern int32_t TIPO_CPU;
 	extern int32_t TIPO_SIZE;
+
+	response* recibirResponse(int socket);
+
+	response* createResponse(int ok, int codError, int contenidoSize, char* contenido);
+
+	void deleteResponse(response* response);
+
+	int enviarOKSinContenido(int socket);
+
+	int enviarOKConContenido(int socket, int contenidoSize, char* contenido);
+
+	int enviarFAIL(int socket, int codError);
 
 //CPU a UMC
 typedef struct cpu_to_umc {

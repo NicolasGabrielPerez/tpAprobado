@@ -36,3 +36,82 @@ int32_t TIPO_UMC = 3000;
 int32_t TIPO_SWAP = 4000;
 int32_t TIPO_CPU = 5000;
 int32_t TIPO_SIZE = sizeof(int32_t);
+
+char* serializarInt(char* posicionDeEscritura, int32_t* value){
+	int inputSize = sizeof(int32_t);
+	memcpy(posicionDeEscritura, value, inputSize);
+	return posicionDeEscritura + inputSize;
+}
+
+char* serializarString(char* posicionDeEscritura, char* value){
+	int inputSize = strlen(value) + 1;
+	memcpy(posicionDeEscritura, value, inputSize);
+	return posicionDeEscritura + inputSize;
+}
+
+void deleteResponse(response* response){
+	if(response->contenidoSize >0){
+		free(response->contenido);
+	}
+	free(response);
+}
+
+response* recibirResponse(int socket){
+	response* respuesta = malloc(sizeof(response));
+	if (recv(socket, &respuesta->ok, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	if (recv(socket, &respuesta->codError, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	if (recv(socket, &respuesta->contenidoSize, sizeof(int32_t), 0) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	if(respuesta->contenidoSize >0){
+		respuesta->contenido = malloc(respuesta->contenidoSize);
+		if (recv(socket, respuesta->contenido, respuesta->contenidoSize, 0) == -1) {
+			perror("recv");
+			exit(1);
+		}
+	} else{
+		respuesta->contenido = 0;
+	}
+	return respuesta;
+}
+
+response* createResponse(int ok, int codError, int contenidoSize, char* contenido){
+	response* respuesta = malloc(sizeof(response));
+	respuesta->ok = ok;
+	respuesta->codError = codError;
+	respuesta->contenidoSize = contenidoSize;
+	respuesta->contenido = contenido;
+	return respuesta;
+}
+
+int enviarResponse(int socket, response* respuesta){
+	int respuestaSize;
+	char* respuestaSerializada = serializarResponse(respuesta, &respuestaSize);
+	if (send(socket, respuestaSerializada, respuestaSize, 0) == -1) {
+		perror("recv");
+		return EXIT_FAILURE;
+	}
+	return EXIT_SUCCESS;
+}
+
+int enviarOKSinContenido(int socket){
+	response* respuesta = createResponse(1,0,0,0);
+	return enviarResponse(socket, respuesta);
+}
+
+int enviarOKConContenido(int socket, int contenidoSize, char* contenido){
+	response* respuesta = createResponse(1,0,contenidoSize,contenido);
+	return enviarResponse(socket, respuesta);
+}
+
+int enviarFAIL(int socket, int codError){
+	response* respuesta = createResponse(0,codError,0,0);
+	return enviarResponse(socket, respuesta);
+}
