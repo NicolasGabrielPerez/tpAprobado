@@ -44,15 +44,8 @@ char* generarComandoDD(){
 	return command;
 }
 
-void ejectuarCrearPartcion(){
-	system(generarComandoDD());
-}
-
 int crearParticion(){
-	ejectuarCrearPartcion();
-	swapAdmin->particion = txt_open_for_append(particionFileName);
-	txt_write_in_file(swapAdmin->particion, '\0');
-
+	system(generarComandoDD());
 	return EXIT_SUCCESS;
 }
 
