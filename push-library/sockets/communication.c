@@ -35,3 +35,4 @@ int32_t TIPO_NUCLEO = 2000;
 int32_t TIPO_UMC = 3000;
 int32_t TIPO_SWAP = 4000;
 int32_t TIPO_CPU = 5000;
+int32_t TIPO_SIZE = sizeof(int32_t);

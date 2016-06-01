@@ -25,6 +25,7 @@
 	extern int32_t TIPO_UMC;
 	extern int32_t TIPO_SWAP;
 	extern int32_t TIPO_CPU;
+	extern int32_t TIPO_SIZE;
 
 //CPU a UMC
 typedef struct cpu_to_umc {

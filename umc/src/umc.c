@@ -1,4 +1,3 @@
-#include <pthread.h>
 #include "umc-structs.h"
 #include "swap-interfaz.h"
 #include "cpu-interfaz.h"
@@ -11,19 +10,12 @@ pthread_attr_t attr;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-//TODO poder usar estas variables desde la push-library
-int32_t HEADER_CAMBIO_PROCESO_ACTIVO = 700;
-int32_t TIPO_NUCLEO = 2000;
-int32_t TIPO_CPU = 5000;
-int32_t TIPO_UMC = 3000;
-int32_t TIPO_SWAP = 4000;
-
 int listener;
 
-int* convertToInt32(char* buffer){
+int convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
-	return number;
+	return *number;
 }
 
 void *gestionarCPU(void* socket){
@@ -122,13 +114,13 @@ int makeHandshake(int socket){
 		perror("recv");
 		exit(1);
 	}
-	char* type;
+	char* type = malloc(TIPO_SIZE);
 	if (recv((int)socket, header, sizeof(int32_t), 0) == -1) {
 		perror("recv");
 		exit(1);
 	}
-	int32_t* iType = convertToInt32(type);
-	if(! (type==TIPO_NUCLEO || type==TIPO_CPU)){
+	int32_t iType = convertToInt32(type);
+	if(! (iType==TIPO_NUCLEO || iType==TIPO_CPU)){
 		if (send(socket, &RESPUESTA_FAIL, sizeof(int32_t), 0) == -1) {
 			perror("send");
 			exit(1);

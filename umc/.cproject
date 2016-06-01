@@ -55,6 +55,14 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.1399711003.1318733255" name="umc.c" rcbsApplicability="disable" resourcePath="src/umc.c" toolsToInvoke="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1870873614.1988572266">
+						<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1870873614.1988572266" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1870873614">
+							<option id="gnu.c.compiler.option.include.paths.2052078324" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/push-library}&quot;"/>
+							</option>
+							<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1296397588" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+						</tool>
+					</fileInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
@@ -121,15 +129,6 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="UCM.cdt.managedbuild.target.gnu.exe.1861824557" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.1399711003;cdt.managedbuild.config.gnu.exe.debug.1399711003.;cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1870873614;cdt.managedbuild.tool.gnu.c.compiler.input.1220497847">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1153054672;cdt.managedbuild.config.gnu.exe.release.1153054672.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.903310060;cdt.managedbuild.tool.gnu.c.compiler.input.1102836759">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Release">
@@ -140,4 +139,13 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1153054672;cdt.managedbuild.config.gnu.exe.release.1153054672.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.903310060;cdt.managedbuild.tool.gnu.c.compiler.input.1102836759">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.1399711003;cdt.managedbuild.config.gnu.exe.debug.1399711003.;cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1870873614;cdt.managedbuild.tool.gnu.c.compiler.input.1220497847">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
 </cproject>
