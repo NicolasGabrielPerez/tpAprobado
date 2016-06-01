@@ -190,3 +190,26 @@ void recv_dinamic(int sockfd, double tamanioDouble, int *bufer){
 
 
 }
+
+int aceptarNuevaConexion(int listener){
+	int new_socket;
+	struct sockaddr_storage remoteaddr; // client address
+	socklen_t addrlen;
+	char remoteIP[INET6_ADDRSTRLEN];
+	// handle new connections
+	addrlen = sizeof remoteaddr;
+	new_socket = accept(listener,
+			(struct sockaddr *)&remoteaddr,
+			&addrlen);
+	puts("Conexion aceptada");
+	if (new_socket == -1) {
+		perror("accept");
+	}
+	printf("umc: new connection from %s on "
+	"socket %d\n",
+	inet_ntop(remoteaddr.ss_family,
+	get_in_addr((struct sockaddr*)&remoteaddr),
+			remoteIP, INET6_ADDRSTRLEN),
+			listener);
+	return new_socket;
+}
