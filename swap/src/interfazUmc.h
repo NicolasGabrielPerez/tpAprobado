@@ -1,7 +1,7 @@
 #ifndef INTERFAZ_UMC_H_
 #define INTERFAZ_UMC_H_
 
-#include "swap-structs.h"
+#include "pages_admin.h"
 #include <sockets/communication.h>
 
 	extern int umc_socket;

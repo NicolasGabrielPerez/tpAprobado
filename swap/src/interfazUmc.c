@@ -71,12 +71,13 @@ void recibirInitPrograma(){
 		exit(1);
 	}
 
-	if(!hayEspacioDisponible(cantPaginas)){
+	if(!hayEspacioDisponible(cantPaginas)
+			|| existePid(pid)){
 		respuesta = string_itoa(RESPUESTA_FAIL);
 		goto enviarRespuesta;
 	}
 
-	escribirPaginas(pid, cantPaginas, codFuente);
+	initPaginas(pid, cantPaginas, codFuente);
 	respuesta = string_itoa(RESPUESTA_OK);
 
 	enviarRespuesta:
@@ -102,7 +103,7 @@ void recibirPedidoPagina(){
 		exit(1);
 	}
 
-	respuesta = buscarPagina(nroPagina, pid);
+	respuesta = getPagina(nroPagina, pid);
 
 	if (send(umc_socket, respuesta, paginaSize, 0) == -1) {
 			perror("send");
@@ -131,12 +132,14 @@ void recibirEscrituraPagina(){
 		exit(1);
 	}
 
-	respuesta = escribirPagina(nroPagina, pid, buffer);
-
-	if (send(umc_socket, respuesta, paginaSize, 0) == -1) {
-			perror("send");
-			exit(1);
+	if(escribirPagina(nroPagina, pid, buffer)==RESPUESTA_OK){
+		if (send(umc_socket, respuesta, paginaSize, 0) == -1) {
+				perror("send");
+				exit(1);
+		};
 	}
+
+
 }
 
 void recibirFinPrograma(){

@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 int paginaSize;
-int cantPaginas;
+int cantPaginasSwap;
 int swapSize; //en bytes
 int retardo_fragmentacion;
 char* particionFileName;
@@ -28,10 +28,10 @@ swap_admin* swapAdmin;
 
 void setConfig(t_config* config){
 	paginaSize = config_get_int_value(config, "TAMANIO_PAGINA");
-	cantPaginas = config_get_int_value(config, "CANTIDAD_PAGINAS");
+	cantPaginasSwap = config_get_int_value(config, "CANTIDAD_PAGINAS");
 	retardo_fragmentacion = config_get_int_value(config, "RETARDO_COMPACTACION");
 	particionFileName = config_get_string_value(config, "NOMBRE_PARTICION");
-	swapSize = cantPaginas * paginaSize;
+	swapSize = cantPaginasSwap * paginaSize;
 }
 
 char* generarComandoDD(){
@@ -40,7 +40,7 @@ char* generarComandoDD(){
 	string_append(&command, " bs=");
 	string_append(&command, string_itoa(paginaSize));
 	string_append(&command, " count=");
-	string_append(&command, string_itoa(cantPaginas));
+	string_append(&command, string_itoa(cantPaginasSwap));
 	return command;
 }
 
@@ -64,9 +64,10 @@ void crearBitMap(){
 void crearFrames(){
 	t_list* framesEntries = list_create();
 	int i;
-	for(i=0; i<cantPaginas; i++){
+	for(i=0; i<cantPaginasSwap; i++){
 		frame_entry* frameEntry = malloc(sizeof(frame_entry));
 		frameEntry->nroFrame = i;
+		frameEntry->particionOffset = i*paginaSize;
 		list_add(framesEntries, frameEntry);
 	}
 	swapAdmin->framesEntries = framesEntries;
@@ -87,6 +88,15 @@ int initSwap(t_config* config){
 	if(crearAdminStructs() == EXIT_FAILURE) return EXIT_FAILURE;
 
 	return EXIT_SUCCESS;
+}
+
+frame_entry* getFrameEntryPorNroFrame(int nroFrame){
+	int i;
+	for(i=0;i<list_size(swapAdmin->framesEntries);i++){
+		frame_entry* actual = list_get(swapAdmin->framesEntries, i);
+		if(actual->nroFrame == nroFrame) return actual;
+	}
+	return NULL;
 }
 
 frame_entry* buscarFrameEntry(int nroPagina, int pid){

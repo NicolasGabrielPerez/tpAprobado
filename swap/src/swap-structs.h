@@ -33,9 +33,10 @@
 #include <commons/string.h>
 
 	typedef struct frame_entry{
+		int nroFrame;
+		int particionOffset;
 		int pid;
 		int nroPagina;
-		int nroFrame;
 	} frame_entry;
 
 	typedef struct swap_admin{
@@ -45,6 +46,7 @@
 	} swap_admin;
 
 	extern int paginaSize;
+	extern int cantPaginasSwap;
 	extern swap_admin* swapAdmin;
 
 	/**
@@ -55,5 +57,7 @@
 	int initSwap(t_config* config);
 
 	frame_entry* buscarFrameEntry(int nroPagina, int pid);
+
+	frame_entry* getFrameEntryPorNroFrame(int nroFrame);
 
 #endif /* SWAP_STRUCTS_H_ */

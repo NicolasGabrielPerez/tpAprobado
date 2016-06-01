@@ -21,7 +21,7 @@ int escribirPagina(int nroPagina, int pid, char* buffer){
 	return EXIT_SUCCESS;;
 }
 
-int cantidadDisponibles(){
+int cantPaginasDisponibles(){
 	int i;
 	int contador = 0;
 	int bitArraySize = bitarray_get_max_bit(swapAdmin->bitMap);
@@ -32,9 +32,79 @@ int cantidadDisponibles(){
 }
 
 int hayEspacioDisponible(int cantPaginas){
-	return cantidadDisponibles() >= cantPaginas;
+	return cantPaginasDisponibles() >= cantPaginas;
 }
 
-void escribirPaginas(int pid, int cantPaginas, char* codFuente){
+int existePid(int pid){
+	return 0;
+}
+
+void setearFramesEntriesNuevoPid(int espacioContiguoStart, int pid){
+	int espacioContiguoEnd = espacioContiguoStart + cantPaginasSwap;
+	int indiceFrame; //coincide con el nroFrame
+	int indicePagina = 0;
+	for(indiceFrame=espacioContiguoStart;
+			indiceFrame<espacioContiguoEnd;
+			indiceFrame++){
+		frame_entry* frameEntry = getFrameEntryPorNroFrame(indiceFrame);
+		frameEntry->nroPagina = indicePagina;
+		indicePagina++;
+		frameEntry->pid = pid;
+	}
+}
+
+void escribirEnParticion(int offset, char* buffer, int size){
+	fwrite(buffer, size, 1, swapAdmin->particion);
+}
+
+void escribirPaginas(int pid, int cantPaginas, char* codFuente, int espacioContiguoStart){
+	setearFramesEntriesNuevoPid(espacioContiguoStart, pid);
+	escribirEnParticion(espacioContiguoStart, codFuente, cantPaginas*paginaSize);
+}
+
+int frameDisponible(int nroFrame){
+	return !bitarray_test_bit(swapAdmin->bitMap, nroFrame);
+}
+
+int hayEspacioContiguo(int indice, int cantPaginas){
+	int i;
+	int end = indice+cantPaginas;
+	int contadorEspacioContiguo;
+	for(i=indice; i<end; i++){
+		if(frameDisponible(i)){
+			contadorEspacioContiguo++;
+		} else{
+			return false;
+		}
+	}
+	return true;
+}
+
+int getEspacioContiguoStart(int cantPaginas){
+	int i;
+	for(int i=0;i<cantPaginasSwap;i++){
+		if(hayEspacioContiguo(i, cantPaginas)) return i;
+	}
+	return -1;
+}
+
+void desfragmentarParticion(){
 	return;
+}
+
+void initPaginas(int pid, int cantPaginas, char* codFuente){
+	int espacioContiguoStart = getEspacioContiguoStart(cantPaginas);
+	if(espacioContiguoStart != -1){
+		escribirPaginas(pid, cantPaginas, codFuente, espacioContiguoStart);
+		return;
+	}
+	//Ya viene verificado que existe espacio disponible para esa cantidad de paginas
+	//Pero en este caso habria que desfragmentar para poder reservar espacio contiguo
+	desfragmentarParticion();
+	espacioContiguoStart = getEspacioContiguoStart(cantPaginas);
+	escribirPaginas(pid, cantPaginas, codFuente, espacioContiguoStart);
+}
+
+char* getPagina(int nroPagina, int pid){
+	return NULL;
 }
