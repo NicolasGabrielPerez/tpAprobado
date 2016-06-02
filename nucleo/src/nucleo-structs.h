@@ -15,5 +15,6 @@
 #include <sockets/sockets.h>
 #include <sockets/config.h>
 
+	void initNucleo(t_config* config);
 
 #endif
