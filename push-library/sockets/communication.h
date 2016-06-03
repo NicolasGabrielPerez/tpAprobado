@@ -20,6 +20,7 @@
 	extern int32_t RESPUESTA_SIZE;
 	extern int32_t RESPUESTA_OK;
 	extern int32_t RESPUESTA_FAIL;
+	extern int32_t HEADER_INVALIDO;
 
 	extern int32_t HEADER_HANDSHAKE;
 	extern int32_t HEADER_INIT_PROGRAMA;

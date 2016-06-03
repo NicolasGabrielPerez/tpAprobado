@@ -34,4 +34,6 @@
 
 	char* serializarResponse(response* response, int* responseSize);
 
+	int convertToInt32(char* buffer);
+
 #endif

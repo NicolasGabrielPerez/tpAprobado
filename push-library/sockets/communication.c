@@ -22,6 +22,7 @@ int32_t HEADER_SIZE = sizeof(int32_t);
 int32_t RESPUESTA_SIZE = sizeof(int32_t);
 int32_t RESPUESTA_OK = 10;
 int32_t RESPUESTA_FAIL = -10;
+int32_t HEADER_INVALIDO = 900;
 
 int32_t HEADER_HANDSHAKE = 100;
 int32_t HEADER_INIT_PROGRAMA = 200;
