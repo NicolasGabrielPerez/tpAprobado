@@ -16,6 +16,7 @@ void initConsolaListener(t_config* config){
 	consola_listener = crear_puerto_escucha(puerto_prog);
 	FD_ZERO(&consola_sockets_set);    // clear the master and temp sets
 	FD_SET(consola_listener, &consola_sockets_set);
+	fd_consola_max = consola_listener;
 }
 
 void actualizarFdMax(int socket){
