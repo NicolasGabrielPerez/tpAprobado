@@ -11,6 +11,7 @@ void initCPUListener(t_config* config){
     cpu_listener = crear_puerto_escucha(puerto_cpu);
     FD_ZERO(&cpu_sockets_set);    // clear the master and temp sets
 	FD_SET(cpu_listener, &cpu_sockets_set);
+	fd_cpu_max = cpu_listener;
 }
 
 void actualizarFdCPUMax(int socket){
