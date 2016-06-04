@@ -17,8 +17,11 @@
 #include <stdlib.h>
 
 #include "serialization.h"
+#include <parser/metadata_program.h>
 
 #define INITIAL_SIZE 32
+#define PRIMITIVE_SEPARATOR "$!"
+#define CODEINDEX_SEPARATOR "$#"
 
 struct Buffer *new_buffer() {
     struct Buffer *b = malloc(sizeof(Buffer));
@@ -28,14 +31,6 @@ struct Buffer *new_buffer() {
     b->next = 0;
 
     return b;
-}
-
-void reserve_space(Buffer *b, size_t bytes) {
-    if((b->next + bytes) > b->size) {
-        /* double size to enforce O(lg N) reallocs */
-        b->data = realloc(b->data, b->size * 2);
-        b->size *= 2;
-    }
 }
 
 char* serializar_Int(char* posicionDeEscritura, int32_t* value){
@@ -63,4 +58,79 @@ char* serializarResponse(response* response, int* responseSize){
 	}
 
 	return respuestaSerializada;
+}
+
+//Reserva espacio dinámicamente y aumenta el tamaño del buffer bajo demanda
+void reserve_space(Buffer *buffer, size_t bytesNeeded) {
+    if((buffer->next + bytesNeeded) > buffer->size) {
+    	buffer->data = realloc(buffer->data, buffer->size + bytesNeeded);
+    	buffer->size += bytesNeeded;
+    }
+}
+
+//Concatena string en buffer utilizando PRIMITIVE_SEPARATOR como separador
+void serialize_string(char* string, Buffer *buffer) {
+
+	char *cadena = string_new();
+	string_append(&cadena, string);
+	int stringSize = strlen(cadena);
+
+    reserve_space(buffer, stringSize);
+
+    //memcpy(((char *)buffer->data) + buffer->next, string, stringSize);
+    memcpy(buffer->data + buffer->next, cadena, stringSize);
+    buffer->next += stringSize;
+}
+
+void serialize_end_of_string(char* string){
+	string_append(string, "\0");
+}
+
+//Contatena un caracter especial de finalización de estructura
+void serialize_ending_special_character(char *specialCharacter, Buffer *buffer){
+	serialize_string(specialCharacter, buffer);
+}
+
+//Concatena integer en buffer utilizando PRIMITIVE_SEPARATOR como separador
+void serialize_int(int integer, Buffer *buffer) {
+    char *integerToString;
+    integerToString = string_itoa(integer);
+
+	serialize_string(integerToString, buffer);
+}
+
+void serialize_codeIndex(t_intructions* codeIndex, t_size instructionsCount, Buffer *buffer){
+	if(instructionsCount > 0){
+		int i;
+		for(i = 0 ; i < instructionsCount ; i++){
+			serialize_int(codeIndex[i].start, buffer);
+			serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+			serialize_int(codeIndex[i].offset, buffer);
+			serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+			serialize_ending_special_character(CODEINDEX_SEPARATOR, buffer);	//Fin de objeto
+		}
+	}
+}
+
+t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructionsCount) {
+	t_intructions *codeIndex = malloc(sizeof(t_intructions) * instructionsCount);
+
+	serialize_end_of_string(serializedCodeIndex);
+
+	char** deserializedList = string_split(serializedCodeIndex, CODEINDEX_SEPARATOR);
+	char** deserializedInstruction;
+
+	int i;
+	for( i = 0 ; i < instructionsCount ; i++ ){
+		deserializedInstruction = string_split(deserializedList[i], PRIMITIVE_SEPARATOR);
+
+		codeIndex[i].start = atoi(deserializedInstruction[0]);
+		codeIndex[i].offset = atoi(deserializedInstruction[1]);
+
+		printf("--- Índice de código n° %d: %s \n", i, deserializedList[i]);
+	}
+
+	return codeIndex;
 }

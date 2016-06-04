@@ -14,7 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef PCB_H_
+#include <parser/metadata_program.h>
 #define PCB_H_
+
+typedef struct Variable{
+	char* id;
+	int32_t pageNumber;
+	int32_t offset;
+	t_size size;
+} t_variable;
+
+typedef struct stackIndex {
+	int32_t instructionNumber;	//Número de instrucción dentro del código
+	t_dictionary* arguments; 	//Diccionario de argumentos, en el caso de hallarse una función
+	t_variable* variables; 		//Lista de variables
+	t_puntero returnAddress;	//
+	t_puntero returnVariable;
+} t_stackIndex;
 
 
 typedef struct stackContent {
@@ -38,14 +54,14 @@ typedef struct indexCode {
 	int offsetEnd;
 } IndexCode;
 
-
-typedef struct pcb {
-	int identifier;
-	int programCounter;
-	int pageCode;
-	IndexCode* indexCode;
-	IndexTag* indexTag;
-	int indexStack;
+typedef struct PCB {
+	int processId;					//Identificador único del proceso
+	int programCounter;				//Nro. de la próxima instrucción a ejecutar
+	int codePagesCount;				//Cantidad de páginas de memoria asignadas al código
+	t_intructions* codeIndex;		//Índice de código
+	t_size instructionsCount;		//Cantidad de instrucciones del programa
+	char* tagIndex;					//Índice de etiquetas, concatenado en una única cadena
+	int stackIndex;
 	t_list* stack;
 
 } PCB;
@@ -56,5 +72,7 @@ void free_pcb(PCB* pcb);
 
 StackContent* init_stackContent();
 void free_stackContent(StackContent* stackContent);
+
+void create_program_PCB(PCB* pcb, char* program);
 
 #endif
