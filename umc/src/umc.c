@@ -12,12 +12,6 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int listener;
 
-int convertToInt32(char* buffer){
-	int32_t* number = malloc(sizeof(int32_t));
-	memcpy(number, buffer, sizeof(int32_t));
-	return *number;
-}
-
 void *gestionarCPU(void* socket){
 	printf("Creado hilo de gestión de CPU\n");
 	printf("De socket: %d\n", (int)socket);
@@ -77,12 +71,28 @@ int crearHiloDeComponente(int tipo, int new_socket){
 	pthread_t newThread;
 	int creacion;
 	if(tipo==TIPO_NUCLEO){
-	creacion = pthread_create(&newThread, &attr, &gestionarNucleo, (void*) new_socket);
+		creacion = pthread_create(&newThread, &attr, &gestionarNucleo, (void*) new_socket);
 	}
 	if(tipo==TIPO_CPU){
-	creacion = pthread_create(&newThread, &attr, &gestionarCPU, (void*) new_socket);
+		creacion = pthread_create(&newThread, &attr, &gestionarCPU, (void*) new_socket);
 	}
 	return creacion;
+}
+
+response* recibir(int socket, int size){
+	char* header = malloc(HEADER_SIZE);
+	int bytesReceived = recv(socket, header, HEADER_SIZE, 0);
+	if(bytesReceived == 0) {
+		return createFAILResponse(SOCKET_DESCONECTADO);
+	}
+	if(bytesReceived == -1){
+		return createFAILResponse(SOCKET_ERROR_DESCONOCIDO);
+	}
+	return createResponse(1,0,HEADER_SIZE,header);
+}
+
+response* recibirHeader(int socket){
+	return recibir(socket, HEADER_SIZE);
 }
 
 int makeHandshake(int socket){
