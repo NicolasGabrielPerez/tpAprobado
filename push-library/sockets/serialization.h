@@ -54,5 +54,7 @@
 
 	t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructionsCount);
 
+	int convertToInt32(char* buffer);
+
 
 #endif
