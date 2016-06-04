@@ -138,5 +138,4 @@ int convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
 	return *number;
->>>>>>> ebe12f6c240674bcc7d003910293c7ebc2b4be12
 }
