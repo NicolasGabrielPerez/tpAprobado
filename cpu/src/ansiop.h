@@ -9,7 +9,7 @@
 	#include <parser/parser.h>
 
 
-	#include "pcb.h"
+	#include "push-library/pcb.h"
 
 
 	PCB* pcb;

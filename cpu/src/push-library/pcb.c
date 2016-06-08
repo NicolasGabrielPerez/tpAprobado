@@ -24,11 +24,26 @@
 #include "pcb.h"
 #include "serialization.h"
 
+void create_program_PCB(PCB* pcb, char* program){
+	t_metadata_program *programMetadata = malloc(sizeof(t_metadata_program));
+	programMetadata = metadata_desde_literal(program);
+
+	pcb->processId = 0;			//TODO: inicializar correctamente
+	pcb->programCounter = 0;
+	pcb->tagIndex = programMetadata->etiquetas;
+	pcb->instructionsCount = programMetadata->instrucciones_size;
+	pcb->codeIndex = programMetadata->instrucciones_serializado;
+	//pcb->codePagesCount
+	//pcb->stack
+	//pcb->stackIndex
+
+}
+
 
 PCB* init_pcb() {
 
 	PCB* pcb = malloc(sizeof(PCB));
-	pcb->indexStack = 0;
+	//pcb->indexStack = 0;
 	pcb->stack = list_create();
 
 	StackContent* stackContent = init_stackContent();
@@ -40,10 +55,10 @@ PCB* init_pcb() {
 void free_pcb(PCB* pcb) {
 
 	int i = 0;
-	for(i = 0; i <= pcb->indexStack; i++) {
-		StackContent* stackContent = list_get(pcb->stack, i);
-		free_stackContent(stackContent);
-	}
+	//for(i = 0; i < pcb->indexStack; i++) {
+	//	StackContent* stackContent = list_get(pcb->stack, i);
+	//	free_stackContent(stackContent);
+	//}
 
 	list_destroy(pcb->stack);
 	free(pcb);
@@ -52,42 +67,15 @@ void free_pcb(PCB* pcb) {
 StackContent* init_stackContent() {
 
 	StackContent* stackContent = malloc(sizeof(StackContent));
-	stackContent->variables = dictionary_create();
 	stackContent->arguments = dictionary_create();
-	stackContent->returnAddress = 3;
-	stackContent->returnVariable = 2;
 
 	return stackContent;
 }
 
 void free_stackContent(StackContent* stackContent) {
 
-	dictionary_destroy_and_destroy_elements(stackContent->arguments, free);
-	dictionary_destroy_and_destroy_elements(stackContent->variables, free);
+	dictionary_destroy(stackContent->arguments);
 	free(stackContent);
-}
-
-//Lo que viene lo saque de aca pero no tuve tiempo de implementarlo
-//http://stackoverflow.com/questions/6002528/c-serialization-techniques
-void serialize_int(int x, Buffer *b) {
-    /* assume int == long; how can this be done better? */
-    //x = htonl(x);
-
-    //reserve_space(b, sizeof(int));
-
-    //memcpy(((char *)b->data) + b->next, &x, sizeof(int));
-    //b->next += sizeof(int);
-}
-
-void serialize_string(char* string, Buffer *b) {
-    /* assume int == long; how can this be done better? */
-
-	//x = htonl(string);
-
-    //reserve_space(b, sizeof(int));
-
-    //memcpy(((char *)b->data) + b->next, &x, sizeof(int));
-    //b->next += sizeof(int);
 }
 
 void serialize_pcb(struct PCB *x, struct Buffer *output) {
