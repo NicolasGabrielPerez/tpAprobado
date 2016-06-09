@@ -177,19 +177,19 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	//nucleo_init(config);
+	nucleo_init(config);
 	umc_init(config);
 
 	umc_process_active(10);
 
-/*	int hasToExit = 0;
+	int hasToExit = 0;
 	while(hasToExit == 0) {
 		pcb = nucleo_recibirInstruccion();
 		hasToExit = doQuantum(pcb);
-	}*/
+	}
 
 	umc_delete();
-	//nucleo_delete();
+	nucleo_delete();
 
 	return EXIT_SUCCESS;
 }

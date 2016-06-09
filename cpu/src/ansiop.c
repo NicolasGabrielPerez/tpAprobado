@@ -7,7 +7,9 @@ t_puntero definirVariable(t_nombre_variable variable) {
 	//Reservar memoria, hay que enviar a la UMC?
 	//umcDefine(variable);
 
-	t_puntero memoryAddr = 0xab;
+
+	t_puntero memoryAddr = pcb->tagIndex;
+	//pcb->tagIndex += sizeof(t_puntero);
 
 	t_nombre_variable* key = malloc(sizeof(t_nombre_variable));
 	memcpy(key, &variable, sizeof(t_nombre_variable));
@@ -17,6 +19,7 @@ t_puntero definirVariable(t_nombre_variable variable) {
 
 	//Agregar al pcb la variable
 	t_list* stack = pcb->stack;
+
 	StackContent* stackContent = list_get(stack, pcb->stackIndex);
 	dictionary_put(stackContent->variables, key, value);
 
@@ -26,7 +29,6 @@ t_puntero definirVariable(t_nombre_variable variable) {
 
 
 t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
-
 
 	t_list* stack = pcb->stack;
 	StackContent* stackContent = list_get(stack, pcb->stackIndex);
