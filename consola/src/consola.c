@@ -10,8 +10,44 @@
 #include <commons/config.h>
 #include <commons/string.h>
 #include <sockets/sockets.h>
+#include <pthread.h>
+
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once
+
+void espera_resultados(int socketCliente){
+
+	int fin_program = 1;
+	while(fin_program){
+
+		//recivir hasta q termine le programa
+		printf("hola espero respuestas");
+	}
+
+}
+
+int comando(void* algo){
+
+	return 0;
+}
+
+void cicloInfinito(int socketCliente, int PACKAGESIZE){ // recive comandos de pantalla
+
+
+	char package[PACKAGESIZE];
+		int enviar = 1;
+
+
+		while(enviar){
+				fgets(package, PACKAGESIZE, stdin);
+				if (!strcmp(package,"exit\n")) enviar = 0;
+				if (comando(package)) send_dinamic(socketCliente, package, strlen(package) + 1);
+
+		}
+
+
+}
+
 
 int main(int argc, char **argv) {
 	t_config* config = config_create("consola.config");
@@ -23,7 +59,7 @@ int main(int argc, char **argv) {
 
 	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
 
-	int received_bytes;
+	//int received_bytes;
 	char buf[50];
 	puts("Ingrese comando\n");
 	scanf("%s", buf);
@@ -70,6 +106,16 @@ fscanf(fp, "%s" , paquete);
 send_dinamic( socket_nucleo, paquete, len);
 
 
+//hilos
+
+
+pthread_t esperaResultados;
+pthread_t envioComandos;
+pthread_create(&esperaResultados, PTHREAD_CREATE_DETACHED, espera_resultados, NULL);
+pthread_create(&envioComandos, PTHREAD_CREATE_DETACHED, cicloInfinito, NULL);
+
+
+free(paquete);
 
 	puts("Terminé felizmente");
 

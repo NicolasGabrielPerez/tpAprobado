@@ -7,7 +7,9 @@ t_puntero definirVariable(t_nombre_variable variable) {
 	//Reservar memoria, hay que enviar a la UMC?
 	//umcDefine(variable);
 
-	t_puntero memoryAddr = 0xab;
+
+	t_puntero memoryAddr = pcb->tagIndex;
+	//pcb->tagIndex += sizeof(t_puntero);
 
 	t_nombre_variable* key = malloc(sizeof(t_nombre_variable));
 	memcpy(key, &variable, sizeof(t_nombre_variable));
@@ -17,7 +19,8 @@ t_puntero definirVariable(t_nombre_variable variable) {
 
 	//Agregar al pcb la variable
 	t_list* stack = pcb->stack;
-	StackContent* stackContent = list_get(stack, pcb->indexStack);
+
+	StackContent* stackContent = list_get(stack, pcb->stackIndex);
 	dictionary_put(stackContent->variables, key, value);
 
 	printf("Definiendo variable %c\n", variable);
@@ -27,9 +30,8 @@ t_puntero definirVariable(t_nombre_variable variable) {
 
 t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
-
 	t_list* stack = pcb->stack;
-	StackContent* stackContent = list_get(stack, pcb->indexStack);
+	StackContent* stackContent = list_get(stack, pcb->stackIndex);
 	t_puntero* memoryAddr = (t_puntero*) dictionary_get(stackContent->variables, &variable);
 
 	printf("Obtener posicion de %c\n", variable);
@@ -77,14 +79,14 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 	t_list* stack = pcb->stack;
 
 	//Get current stack content
-	StackContent* currentStackContent = list_get(stack, pcb->indexStack);
+	StackContent* currentStackContent = list_get(stack, pcb->stackIndex);
 
 	//Push
 	StackContent* newStackContent = init_stackContent();
-	newStackContent->returnAddress = pcb->indexCode;
+	newStackContent->returnAddress = pcb->codeIndex;
 	newStackContent->returnVariable = 0xff;
 
-	pcb->indexStack++;
+	pcb->stackIndex++;
 	list_add(stack, newStackContent);
 }
 
@@ -94,7 +96,7 @@ void llamarConRetorno(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 }
 
 void llamarSinRetorno(t_nombre_etiqueta etiqueta) {
-	callFunction(etiqueta, pcb->indexCode);
+	callFunction(etiqueta, pcb->codeIndex);
 }
 
 void finalizar() {
@@ -105,23 +107,22 @@ void retornar(t_valor_variable valor) {
 
 	//Obtener contentido
 	t_list* stack = pcb->stack;
-	StackContent* content = list_get(stack, pcb->indexStack);
+	StackContent* content = list_get(stack, pcb->stackIndex);
 
 	//Asignar variable de retorno y program counter
-	pcb->indexCode = content->returnAddress;
+	pcb->codeIndex = content->returnAddress;
 	pcb->programCounter = 0;
 	valor = content->returnVariable;
 
 	//Pop
 	free_stackContent(content);
-	list_remove(stack, pcb->indexStack);
-	pcb->indexStack--;
+	list_remove(stack, pcb->stackIndex);
+	pcb->stackIndex--;
 }
 
 void imprimir(t_valor_variable valor) {
 	printf("Imprimiendo: %d\n", valor);
 }
-
 
 void imprimirTexto(char* texto) {
 	printf("Imprimiendo texto: %s\n", texto);

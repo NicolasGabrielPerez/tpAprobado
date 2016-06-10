@@ -21,19 +21,11 @@
 
 #include "umcFunctions.h"
 
-#include "sockets.h"
+#include "push-library/sockets.h"
+#include "push-library/communication.h"
+
 
 int socket_umc;
-
-int32_t HEADER_HANDSHAKE = 100;
-int32_t HEADER_SOLICITAR_PAGINAS = 300;
-int32_t HEADER_ALMACENAR_PAGINAS = 400;
-int32_t HEADER_CAMBIO_PROCESO_ACTIVO = 500;
-
-int32_t RESPUESTA_OK = 10;
-int32_t RESPUESTA_FAIL = -10;
-
-int32_t TIPO_CPU = 10;
 
 const u_int32_t BUFFER_SIZE_UMC = 1024;
 const u_int32_t HEADER_SIZE_UMC = sizeof(int32_t);
@@ -41,7 +33,7 @@ const u_int32_t HEADER_SIZE_UMC = sizeof(int32_t);
 void umc_init(t_config* config){
 
 	//Hacer HANDSHAKE: HEADER_HANDSHAKE
-	//Enviar tipo: CPU
+	//Enviar tipo: TIPO_CPU
 
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
 	char* ip_umc = config_get_string_value(config, "IP_UMC");
@@ -89,60 +81,79 @@ void umc_process_active(int32_t processId) {
 	const int bytesPayload = sizeof(int32_t);
 	char bufferPayload[bytesPayload];
 	memcpy(bufferPayload, &processId, sizeof(int32_t));
-
 	if (send(socket_umc, bufferPayload, bytesPayload, 0) == -1) {
 		perror("Error enviando payload proceso activo");
 	};
+
+	response* respuesta = recibirResponse(socket_umc);
+	if(respuesta->ok != RESPUESTA_OK) {
+		perror("Error recibiendo respuesta proceso activo");
+	}
 }
 
 void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 
 	//Envio header: HEADER_ALMACENAR_PAGINAS
-	//Enviar page
-	//Enviar offset
-	//Enviar size
-	//Enviar buffer
-	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
-	//En caso de fallo, hacer un receive adicional con un codigo int32.
-
-	int nbytes = 10;
-	if (send(socket_umc, buffer, nbytes, 0) == -1) {
-		 perror("Error insertando memoria");
+	if (send(socket_umc, HEADER_ALMACENAR_PAGINAS, sizeof(int32_t), 0) == -1) {
+		perror("Error insertando memoria: HEADER");
 	};
+
+	//Enviar page
+	if (send(socket_umc, page, sizeof(t_puntero), 0) == -1) {
+		perror("Error insertando memoria: PAGINA");
+	};
+
+	//Enviar offset
+	if (send(socket_umc, offset, sizeof(t_puntero), 0) == -1) {
+		perror("Error insertando memoria: OFFSET");
+	};
+	//Enviar size
+	if (send(socket_umc, size, sizeof(u_int32_t), 0) == -1) {
+		perror("Error insertando memoria: SIZE");
+	};
+
+	//Enviar buffer
+	if (send(socket_umc, buffer, size, 0) == -1) {
+		perror("Error insertando memoria: BUFFER");
+	};
+
+	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
+	response* respuesta = recibirResponse(socket_umc);
+	if(respuesta->ok != RESPUESTA_OK) {
+		perror("Error insertando memoria: RESPONSE");
+	}
+
+	//En caso de fallo, hacer un receive adicional con un codigo int32.
 }
 
 char* umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
 
 	//Envio header: HEADER_SOLICITAR_PAGINAS
-	//Enviar page
-	//Enviar offset
-	//Enviar size
-	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
-	//En caaso de OK, recibir los datos char*
-	//En caso de fallo, hacer un receive adicional con un codigo int32.
-
-	char buf[BUFFER_SIZE_UMC];
-	int nbytes = 10;
-	if (send(socket_umc, buf, nbytes, 0) == -1) {
-		perror("Error obteniendo memoria");
+	if (send(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(int32_t), 0) == -1) {
+		perror("Error obteniendo memoria: HEADER");
 	};
 
-	//Quiero recibir de núcleo, lo que le pasó consola
-	if ((nbytes = recv(socket_umc, buf, BUFFER_SIZE_UMC, 0)) <= 0) {
-	   // got error or connection closed by client
-	   if (nbytes == 0) {
-		   // connection closed
-		   printf("socket %d hung up\n", socket_umc);
-	   } else {
-		   perror("recv");
-	   }
-	   close(socket_umc); // bye!
-	} else {
-	   //se recibió mensaje
-	   printf("Se recibieron %d bytes\n", nbytes);
-	   printf("Se recibió: %s\n", buf);
-	}
+	//Enviar page
+	if (send(socket_umc, page, sizeof(t_puntero), 0) == -1) {
+		perror("Error obteniendo memoria: PAGINA");
+	};
 
-	char* result = buf;
-	return result;
+	//Enviar offset
+	if (send(socket_umc, offset, sizeof(t_puntero), 0) == -1) {
+		perror("Error obteniendo memoria: OFFSET");
+	};
+
+	//Enviar size
+	if (send(socket_umc, size, sizeof(u_int32_t), 0) == -1) {
+		perror("Error obteniendo memoria: SIZE");
+	};
+
+	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
+	response* respuesta = recibirResponse(socket_umc);
+	if(respuesta->ok != RESPUESTA_OK) {
+		perror("Error obteniendo memoria: RESPONSE");
+	}
+	//En caso de fallo, hacer un receive adicional con un codigo int32.
+
+	return respuesta->contenido;
 }

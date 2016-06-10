@@ -56,4 +56,6 @@ void send_dinamic(int sockfd, void* estructura, double tamanioEstructura);
 		 * @DESC: envia a sockfd una estructura de tamañoEstructura
 		 */
 
+int aceptarNuevaConexion(int listener);
+
 #endif /* SOCKETS_H_ */
