@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 
+#include <commons/string.h>
 
 #include "nucleoFunctions.h"
 
@@ -35,6 +36,8 @@ int32_t HEADER_NOTIFICAR_FIN_PROGRAMA = 6;
 int32_t HEADER_NOTIFICAR_FIN_RAFAGA = 7;
 int32_t HEADER_NOTIFICAR_WAIT = 8;
 int32_t HEADER_NOTIFICAR_SIGNAL = 9;
+int32_t HEADER_IMPRIMIR = 9;
+int32_t HEADER_IMPRIMIR_TEXTO = 9;
 
 int32_t HEADER_SIZE_NUCLEO = sizeof(int32_t);
 int32_t BUFFER_SIZE_NUCLEO = 1024;
@@ -139,7 +142,7 @@ void nucleo_notificarFinDePrograma(PCB* pcb) {
 //	};
 }
 
-void nucleo_notificarFinDeRafaga(PCB* pcb) {
+char* nucleo_notificarFinDeRafaga(PCB* pcb) {
 	if (send(socket_nucleo, HEADER_NOTIFICAR_FIN_RAFAGA, sizeof(int32_t), 0) == -1) {
 		 perror("Error enviando header Fin de Rafaga");
 	};
@@ -148,6 +151,8 @@ void nucleo_notificarFinDeRafaga(PCB* pcb) {
 //	if (send(socket_nucleo, quantumCount, sizeof(u_int32_t), 0) == -1) {
 //		 perror("Error enviando count Fin de Rafaga");
 //	};
+
+	return "Test";
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {
@@ -166,6 +171,26 @@ void nucleo_signal(t_nombre_semaforo semaforo) {
 	};
 
 	if (send(socket_nucleo, semaforo, sizeof(t_nombre_semaforo), 0) == -1) {
+		 perror("Error enviando nomnre Signal");
+	};
+}
+
+void nucleo_imprimir(t_valor_variable valor) {
+	if (send(socket_nucleo, HEADER_IMPRIMIR, sizeof(int32_t), 0) == -1) {
+		 perror("Error enviando header Signal");
+	};
+
+	if (send(socket_nucleo, valor, sizeof(t_valor_variable), 0) == -1) {
+		 perror("Error enviando nomnre Signal");
+	};
+}
+
+void nucleo_imprimir_texto(char* texto) {
+	if (send(socket_nucleo, HEADER_IMPRIMIR_TEXTO, sizeof(int32_t), 0) == -1) {
+		 perror("Error enviando header Signal");
+	};
+
+	if (send(socket_nucleo, texto, sizeof(char) * (string_length(texto) + 1), 0) == -1) {
 		 perror("Error enviando nomnre Signal");
 	};
 }

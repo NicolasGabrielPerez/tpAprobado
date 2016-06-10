@@ -126,7 +126,7 @@ void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 }
 
-char* umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
+t_valor_variable umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
 
 	//Envio header: HEADER_SOLICITAR_PAGINAS
 	if (send(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(int32_t), 0) == -1) {
@@ -155,5 +155,9 @@ char* umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
 	}
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
-	return respuesta->contenido;
+	//TODO
+	respuesta->contenido;
+	t_valor_variable result = 2;   //String to int???
+
+	return result;
 }
