@@ -91,39 +91,15 @@ response* recibir(int socket, int size){
 	return createResponse(1,0,HEADER_SIZE,header);
 }
 
-response* recibirHeader(int socket){
-	return recibir(socket, HEADER_SIZE);
+void enviarPageSize(int socket){
+	enviarOKConContenido(socket, sizeof(int32_t), string_itoa(marco_size));
 }
 
 int makeHandshake(int socket){
-	char* header = malloc(HEADER_SIZE);
-	if (recv((int)socket, header, HEADER_SIZE, 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	char* type = malloc(TIPO_SIZE);
-	if (recv((int)socket, header, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	int32_t iType = convertToInt32(type);
-	if(! (iType==TIPO_NUCLEO || iType==TIPO_CPU)){
-		if (send(socket, &RESPUESTA_FAIL, sizeof(int32_t), 0) == -1) {
-			perror("send");
-			exit(1);
-		};
-		return EXIT_FAILURE;
-	}
-
-	if (send(socket, &RESPUESTA_OK, sizeof(int32_t), 0) == -1) {
-		perror("send");
-		exit(1);
-	};
-	if (send(socket, &TIPO_UMC, sizeof(int32_t), 0) == -1) {
-		perror("send");
-		exit(1);
-	};
-	return iType;
+	response* header = recibirResponse(socket);
+	//TODO validar header
+	response* tipo = recibirResponse(socket);
+	return convertToInt32(tipo->contenido);
 }
 
 void manejarNuevasConexiones(){
@@ -133,10 +109,11 @@ void manejarNuevasConexiones(){
 		puts("Hubo error en handshake");
 		return;
 	}
-	int creacion = crearHiloDeComponente(tipo, new_socket);
-	if(creacion == -1){
-		puts("Error al crear hilo\n");
+	if(tipo == TIPO_NUCLEO){
+		enviarPageSize(new_socket);
 	}
+
+	crearHiloDeComponente(tipo, new_socket);
 }
 
 int main(void) {
