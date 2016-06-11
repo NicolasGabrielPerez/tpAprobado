@@ -160,3 +160,53 @@ void cargarPagina(int nroPagina, int pid, char* pagina){
 	entrada->presente = 1;
 	return;
 }
+
+char* leerFrame(int nroFrame){
+	return obtenerBytesDeMemoriaPrincipal(nroFrame, 0, marco_size);
+}
+
+int tablaDePaginasIsFromFrame(tabla_de_paginas* tablaDePaginas, int nroFrame){
+	int i;
+	for(i=0; i<list_size(tablaDePaginas->entradas); i++){
+		tabla_de_paginas_entry* paginaEntry = list_get(tablaDePaginas->entradas, i);
+		if(paginaEntry->nroFrame == nroFrame) return 1;
+	}
+	return 0;
+}
+
+int buscarPIDActualDeFrame(int nroFrame){
+	int i;
+	for(i=0; i<list_size(tablasDePaginas); i++){
+		tabla_de_paginas* tablaDePaginas = list_get(tablasDePaginas, i);
+		if(tablaDePaginasIsFromFrame(tablaDePaginas, nroFrame)){
+			return tablaDePaginas->pid;
+		}
+	}
+	return 0;
+}
+
+int buscarNroPagActualDeFrame(int nroFrame){
+	int i;
+	for(i=0; i<list_size(tablasDePaginas); i++){
+		tabla_de_paginas* tablaDePaginas = list_get(tablasDePaginas, i);
+
+		int j;
+		for(j=0; j<list_size(tablaDePaginas->entradas);i++){
+			tabla_de_paginas_entry* paginaEntry = list_get(tablaDePaginas->entradas, j);
+			if(paginaEntry->nroFrame == nroFrame) return paginaEntry->nroPagina;
+		}
+	}
+	return 0;
+}
+
+tabla_de_frame_entry* getFrameEntry(int nroFrame){
+	int i;
+	tabla_de_frame_entry* tablaDeFramesEntry;
+	for(i=0; i<list_size(tablaDeFrames->entradas); i++){
+		tablaDeFramesEntry = list_get(tablaDeFrames->entradas, i);
+		if(tablaDeFramesEntry->nroFrame){
+			break;
+		}
+	}
+	return tablaDeFramesEntry;
+}

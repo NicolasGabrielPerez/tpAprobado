@@ -43,6 +43,7 @@
 		int presente;
 		int modificado;
 		int nroFrame;
+		int pid;
 	} tabla_de_paginas_entry;
 
 	typedef struct tabla_de_paginas{
@@ -65,5 +66,11 @@
 	tabla_de_paginas_entry* buscarPorNroPaginaYPID(int nroPagina, int pid);
 
 	void cargarPagina(int nroPagina, int pid, char* pagina);
+
+	char* leerFrame(int nroFrame);
+
+	int buscarPIDActualDeFrame(int nroFrame);
+
+	int buscarNroPagActualDeFrame(int nroFrame);
 
 #endif /* UMC_STRUCTS_H_ */

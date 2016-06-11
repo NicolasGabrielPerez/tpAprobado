@@ -4,10 +4,10 @@
 
 int agujaClockModificado; //nroFrame apuntado actualmente
 
-void initClock(){
+void initClockModificado(){
 	agujaClockModificado = 0;
 }
 
 response* clockModificadoGetFrame(int nroPagina, int pidActivo){
-
+	return 0;
 }
