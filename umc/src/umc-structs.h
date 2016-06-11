@@ -24,6 +24,8 @@
 	extern int cantidad_de_marcos;
 	extern int marco_size;
 	extern int marcos_x_proc;
+	extern int algoritmoClockEnable;
+	extern int algoritmoClockModificadoEnable;
 
 	typedef struct tabla_de_frame_entry{
 		int nroFrame;

@@ -96,7 +96,7 @@ void enviarPageSize(int socket){
 }
 
 int makeHandshake(int socket){
-	response* header = recibirResponse(socket);
+	recibirResponse(socket);
 	//TODO validar header
 	response* tipo = recibirResponse(socket);
 	return convertToInt32(tipo->contenido);
@@ -106,7 +106,7 @@ void manejarNuevasConexiones(){
 	int new_socket = aceptarNuevaConexion(listener);
 	int tipo = makeHandshake(new_socket);
 	if(tipo == -1){
-		puts("Hubo error en handshake");
+		printf("Hubo error en handshake");
 		return;
 	}
 	if(tipo == TIPO_NUCLEO){

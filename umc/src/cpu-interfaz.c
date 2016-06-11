@@ -1,5 +1,7 @@
 #include "cpu-interfaz.h"
-#include "swap-interfaz.h"
+
+#include "clock.h"
+#include "umc-structs.h"
 
 void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 	int32_t nroPagina;
@@ -28,6 +30,7 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 		exit(1);
 	}
 
+	//Esto es solo una validacion
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(pidActivo);
 	if(tablaDePaginas==NULL){
 		enviarFAIL(cpu_socket, PID_NO_EXISTE);
@@ -43,30 +46,19 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 		}
 	}
 
-	//buscar en Tabla de Paginas del pid
-	tabla_de_paginas_entry* entrada = buscarPorNroPaginaYPID(nroPagina, pidActivo);
-	if(entrada==NULL){
-		enviarFAIL(cpu_socket, PAGINA_NO_EXISTE);
-	}
-	if(entrada->presente){
-		// esta en tabla de paginas ⇒ ir a buscar a Memoria Principal
-		escribirEnFrame(buffer, offset, tamanio, entrada->nroFrame);
-		entrada->modificado = 1;
-		// y actualizar TLB
-		if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+	int nroFrame; //nroFrame a escribir
+
+	if(algoritmoClockEnable){
+		response* clockResponse = clockGetFrame(nroPagina, pidActivo);
+		if(!clockResponse->ok){
+			enviarFAIL(cpu_socket, clockResponse->codError);
+		}
+		memcpy(&nroFrame, clockResponse->contenido, sizeof(int32_t));
+	} else{
+		//implementar clock modificado
 	}
 
-	// no esta ⇒ pedir a Swap
-	response* paginaSolicitadaResult = pedirPaginaASwap(nroPagina, pidActivo);
-	if(!paginaSolicitadaResult->ok){ //hubo error
-		enviarResultado(paginaSolicitadaResult, cpu_socket);
-		return;
-	}
-
-	// TODO cargar pagina y actualizar tabla de paginas
-	// reemplazar si es necesario (Clock y clock modificado)
-	cargarPagina(nroPagina, pidActivo, paginaSolicitadaResult->contenido);
-	escribirEnFrame(buffer, offset, tamanio, entrada->nroFrame);
+	escribirEnFrame(buffer, offset, tamanio, nroFrame);
 
 	//Actualizar TLB
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
@@ -95,6 +87,7 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 		exit(1);
 	}
 
+	//Esto es solo una validacion
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(pidActivo);
 	if(tablaDePaginas==NULL){
 		enviarFAIL(cpu_socket, PID_NO_EXISTE);
@@ -111,36 +104,24 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 		}
 	}
 
-	// else: buscar en Tabla de Paginas del pid
-	tabla_de_paginas_entry* entrada = buscarPorNroPaginaYPID(nroPagina, pidActivo); //esta busqueda seria penalizada
-	if(entrada==NULL){
-		enviarFAIL(cpu_socket, PAGINA_NO_EXISTE);
-		return;
+	int nroFrame; //nroFrame a leer
+
+	if(algoritmoClockEnable){
+		response* clockResponse = clockGetFrame(nroPagina, pidActivo);
+		if(!clockResponse->ok){
+			enviarFAIL(cpu_socket, clockResponse->codError);
+		}
+		memcpy(&nroFrame, clockResponse->contenido, sizeof(int32_t));
+	} else{
+		//implementar clock modificado
 	}
 
-	if(entrada->presente){
-		// esta en tabla de paginas ⇒ ir a buscar a Memoria Principal
-		bytesAEnviar = obtenerBytesDeMemoriaPrincipal(entrada->nroFrame, offset, tamanio);
-		if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
-		enviarOKConContenido(cpu_socket, tamanio, bytesAEnviar);
-		return;
-	}
+	char* pagina = leerFrame(nroFrame);
 
-	// no esta ⇒ pedir a Swap
-	response* paginaSolicitadaResult = pedirPaginaASwap(nroPagina, pidActivo);
-	if(!paginaSolicitadaResult->ok){ //hubo error
-		enviarResultado(paginaSolicitadaResult, cpu_socket);
-		return;
-	}
-
-	// TODO cargar pagina y actualizar tabla de paginas
-	// reemplazar si es necesario (Clock y clock modificado)
-	cargarPagina(nroPagina, pidActivo, paginaSolicitadaResult->contenido);
-	bytesAEnviar = obtenerBytes(paginaSolicitadaResult->contenido, offset, tamanio);
 	//Actualizar TLB
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
 
-	enviarOKConContenido(cpu_socket, paginaSolicitadaResult->contenidoSize, paginaSolicitadaResult->contenido);
+	enviarOKConContenido(cpu_socket, marco_size, pagina);
 }
 
 void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){
@@ -149,7 +130,7 @@ void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){
 		perror("recv");
 		exit(1);
 	}
-	tabla_de_paginas* tablaDePaginas = buscarPorPID(pidActivo);
+	tabla_de_paginas* tablaDePaginas = buscarPorPID(*pidActivo);
 	if(tablaDePaginas==NULL){
 		enviarFAIL(cpu_socket, PID_NO_EXISTE);
 		return;

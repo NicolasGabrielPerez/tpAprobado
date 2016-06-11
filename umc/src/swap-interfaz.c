@@ -88,3 +88,7 @@ response* pedirPaginaASwap(int nroPagina, int pid){
 	pthread_mutex_unlock(&swap_semaphore);
 	return swapResponse;
 }
+
+response* escribirPaginaEnSwap(int nroPagina, int pid, char* contenido){
+	return 0;
+}
