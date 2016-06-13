@@ -16,4 +16,6 @@
 
 	response* pedirPaginaASwap(int nroPagina, int pid);
 
+	response* escribirPaginaEnSwap(int nroPagina, int pid, char* contenido);
+
 #endif /* SWAP_INTERFAZ_H_ */

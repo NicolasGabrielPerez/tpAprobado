@@ -29,9 +29,12 @@ PCB* nucleo_recibirInstruccion();
 void nucleo_notificarIO(t_nombre_dispositivo valor, u_int32_t tiempo);
 void nucleo_notificarFinDeQuantum(u_int32_t quantumCount);
 void nucleo_notificarFinDePrograma(PCB* pcb);
-void nucleo_notificarFinDeRafaga(PCB* pcb);
+char* nucleo_notificarFinDeRafaga(PCB* pcb);
 
 void nucleo_wait(t_nombre_semaforo semaforo);
 void nucleo_signal(t_nombre_semaforo semaforo);
+
+void nucleo_imprimir(t_valor_variable valor);
+void nucleo_imprimir_texto(char* texto);
 
 #endif

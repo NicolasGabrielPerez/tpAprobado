@@ -1,6 +1,7 @@
 #include "ansiop.h"
 #include "nucleoFunctions.h"
 
+#include <commons/string.h>
 
 t_puntero definirVariable(t_nombre_variable variable) {
 
@@ -41,10 +42,13 @@ t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
 t_valor_variable dereferenciar(t_puntero puntero) {
 
+	//TODO
+	//Como cambiar de puntero a page, offset y size?
+	t_puntero page = 2;
+	t_puntero offset = 3;
+	t_valor_variable result = umc_get(page, offset, sizeof(int));
 
-	//umcGet(puntero);
-
-	t_valor_variable value = 5;
+	t_valor_variable value = result;
 
 	printf("Dereferenciar %d y su valor es: %d\n", puntero, value);
 	return value;
@@ -53,13 +57,19 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 void asignar(t_puntero puntero, t_valor_variable variable) {
 
-	//umcSet(puntero, variable);
+	//TODO
+	//Como cambiar de puntero a page, offset y size?
+	t_puntero page = 2;
+	t_puntero offset = 3;
+	umc_set(page, offset, sizeof(int), variable);
 
 	printf("Asignando en %d el valor %d\n", puntero, variable);
 }
 
 t_valor_variable obtenerValorCompartida(t_nombre_compartida valor) {
 
+	//TODO
+	//Donde se definen las variables compartidas?
 
 	return 0;
 }
@@ -67,24 +77,28 @@ t_valor_variable obtenerValorCompartida(t_nombre_compartida valor) {
 
 t_valor_variable asignarValorCompartida(t_nombre_compartida variable, t_valor_variable valor) {
 
+	//TODO
+	//Donde se definen las variables compartidas?
+
 	return 0;
 }
 
 
 void irAlLabel(t_nombre_etiqueta etiqueta) {
-
+	//TODO
+	//Que hace esto?
 }
 
 void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 	t_list* stack = pcb->stack;
-
+	//TODO
 	//Get current stack content
 	StackContent* currentStackContent = list_get(stack, pcb->stackIndex);
 
 	//Push
 	StackContent* newStackContent = init_stackContent();
-	newStackContent->returnAddress = pcb->codeIndex;
-	newStackContent->returnVariable = 0xff;
+	newStackContent->returnAddress = donde_retornar;
+	newStackContent->returnVariable = 0xff;  //Que tiene que ir aca?
 
 	pcb->stackIndex++;
 	list_add(stack, newStackContent);
@@ -111,6 +125,8 @@ void retornar(t_valor_variable valor) {
 
 	//Asignar variable de retorno y program counter
 	pcb->codeIndex = content->returnAddress;
+
+	//TODO
 	pcb->programCounter = 0;
 	valor = content->returnVariable;
 
@@ -121,11 +137,11 @@ void retornar(t_valor_variable valor) {
 }
 
 void imprimir(t_valor_variable valor) {
-	printf("Imprimiendo: %d\n", valor);
+	nucleo_imprimir(valor);
 }
 
 void imprimirTexto(char* texto) {
-	printf("Imprimiendo texto: %s\n", texto);
+	nucleo_imprimir_texto(texto);
 }
 
 void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {

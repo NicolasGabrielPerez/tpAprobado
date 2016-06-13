@@ -57,34 +57,15 @@ AnSISOP_kernel kernel_functions = {
 		.AnSISOP_signal	= signal
 };
 
-
-
 //Devuelve un booleano si tiene que salir del programa.
 int doQuantum(PCB* pcb) {
-
 	int hasToExit = 0;
 
 	//Incrementar Program Counter
 	pcb->programCounter++;
 
 	//Pedir a la UMC la siguiente instruccion a ejecutar
-	char* instruction;
-
-	//test
-	switch(quantumCount) {
-		case 0:
-			instruction = DEFINICION_VARIABLES;
-			break;
-		case 1:
-			instruction = ASIGNACION;
-			break;
-		case 2:
-			instruction = IMPRIMIR;
-			break;
-		case 3:
-			instruction = IMPRIMIR_TEXTO;
-			break;
-	}
+	char* instruction = "test";//umc_get(codeIndex, offset, size);
 
 	analizadorLinea(strdup(instruction), &functions, &kernel_functions);
 
@@ -95,7 +76,11 @@ int doQuantum(PCB* pcb) {
 
 	if(quantumCount >= QUANTUM_SIZE) {
 		//Notificar al nucleo que concluyo una rafaga
-		nucleo_notificarFinDeRafaga(pcb);
+		char* result = nucleo_notificarFinDeRafaga(pcb);
+		int isDifferent = strcmp(result, "SIGUSR1");
+		if(isDifferent == 0) {
+			hasToExit = 1;
+		}
 
 		quantumCount = 0;
 	}
@@ -103,68 +88,20 @@ int doQuantum(PCB* pcb) {
 	return hasToExit;
 }
 
+//Devuelve un booleano si tiene que salir del programa.
+int receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
 
-/*
-int main(int argc, char **argv) {
+	int quantumCounter = 0;
+	int hasToExit = 0;
 
-	t_config* config = config_create("cpu.config");
-	if(config==NULL){
-		printf("No se pudo leer la configuración");
-		return EXIT_FAILURE;
+	while(quantumCounter <= QUANTUM_COUNT) {
+		int tmp = doQuantum(pcb);
+
+		if(hasToExit == 0) hasToExit = tmp;
+		quantumCounter++;
 	}
-
-	char buf[50];
-	int nbytes;
-
-	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
-	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
-
-	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
-	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
-
-	int socket_umc = crear_socket_cliente("utnso40", puerto_umc); //socket usado para conectarse a la umc
-	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
-
-	printf("UMC FD: %d\n", socket_umc);
-	printf("NUCLEO FD: %d\n", socket_nucleo);
-
-	//Hago handshake con umc
-	if(handshake(socket_umc, "PRUEBA") != 0){
-		puts("Error en handshake con la umc");
-	}
-
-	//Hago handskae con nucleo
-	if(handshake(socket_nucleo, "PRUEBA") != 0){
-		puts("Error en handshake con la umc");
-	}
-
-	//Quiero recibir de núcleo, lo que le pasó consola
-	if ((nbytes = recv(socket_nucleo, buf, 50, 0)) <= 0) {
-	   // got error or connection closed by client
-	   if (nbytes == 0) {
-		   // connection closed
-		   printf("socket %d hung up\n", socket_nucleo);
-	   } else {
-		   perror("recv");
-	   }
-	   close(socket_nucleo); // bye!
-   } else {
-	   //se recibió mensaje
-	   printf("Se recibieron %d bytes\n", nbytes);
-	   printf("Se recibió: %s\n", buf);
-
-  } // END handle data from client
-
-
-	if (send(socket_umc, buf, nbytes, 0) == -1) { //envio lo mismo que me acaba de llegar => misma cant de bytes a enviar
-		 perror("send");
-    };
-
-	puts("Ya le hice un envio a UMC. Termino mi ejecucion.");
-
-	return EXIT_SUCCESS;
-
-}*/
+	return hasToExit;
+}
 
 int main(int argc, char **argv) {
 
@@ -180,12 +117,12 @@ int main(int argc, char **argv) {
 	nucleo_init(config);
 	umc_init(config);
 
-	umc_process_active(10);
+	//umc_process_active(10);
 
 	int hasToExit = 0;
 	while(hasToExit == 0) {
 		pcb = nucleo_recibirInstruccion();
-		hasToExit = doQuantum(pcb);
+		hasToExit = receiveInstructions(pcb, 3);
 	}
 
 	umc_delete();
