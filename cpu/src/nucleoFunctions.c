@@ -22,22 +22,10 @@
 
 #include "nucleoFunctions.h"
 
-#include "push-library/sockets.h"
-#include "push-library/communication.h"
+#include <sockets/sockets.h>
+#include <sockets/communication.h>
 
 int socket_nucleo;
-
-int32_t HEADER_NUCLEO_HANDSHAKE = 1;
-int32_t HEADER_NUCLEO_INIT_PROGRAMA = 2;
-int32_t HEADER_RECIBIR_PCB = 3;
-int32_t HEADER_NOTIFICAR_IO = 4;
-int32_t HEADER_NOTIFICAR_FIN_QUANTUM = 5;
-int32_t HEADER_NOTIFICAR_FIN_PROGRAMA = 6;
-int32_t HEADER_NOTIFICAR_FIN_RAFAGA = 7;
-int32_t HEADER_NOTIFICAR_WAIT = 8;
-int32_t HEADER_NOTIFICAR_SIGNAL = 9;
-int32_t HEADER_IMPRIMIR = 9;
-int32_t HEADER_IMPRIMIR_TEXTO = 9;
 
 int32_t HEADER_SIZE_NUCLEO = sizeof(int32_t);
 int32_t BUFFER_SIZE_NUCLEO = 1024;
@@ -103,7 +91,7 @@ void nucleo_delete(){
 
 
 
-PCB* nucleo_recibirInstruccion() {
+PCB* nucleo_recibir_pcb() {
 
 	char buffer[BUFFER_SIZE_NUCLEO];
 	int bytesReceived = receiveData(buffer);
