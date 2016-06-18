@@ -85,6 +85,7 @@ void nucleo_init(t_config* config) {
 	if (send(socket_nucleo, bufferHandshake, bytesHandshake, 0) == -1) {
 			perror("Error enviando handshake nucleo");
 	};
+	free(bufferHandshake);
 
 	// Envio mi tipo: CPUs
 	char* bufferType[HEADER_SIZE_NUCLEO];
@@ -93,6 +94,7 @@ void nucleo_init(t_config* config) {
 	if (send(socket_nucleo, bufferType, bytesType, 0) == -1) {
 		perror("Error enviando tipo a nucleo");
 	};
+	free(bufferType);
 }
 
 void nucleo_delete(){
