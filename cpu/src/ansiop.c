@@ -8,7 +8,7 @@ t_puntero definirVariable(t_nombre_variable variable) {
 	//Reservar memoria, hay que enviar a la UMC?
 	//umcDefine(variable);
 
-
+	//TODO
 	t_puntero memoryAddr = pcb->tagIndex;
 	//pcb->tagIndex += sizeof(t_puntero);
 
@@ -46,7 +46,7 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 	//Como cambiar de puntero a page, offset y size?
 	t_puntero page = 2;
 	t_puntero offset = 3;
-	t_valor_variable result = umc_get(page, offset, sizeof(int));
+	t_valor_variable result = umc_get(page, offset, sizeof(u_int32_t));
 
 	t_valor_variable value = result;
 
