@@ -15,6 +15,10 @@
  */
 #ifndef PCB_H_
 #include <parser/metadata_program.h>
+#include <commons/collections/list.h>
+#include <commons/collections/dictionary.h>
+
+#include <parser/parser.h>
 #define PCB_H_
 
 typedef struct Variable{
@@ -34,11 +38,10 @@ typedef struct stackIndex {
 
 
 typedef struct stackContent {
-
 	t_dictionary* arguments; //Diccionario
-	t_list* variables; //Lista
+	t_dictionary* variables; //Lista
 	t_puntero returnAddress;
-	t_puntero returnVariable;
+	t_variable returnVariable;
 } StackContent;
 
 typedef struct indexTag {
@@ -61,7 +64,8 @@ typedef struct PCB {
 	t_intructions* codeIndex;		//Índice de código
 	t_size instructionsCount;		//Cantidad de instrucciones del programa
 	char* tagIndex;					//Índice de etiquetas, concatenado en una única cadena
-	int stackIndex;
+	int tagIndexSize;				// Tamaño del mapa serializado de etiquetas
+	StackContent** stackIndex;
 	t_list* stack;
 
 } PCB;
