@@ -44,6 +44,10 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 	//TODO
 	//Como cambiar de puntero a page, offset y size?
+	//int offset = puntero % PAGE_SIZE;
+	//int page = puntero / PAGE_SIZE;
+	//El size es el size de un int.
+
 	t_puntero page = 2;
 	t_puntero offset = 3;
 	t_valor_variable result = umc_get(page, offset, sizeof(u_int32_t));
@@ -59,6 +63,11 @@ void asignar(t_puntero puntero, t_valor_variable variable) {
 
 	//TODO
 	//Como cambiar de puntero a page, offset y size?
+	//Como cambiar de puntero a page, offset y size?
+	//int offset = puntero % PAGE_SIZE;
+	//int page = puntero / PAGE_SIZE;
+	//El size es el size de un int.
+
 	t_puntero page = 2;
 	t_puntero offset = 3;
 	umc_set(page, offset, sizeof(int), variable);
@@ -70,6 +79,7 @@ t_valor_variable obtenerValorCompartida(t_nombre_compartida valor) {
 
 	//TODO
 	//Donde se definen las variables compartidas?
+	//Al nucleo, agregado API
 
 	return 0;
 }
@@ -79,6 +89,7 @@ t_valor_variable asignarValorCompartida(t_nombre_compartida variable, t_valor_va
 
 	//TODO
 	//Donde se definen las variables compartidas?
+	//Al nucleo, agregado API
 
 	return 0;
 }
@@ -86,10 +97,14 @@ t_valor_variable asignarValorCompartida(t_nombre_compartida variable, t_valor_va
 
 void irAlLabel(t_nombre_etiqueta etiqueta) {
 	//TODO
-	//Que hace esto?
+	//Cambiar Program Counter buscando la etiqueta
 }
 
 void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
+
+	//Aca tengo que ir a buscar el indice de etiquetas con la funcion
+	//metadata_buscar_etiqueta en <parser/metadata_program.h>
+
 	t_list* stack = pcb->stack;
 	//TODO
 	//Get current stack content
@@ -98,7 +113,6 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 	//Push
 	StackContent* newStackContent = init_stackContent();
 	newStackContent->returnAddress = donde_retornar;
-	newStackContent->returnVariable = 0xff;  //Que tiene que ir aca?
 
 	pcb->stackIndex++;
 	list_add(stack, newStackContent);
@@ -119,9 +133,12 @@ void finalizar() {
 
 void retornar(t_valor_variable valor) {
 
+	//TODO
+
 	//Obtener contentido
 	t_list* stack = pcb->stack;
 	StackContent* content = list_get(stack, pcb->stackIndex);
+	content->returnVariable = valor; //Setear ubicacion de la variable a retornar
 
 	//Asignar variable de retorno y program counter
 	pcb->codeIndex = content->returnAddress;
