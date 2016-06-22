@@ -16,11 +16,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <commons/collections/list.h>
-#include <commons/collections/dictionary.h>
-
-#include <parser/parser.h>
-
 #include "pcb.h"
 #include "serialization.h"
 
@@ -29,14 +24,14 @@ void create_program_PCB(PCB* pcb, char* program){
 	programMetadata = metadata_desde_literal(program);
 
 	pcb->processId = 0;			//TODO: inicializar correctamente
-	pcb->programCounter = 0;
+	pcb->programCounter = programMetadata->instruccion_inicio;
 	pcb->tagIndex = programMetadata->etiquetas;
+	pcb->tagIndexSize = programMetadata->etiquetas_size;
 	pcb->instructionsCount = programMetadata->instrucciones_size;
 	pcb->codeIndex = programMetadata->instrucciones_serializado;
-	//pcb->codePagesCount
-	//pcb->stack
-	//pcb->stackIndex
-
+	pcb->codePagesCount = 0;		//TODO: Asignar correctamente la cantidad de páginas de memoria
+	pcb->stack = NULL;
+	pcb->stackIndex = NULL;
 }
 
 
@@ -76,12 +71,6 @@ void free_stackContent(StackContent* stackContent) {
 
 	dictionary_destroy(stackContent->arguments);
 	free(stackContent);
-}
-
-void serialize_pcb(struct PCB *x, struct Buffer *output) {
-    //serialize_int(x->arguments, output);
-    //serialize_int(x->variables, output);
-    //serialize_string(x->string, output);
 }
 
 

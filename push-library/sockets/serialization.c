@@ -18,10 +18,12 @@
 
 #include "serialization.h"
 #include <parser/metadata_program.h>
+#include "pcb.h"
 
 #define INITIAL_SIZE 32
-#define PRIMITIVE_SEPARATOR "$!"
-#define CODEINDEX_SEPARATOR "$#"
+#define PRIMITIVE_SEPARATOR "!"
+#define CODEINDEX_SEPARATOR "#"
+#define PCBSTRUCT_SEPARATOR "$"
 
 struct Buffer *new_buffer() {
     struct Buffer *b = malloc(sizeof(Buffer));
@@ -82,8 +84,8 @@ void serialize_string(char* string, Buffer *buffer) {
     buffer->next += stringSize;
 }
 
-void serialize_end_of_string(char* string){
-	string_append(string, "\0");
+void serialize_end_of_string(Buffer *buffer){
+	serialize_ending_special_character("\0", buffer);
 }
 
 //Contatena un caracter especial de finalización de estructura
@@ -111,13 +113,13 @@ void serialize_codeIndex(t_intructions* codeIndex, t_size instructionsCount, Buf
 
 			serialize_ending_special_character(CODEINDEX_SEPARATOR, buffer);	//Fin de objeto
 		}
+		serialize_end_of_string(buffer->data);
 	}
 }
 
 t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructionsCount) {
-	t_intructions *codeIndex = malloc(sizeof(t_intructions) * instructionsCount);
 
-	serialize_end_of_string(serializedCodeIndex);
+	t_intructions *codeIndex = malloc((sizeof(t_intructions) * instructionsCount));
 
 	char** deserializedList = string_split(serializedCodeIndex, CODEINDEX_SEPARATOR);
 	char** deserializedInstruction;
@@ -139,4 +141,31 @@ int convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
 	return *number;
+}
+
+char* serialize_pcb(PCB *pcb, Buffer *buffer){
+	//TODO: Serializar
+
+	//PID
+	serialize_int(pcb->processId, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+	//programCounter
+	serialize_int(pcb->programCounter, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+	//codePagesCount
+	serialize_int(pcb->codePagesCount, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+	//instructionsCount
+	serialize_int(pcb->instructionsCount, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+	//codeIndex
+	serialize_codeIndex(pcb->codeIndex, pcb->instructionsCount, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+	//tagIndex
+	serialize_string(pcb->tagIndex, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+	//stackIndex
+	//stack
+
+	return (char*)buffer->data;
 }

@@ -9,11 +9,11 @@ typedef struct CPU{
 } CPU;
 
 t_list* CPUs;
-t_queue* readys;
+t_queue* ready_status_queue;
 
 void initPlanificador(){
 	CPUs = list_create();
-	readys = queue_create();
+	ready_status_queue = queue_create();
 }
 
 void agregarCPU(CPU* cpu){
@@ -21,7 +21,7 @@ void agregarCPU(CPU* cpu){
 }
 
 void agregarPCB(PCB* pcb){
-	queue_push(readys, pcb);
+	queue_push(ready_status_queue, pcb);
 }
 
 void setearDisponible(int cpu_socket){
@@ -62,9 +62,9 @@ void enviarAEjecutar(PCB* pcb, int cpu_socket){
 void planificar(){
 
 	while(1){
-		if(!queue_is_empty(readys)){ //hay algun PCB para ejecutar
+		if(!queue_is_empty(ready_status_queue)){ //hay algun PCB para ejecutar
 			int cpuDisponible = obtenerCpuDisponible();
-			enviarAEjecutar(queue_pop(readys), cpuDisponible);
+			enviarAEjecutar(queue_pop(ready_status_queue), cpuDisponible);
 		}
 	}
 }

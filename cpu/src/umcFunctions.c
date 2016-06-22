@@ -21,14 +21,16 @@
 
 #include "umcFunctions.h"
 
-#include "push-library/sockets.h"
-#include "push-library/communication.h"
+#include <sockets/sockets.h>
+#include <sockets/communication.h>
 
 
 int socket_umc;
 
 const u_int32_t BUFFER_SIZE_UMC = 1024;
 const u_int32_t HEADER_SIZE_UMC = sizeof(int32_t);
+
+const u_int32_t PAGE_SIZE;
 
 void umc_init(t_config* config){
 
@@ -44,19 +46,26 @@ void umc_init(t_config* config){
 
 	//Hago handshake con umc
 	char* bufferHandshake[HEADER_SIZE_UMC];
-	memcpy(bufferHandshake, HEADER_HANDSHAKE, sizeof(int32_t));
-	int bytesHandshake = HEADER_SIZE_UMC;
-	if (send(socket_umc, bufferHandshake, bytesHandshake, 0) == -1) {
-			perror("Error enviando handshake umc");
-	};
+	memcpy(bufferHandshake, &HEADER_HANDSHAKE, sizeof(int32_t));
+
+	enviarOKConContenido(socket_umc, sizeof(int32_t), bufferHandshake );
+
+	free(bufferHandshake);
 
 	// Envio mi tipo: CPUs
 	char* bufferType[HEADER_SIZE_UMC];
-	memcpy(bufferType, TIPO_CPU, sizeof(int32_t));
-	int bytesType = HEADER_SIZE_UMC;
-	if (send(socket_umc, bufferType, bytesType, 0) == -1) {
-		perror("Error enviando tipo a umc");
-	};
+	memcpy(bufferType, &TIPO_CPU, sizeof(int32_t));
+
+	enviarOKConContenido(socket_umc, sizeof(int32_t), bufferType);
+
+	free(bufferType);
+
+	response* respuesta = recibirResponse(socket_umc);
+	if(respuesta->ok != RESPUESTA_OK) {
+		perror("Error recibiendo respuesta proceso activo");
+	}
+
+	PAGE_SIZE = (u_int32_t) respuesta->contenido;
 }
 
 void umc_delete() {
@@ -74,16 +83,18 @@ void umc_process_active(int32_t processId) {
 	memcpy(bufferHeader, &processId, sizeof(int32_t));
 
 	int bytesHeader = HEADER_SIZE_UMC;
-	if (send(socket_umc, bufferHeader, bytesHeader, 0) == -1) {
-		 perror("Error enviando header proceso activo");
-	};
+
+	enviarOKConContenido(socket_umc, bytesHeader, bufferHeader);
+
+	free(bufferHeader);
 
 	const int bytesPayload = sizeof(int32_t);
 	char bufferPayload[bytesPayload];
 	memcpy(bufferPayload, &processId, sizeof(int32_t));
-	if (send(socket_umc, bufferPayload, bytesPayload, 0) == -1) {
-		perror("Error enviando payload proceso activo");
-	};
+
+	enviarOKConContenido(socket_umc, bytesPayload, bufferPayload);
+
+	free(bufferPayload);
 
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok != RESPUESTA_OK) {
@@ -94,28 +105,19 @@ void umc_process_active(int32_t processId) {
 void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 
 	//Envio header: HEADER_ALMACENAR_PAGINAS
-	if (send(socket_umc, HEADER_ALMACENAR_PAGINAS, sizeof(int32_t), 0) == -1) {
-		perror("Error insertando memoria: HEADER");
-	};
+	enviarOKConContenido(socket_umc, sizeof(int32_t), &HEADER_ALMACENAR_PAGINAS);
 
 	//Enviar page
-	if (send(socket_umc, page, sizeof(t_puntero), 0) == -1) {
-		perror("Error insertando memoria: PAGINA");
-	};
+	enviarOKConContenido(socket_umc, sizeof(t_puntero), &page);
 
 	//Enviar offset
-	if (send(socket_umc, offset, sizeof(t_puntero), 0) == -1) {
-		perror("Error insertando memoria: OFFSET");
-	};
+	enviarOKConContenido(socket_umc, sizeof(t_puntero), &offset);
+
 	//Enviar size
-	if (send(socket_umc, size, sizeof(u_int32_t), 0) == -1) {
-		perror("Error insertando memoria: SIZE");
-	};
+	enviarOKConContenido(socket_umc, sizeof(u_int32_t), &size);
 
 	//Enviar buffer
-	if (send(socket_umc, buffer, size, 0) == -1) {
-		perror("Error insertando memoria: BUFFER");
-	};
+	enviarOKConContenido(socket_umc, size, &buffer);
 
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);
@@ -126,27 +128,19 @@ void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 }
 
-char* umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
+t_valor_variable umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
 
 	//Envio header: HEADER_SOLICITAR_PAGINAS
-	if (send(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(int32_t), 0) == -1) {
-		perror("Error obteniendo memoria: HEADER");
-	};
+	enviarOKConContenido(socket_umc, sizeof(int32_t), &HEADER_SOLICITAR_PAGINAS);
 
 	//Enviar page
-	if (send(socket_umc, page, sizeof(t_puntero), 0) == -1) {
-		perror("Error obteniendo memoria: PAGINA");
-	};
+	enviarOKConContenido(socket_umc, sizeof(t_puntero), &page);
 
 	//Enviar offset
-	if (send(socket_umc, offset, sizeof(t_puntero), 0) == -1) {
-		perror("Error obteniendo memoria: OFFSET");
-	};
+	enviarOKConContenido(socket_umc, sizeof(t_puntero), &offset);
 
 	//Enviar size
-	if (send(socket_umc, size, sizeof(u_int32_t), 0) == -1) {
-		perror("Error obteniendo memoria: SIZE");
-	};
+	enviarOKConContenido(socket_umc, sizeof(u_int32_t), &size);
 
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);
@@ -155,5 +149,7 @@ char* umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
 	}
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
-	return respuesta->contenido;
+	t_valor_variable result = (u_int32_t) respuesta->contenido;
+
+	return result;
 }

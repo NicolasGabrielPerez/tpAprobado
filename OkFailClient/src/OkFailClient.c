@@ -102,7 +102,7 @@ int enviarFAIL(int socket, int codError){
 }
 
 int main(void) {
-	int socket = crear_socket_cliente("utnso40","8008");
+	int socket = crear_socket_cliente("192.168.0.106","8008");
 
 	enviarOKSinContenido(socket);
 
