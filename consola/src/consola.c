@@ -41,8 +41,10 @@ void cicloInfinito(int socketCliente, int PACKAGESIZE){ // recive comandos de pa
 		while(enviar){
 				fgets(package, PACKAGESIZE, stdin);
 				if (!strcmp(package,"exit\n")) enviar = 0;
-				if (comando(package)) send_dinamic(socketCliente, package, strlen(package) + 1);
-
+				if (comando(package)){
+				printf("esciviste %s", package);
+					//send_dinamic(socketCliente, package, strlen(package) + 1);
+				}
 		}
 
 
