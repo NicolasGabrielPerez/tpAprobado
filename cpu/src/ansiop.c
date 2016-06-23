@@ -1,7 +1,18 @@
 #include "ansiop.h"
-#include "nucleoFunctions.h"
 
 #include <commons/string.h>
+#include <parser/metadata_program.h>
+
+t_variable* getMemoryAddr(t_puntero position) {
+
+	t_variable* memoryAddr = malloc(sizeof(t_variable));
+	memoryAddr->pageNumber = (position / PAGE_SIZE) + pcb->pageStart;
+	memoryAddr->offset = position % PAGE_SIZE;
+	memoryAddr->size = sizeof(t_valor_variable);
+
+	return memoryAddr;
+}
+
 
 t_puntero definirVariable(t_nombre_variable variable) {
 
@@ -9,8 +20,9 @@ t_puntero definirVariable(t_nombre_variable variable) {
 	//umcDefine(variable);
 
 	//TODO
-	t_puntero memoryAddr = pcb->tagIndex;
-	//pcb->tagIndex += sizeof(t_puntero);
+	t_puntero memoryAddr = pcb->memoryIndex;
+	pcb->memoryIndex++;
+
 
 	t_nombre_variable* key = malloc(sizeof(t_nombre_variable));
 	memcpy(key, &variable, sizeof(t_nombre_variable));
@@ -42,17 +54,10 @@ t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
 t_valor_variable dereferenciar(t_puntero puntero) {
 
-	//TODO
-	//Como cambiar de puntero a page, offset y size?
-	//int offset = puntero % PAGE_SIZE;
-	//int page = puntero / PAGE_SIZE;
-	//El size es el size de un int.
+	t_variable* memoryAddr = getMemoryAddr(puntero);
+	t_valor_variable value = umc_get(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size);
 
-	t_puntero page = 2;
-	t_puntero offset = 3;
-	t_valor_variable result = umc_get(page, offset, sizeof(u_int32_t));
-
-	t_valor_variable value = result;
+	free(memoryAddr);
 
 	printf("Dereferenciar %d y su valor es: %d\n", puntero, value);
 	return value;
@@ -61,52 +66,41 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 void asignar(t_puntero puntero, t_valor_variable variable) {
 
-	//TODO
-	//Como cambiar de puntero a page, offset y size?
-	//Como cambiar de puntero a page, offset y size?
-	//int offset = puntero % PAGE_SIZE;
-	//int page = puntero / PAGE_SIZE;
-	//El size es el size de un int.
+	t_variable* memoryAddr = getMemoryAddr(puntero);
 
-	t_puntero page = 2;
-	t_puntero offset = 3;
-	umc_set(page, offset, sizeof(int), variable);
+	umc_set(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size, variable);
+
+	free(memoryAddr);
 
 	printf("Asignando en %d el valor %d\n", puntero, variable);
 }
 
-t_valor_variable obtenerValorCompartida(t_nombre_compartida valor) {
+t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
 
-	//TODO
-	//Donde se definen las variables compartidas?
-	//Al nucleo, agregado API
-
-	return 0;
+	t_valor_variable value = nucleo_variable_compartida_obtener(name);
+	return value;
 }
 
 
-t_valor_variable asignarValorCompartida(t_nombre_compartida variable, t_valor_variable valor) {
+t_valor_variable asignarValorCompartida(t_nombre_compartida name, t_valor_variable value) {
 
-	//TODO
-	//Donde se definen las variables compartidas?
-	//Al nucleo, agregado API
-
-	return 0;
+	nucleo_variable_compartida_asignar(name, value);
+	return value;
 }
 
 
 void irAlLabel(t_nombre_etiqueta etiqueta) {
-	//TODO
-	//Cambiar Program Counter buscando la etiqueta
+	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
+	pcb->programCounter = pointer;
 }
 
 void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
-	//Aca tengo que ir a buscar el indice de etiquetas con la funcion
-	//metadata_buscar_etiqueta en <parser/metadata_program.h>
+	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
+	pcb->programCounter = pointer;
 
 	t_list* stack = pcb->stack;
-	//TODO
+
 	//Get current stack content
 	StackContent* currentStackContent = list_get(stack, pcb->stackIndex);
 
@@ -132,8 +126,6 @@ void finalizar() {
 }
 
 void retornar(t_valor_variable valor) {
-
-	//TODO
 
 	//Obtener contentido
 	t_list* stack = pcb->stack;

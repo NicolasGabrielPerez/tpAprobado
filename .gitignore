@@ -32,8 +32,6 @@
 *.dSYM/
 
 .metadata
-*.project
-*.cproject
 
 Debug/
 

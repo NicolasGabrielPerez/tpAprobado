@@ -10,6 +10,9 @@
 
 
 	#include <sockets/pcb.h>
+	#include "nucleoFunctions.h"
+	#include "umcFunctions.h"
+
 
 
 	PCB* pcb;
