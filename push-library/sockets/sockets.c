@@ -173,7 +173,7 @@ void send_dinamic(int sockfd, void* estructura, double tamanioEstructura){
 	}
 }
 
-void recv_dinamic(int sockfd, double tamanioDouble, int *bufer){
+void recv_dinamic(int sockfd, double tamanioDouble, int* bufer){
 	int numbytes; //lo uso para poner la cantidad de bytes recibidos
 
 

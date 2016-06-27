@@ -10,45 +10,48 @@
 #include <commons/config.h>
 #include <commons/string.h>
 #include <sockets/sockets.h>
-#include <pthread.h>
+
 
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once
 
 void espera_resultados(int socketCliente){
 
+	char* bufer_respuestas;
+	int bufer = &bufer_respuestas;
+	double tamanioDouble = 22; //cantidad de header
 	int fin_program = 1;
 	while(fin_program){
 
-		//recivir hasta q termine le programa
-		printf("hola espero respuestas");
+		recv_dinamic(socketCliente,  tamanioDouble, bufer);
+		printf("%s", bufer_respuestas);
+		if (!strcmp(bufer_respuestas,"exit\n")) fin_program = 0;
 	}
-
 }
 
-int comando(void* algo){
+//int comando(void* algo){
 
-	return 0;
-}
+	//return 0;
+//}
 
-void cicloInfinito(int socketCliente, int PACKAGESIZE){ // recive comandos de pantalla
-
-
-	char package[PACKAGESIZE];
-		int enviar = 1;
+//void cicloInfinito(int socketCliente, int PACKAGESIZE){ // recive comandos de pantalla
 
 
-		while(enviar){
-				fgets(package, PACKAGESIZE, stdin);
-				if (!strcmp(package,"exit\n")) enviar = 0;
-				if (comando(package)){
-				printf("esciviste %s", package);
+//	char package[PACKAGESIZE];
+		//int enviar = 1;
+
+
+	//	while(enviar){
+			//	fgets(package, PACKAGESIZE, stdin);
+		//		if (!strcmp(package,"exit\n")) enviar = 0;
+	//			if (comando(package)){
+//				printf("esciviste %s", package);
 					//send_dinamic(socketCliente, package, strlen(package) + 1);
-				}
-		}
+		//		}
+	//	}
 
 
-}
+//}
 
 
 int main(int argc, char **argv) {
@@ -106,18 +109,12 @@ char *paquete = malloc(len);
 fscanf(fp, "%s" , paquete);
 
 send_dinamic( socket_nucleo, paquete, len);
-
-
-//hilos
-
-
-pthread_t esperaResultados;
-pthread_t envioComandos;
-pthread_create(&esperaResultados, PTHREAD_CREATE_DETACHED, espera_resultados, NULL);
-pthread_create(&envioComandos, PTHREAD_CREATE_DETACHED, cicloInfinito, NULL);
-
-
 free(paquete);
+
+
+espera_resultados(socket_nucleo );
+
+
 
 	puts("Terminé felizmente");
 
