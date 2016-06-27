@@ -14,12 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #ifndef PCB_H_
+#define PCB_H_
 #include <parser/metadata_program.h>
 #include <commons/collections/list.h>
 #include <commons/collections/dictionary.h>
 
 #include <parser/parser.h>
-#define PCB_H_
+
 
 typedef struct Variable{
 	char* id;
@@ -53,20 +54,26 @@ typedef struct indexTag {
 } IndexTag;
 
 typedef struct indexCode {
-	int offsetStart;
-	int offsetEnd;
+	u_int32_t offsetStart;
+	u_int32_t offsetEnd;
 } IndexCode;
 
 typedef struct PCB {
-	int processId;					//Identificador único del proceso
-	int programCounter;				//Nro. de la próxima instrucción a ejecutar
-	int codePagesCount;				//Cantidad de páginas de memoria asignadas al código
+	u_int32_t processId;					//Identificador único del proceso
+	u_int32_t programCounter;				//Nro. de la próxima instrucción a ejecutar
+	u_int32_t codePagesCount;				//Cantidad de páginas de memoria asignadas al código
 	t_intructions* codeIndex;		//Índice de código
 	t_size instructionsCount;		//Cantidad de instrucciones del programa
 	char* tagIndex;					//Índice de etiquetas, concatenado en una única cadena
-	int tagIndexSize;				// Tamaño del mapa serializado de etiquetas
-	StackContent** stackIndex;
+	u_int32_t tagIndexSize;				// Tamaño del mapa serializado de etiquetas
+	StackContent** stackIndex;//Agus: Chicos, a que le llaman index? No se olviden que INDEX es un NUMERO
 	t_list* stack;
+	u_int32_t stackCount; //Esto lo agregue yo (Agus), si me quitan el numero de elementos del stack no tengo forma de saber cual es el ultimo elemento!
+
+	//Agregado Agus, creo que es necesario para la memoria, dsp lo vemos
+	u_int32_t pageStart;
+	u_int32_t pagesCount;
+	t_puntero memoryIndex;
 
 } PCB;
 
