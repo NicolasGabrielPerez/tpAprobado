@@ -104,24 +104,35 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 		}
 	}
 
+	char* pagina;
 	int nroFrame; //nroFrame a leer
+	//TODO buscar en la tabla de paginas
 
-	if(algoritmoClockEnable){
-		response* clockResponse = clockGetFrame(nroPagina, pidActivo);
-		if(!clockResponse->ok){
-			enviarFAIL(cpu_socket, clockResponse->codError);
-		}
-		memcpy(&nroFrame, clockResponse->contenido, sizeof(int32_t));
-	} else{
-		//implementar clock modificado
+	if(nroFrame != -1){ //si ya esta la pagina presente
+		pagina = leerFrame(nroFrame);
+		goto retornar;
 	}
 
-	char* pagina = leerFrame(nroFrame);
+	tabla_de_paginas_entry* victima_entry;
+	if(algoritmoClockEnable){
+		//implementar clock
+	} else{
+		victima_entry = clockModificadoGetVictima(tablaDePaginas);
+	}
 
-	//Actualizar TLB
-	if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+	if(victima_entry->modificado){
+		char* paginaModificada = leerFrame(victima_entry->nroFrame);
+		escribirPaginaEnSwap(victima_entry->nroPagina, pidActivo, paginaModificada);
+	}
 
-	enviarOKConContenido(cpu_socket, marco_size, pagina);
+	response* pedidoSwap = pedirPaginaASwap(nroPagina, pidActivo);
+	pagina = pedidoSwap->contenido;
+
+	retornar:
+		//Actualizar TLB
+		if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+
+		enviarOKConContenido(cpu_socket, marco_size, pagina);
 }
 
 void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){

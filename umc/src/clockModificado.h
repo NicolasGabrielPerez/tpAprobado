@@ -5,8 +5,6 @@
 
 	extern int agujaClockModificado; //nroFrame apuntado actualmente
 
-	void initClockModificado();
-
-	response* clockModificadoGetFrame(int nroPagina, int pidActivo);
+	tabla_de_paginas_entry* clockModificadoGetVictima(tabla_de_paginas* tablaDePaginas);
 
 #endif
