@@ -17,6 +17,8 @@
 #define MAXDATASIZE 100 // max number of bytes we can get at once
 
 void espera_resultados(int socketCliente){
+int fin_program = 1;
+while(fin_program){
 
 	response* nucleoResponse = recibirResponse(socketCliente);
 		// deserialize response
@@ -26,15 +28,15 @@ void espera_resultados(int socketCliente){
 
 		char* mensaje = malloc(nucleoResponse->contenidoSize);
 		mensaje = (nucleoResponse->contenido);
+		if (!strcmp(mensaje,"exit\n")) fin_program = 0;
 		printf("%s", mensaje);
 		}
-
 	else{
 			perror("faill respounse");
 		}
 
 	}
-
+}
 
 
 
