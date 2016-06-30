@@ -4,6 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <parser/metadata_program.h>
+#include <commons/collections/dictionary.h>
+#include <commons/collections/list.h>
+#include "pcb.h"
+
+#define INITIAL_SIZE 32
+#define PCB_ELEMENTS_COUNT 9
+#define PRIMITIVE_SEPARATOR "!"
+#define CODEINDEX_SEPARATOR "#"
+#define PCBSTRUCT_SEPARATOR "$"
+#define DICTIONARY_SEPARATOR "|"
+#define VARIABLE_SEPARATOR "¡"
+#define STACKCONTENT_SEPARATOR "°"
+#define STACK_SEPARATOR "¬"
 
 	typedef struct Buffer {
 		void *data;
@@ -22,6 +35,8 @@
 
 	struct Buffer *new_buffer();
 
+	void dictionary_serialization_iterator(t_dictionary *self, void(*closure)(char*,void*, Buffer*), Buffer* buffer);
+
 	//Reserva espacio dinámicamente y aumenta el tamaño del buffer bajo demanda
 	void reserve_space(Buffer *buffer, size_t bytesNeeded);
 
@@ -38,7 +53,19 @@
 
 	void serialize_codeIndex(t_intructions* codeIndex, t_size instructionsCount, Buffer *buffer);
 
+	void serialize_stackIndex(t_list* stack,int stackCount, Buffer* buffer);
+
+	void serialize_dictionary_element(char* key, void* value, Buffer* buffer);
+
+	void serialize_dictionary(t_dictionary* dictionary, Buffer* buffer);
+
+	void serialize_variable(t_variable* variable, Buffer* buffer);
+
+	void serialize_stackContent(t_stackContent* content, Buffer* buffer);
+
 	t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructionsCount);
+
+	t_dictionary* deserialize_dictionary(char* serializedDictionary, int elementsCount);
 
 	int convertToInt32(char* buffer);
 

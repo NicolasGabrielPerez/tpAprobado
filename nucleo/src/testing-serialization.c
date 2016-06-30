@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define PRIMITIVE_SEPARATOR "$!"
-#define CODEINDEX_SEPARATOR "$#"
+t_list* General_Process_List;
+
+int auxCounter;
 
 void print_program_metadata(t_metadata_program *programMetadata) {
 	puts("++++++++++++Program Metadada++++++++++++ \n");
@@ -58,6 +59,18 @@ void print_program_instruction_index(t_intructions *instructionIndex, t_size ins
 	printf("---------- Fín de índice ---------- \n");
 }
 
+void print_dictionary_element(char* key, void* value){
+	printf("Entrada n°: %d\n", auxCounter);
+	printf("-- Key: %s\n", key);
+	printf("-- Value: %s\n", (char*)value);
+	auxCounter ++;
+}
+
+void print_dictionary(t_dictionary* dictionary){
+	auxCounter = 0;
+	dictionary_iterator(dictionary, print_dictionary_element);
+}
+
 //TODO: Serializar índice de etiquetas
 
 //TODO: Serializar estructura de stack
@@ -70,21 +83,65 @@ void serialize_pcb(PCB *pcb, Buffer *output) {
     serialize_int(pcb->stackIndex, output);
 }
 
-void deserialize_string(Buffer *buffer){
-	char** vector = string_split((char*)buffer->data, PRIMITIVE_SEPARATOR);
-
-	int i;
-
-	for(i = 0 ; i < 2 ; i++){
-		printf("Vector en %d contiene: %s \n", i, vector[i]);
-	}
-}
 
 void initialize_pcb_test(PCB *pcb){
 	pcb->processId = 493;
 	pcb->programCounter = 0;
 	pcb->codePagesCount = 25;
 	pcb->stackIndex = 10;
+}
+
+t_dictionary* create_testing_dictionary(int dictionarySize){
+	t_dictionary* testDictionary = dictionary_create();
+
+	int i;
+
+	char* key = string_new();
+	char* value = string_new();
+	char* aux = string_new();
+
+	for (i = 0 ; i < dictionarySize ; i++){
+		key = string_new();
+		value = string_new();
+		string_append(&key, "Key ");
+		string_append(&key, string_itoa(i));
+		string_append(&value, "Value ");
+		string_append(&value, string_itoa(i));
+
+		dictionary_put(testDictionary, key, value);
+	}
+
+	return testDictionary;
+}
+
+//Agrega elementos en la lista general de PCBs
+void set_pcb_test_list(){
+	PCB* pcb1 = malloc(sizeof(PCB));
+	pcb1 = new_pcb();
+	pcb1->tagIndex = "Hola guti\n";
+	list_add(General_Process_List, pcb1);
+
+	PCB* pcb2 = malloc(sizeof(PCB));
+	pcb2 = new_pcb();
+	pcb2->tagIndex = "Cómo andás?\n";
+	list_add(General_Process_List, pcb2);
+
+	PCB* pcb3 = malloc(sizeof(PCB));
+	pcb3 = new_pcb();
+	pcb3->tagIndex = "PCB 3\n";
+	list_add(General_Process_List, pcb3);
+
+	PCB* pcb4 = malloc(sizeof(PCB));
+	pcb4 = new_pcb();
+	pcb4->tagIndex = "PCB 4\n";
+	list_add(General_Process_List, pcb4);
+
+	list_remove(General_Process_List, 2);
+
+	PCB* pcb5 = malloc(sizeof(PCB));
+	pcb5 = new_pcb();
+	pcb5->tagIndex = "PCB 5\n";
+	list_add(General_Process_List, pcb5);
 }
 
 void test_serialization(){
@@ -108,6 +165,7 @@ void test_serialization(){
 			"return f\n"
 			"end";
 
+
 	t_metadata_program *programMetadata = malloc(sizeof(t_metadata_program));
 	programMetadata = metadata_desde_literal(programa1);
 
@@ -117,10 +175,31 @@ void test_serialization(){
 	//Posición de etiqueta de programa principal
 	t_puntero_instruccion instruccion = metadata_buscar_etiqueta("begin", programMetadata->etiquetas, programMetadata->etiquetas_size);
 
-	printf("Posición de etiqueta principal: %d", instruccion);
+	printf("Posición de etiqueta principal: %d \n", instruccion);
 
 	Buffer *dataBuffer = malloc(sizeof(Buffer));
 	dataBuffer = new_buffer();
+
+	//---------------------DICCIONARIOS
+
+	t_dictionary* testDictionary = create_testing_dictionary(5);
+
+	serialize_dictionary(testDictionary, dataBuffer);
+	free(testDictionary);
+	printf("Diccionario serializado: %s \n", (char*)dataBuffer->data);
+
+	t_dictionary* auxDictionary = malloc(sizeof(t_dictionary));
+	auxDictionary = deserialize_dictionary(dataBuffer->data, 5);
+
+	print_dictionary(auxDictionary);
+
+
+	//t_dictionary* testDictionary = dictionary_create();
+	//dictionary_put(testDictionary, "key1\0", "value1\0");
+
+	//---------------------DICCIONARIOS
+
+
 
 	serialize_codeIndex(programMetadata->instrucciones_serializado, programMetadata->instrucciones_size, dataBuffer);
 
@@ -137,12 +216,30 @@ void test_serialization(){
 		codeIndex[i].offset = atoi(deserializedInstruction[1]);
 		printf("--- Índice de código n° %d: %s \n", i, deserializedList[i]);
 	}
+	*/
 
 	free(programMetadata);
-*/
+
 	//t_intructions* programInstructionIndex = codeIndex;
 
-	print_program_instruction_index(programInstructionIndex, programMetadata->instrucciones_size);
+	//print_program_instruction_index(programInstructionIndex, programMetadata->instrucciones_size);
 
 
+}
+
+void test_planification(){
+	if(General_Process_List == NULL){
+		General_Process_List = list_create();
+	}
+	set_pcb_test_list();
+
+	PCB* pcb = malloc(sizeof(PCB));
+	int i;
+	for(i = 0 ; i < list_size(General_Process_List) ; i++){
+		pcb = get_pcb_by_ID(General_Process_List, i);
+		if(pcb != NULL){
+			printf("Process ID: %d\n", pcb->processId);
+			printf("--%s\n", pcb->tagIndex);
+		}
+	}
 }

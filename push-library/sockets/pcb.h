@@ -18,10 +18,13 @@
 #include <parser/metadata_program.h>
 #include <commons/collections/list.h>
 #include <commons/collections/dictionary.h>
+#include <commons/collections/queue.h>
 
 #include <parser/parser.h>
 
+extern t_list* General_Process_List;
 
+//--------------------------Structs
 typedef struct Variable{
 	char* id;
 	int32_t pageNumber;
@@ -29,21 +32,12 @@ typedef struct Variable{
 	t_size size;
 } t_variable;
 
-typedef struct stackIndex {
-	int32_t instructionNumber;	//Número de instrucción dentro del código
-	t_dictionary* arguments; 	//Diccionario de argumentos, en el caso de hallarse una función
-	t_variable* variables; 		//Lista de variables
-	t_puntero returnAddress;	//
-	t_puntero returnVariable;
-} t_stackIndex;
-
-
 typedef struct stackContent {
-	t_dictionary* arguments; //Diccionario
-	t_dictionary* variables; //Lista
+	t_dictionary* arguments;
+	t_dictionary* variables;
 	t_puntero returnAddress;
-	t_variable returnVariable;
-} StackContent;
+	t_variable* returnVariable;
+} t_stackContent;
 
 typedef struct indexTag {
 
@@ -66,7 +60,7 @@ typedef struct PCB {
 	t_size instructionsCount;		//Cantidad de instrucciones del programa
 	char* tagIndex;					//Índice de etiquetas, concatenado en una única cadena
 	u_int32_t tagIndexSize;				// Tamaño del mapa serializado de etiquetas
-	StackContent** stackIndex;//Agus: Chicos, a que le llaman index? No se olviden que INDEX es un NUMERO
+	//StackContent** stackIndex;//Agus: Chicos, a que le llaman index? No se olviden que INDEX es un NUMERO
 	t_list* stack;
 	u_int32_t stackCount; //Esto lo agregue yo (Agus), si me quitan el numero de elementos del stack no tengo forma de saber cual es el ultimo elemento!
 
@@ -74,16 +68,35 @@ typedef struct PCB {
 	u_int32_t pageStart;
 	u_int32_t pagesCount;
 	t_puntero memoryIndex;
+	t_list* stackIndex;
+	int stackPosition;
+
 
 } PCB;
+//--------------------------Structs
 
-
+//--------------------------Functions
 PCB* init_pcb();
+
 void free_pcb(PCB* pcb);
 
-StackContent* init_stackContent();
-void free_stackContent(StackContent* stackContent);
+t_stackContent* init_stackContent();
 
-void create_program_PCB(PCB* pcb, char* program);
+void free_stackContent(t_stackContent* stackContent);
+
+void create_program_PCB(PCB* pcb, char* program, int codePagesCount);
+
+static t_link_element* list_find_pcb(t_list *self, int PID, bool(*condition)(void*, int), int* index);
+
+PCB* pcb_list_find_element(t_list *self, int PID, bool(*condition)(void*, int));
+
+int find_pcb(PCB* pcb, int PID);
+
+PCB* get_pcb_by_ID(t_list* pcbList, int PID);
+
+PCB* remove_pcb_by_ID(t_list* pcbList, int PID);
+
+int get_next_Process_ID();
+//--------------------------Functions
 
 #endif

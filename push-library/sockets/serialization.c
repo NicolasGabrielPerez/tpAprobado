@@ -20,10 +20,6 @@
 #include <parser/metadata_program.h>
 #include "pcb.h"
 
-#define INITIAL_SIZE 32
-#define PRIMITIVE_SEPARATOR "!"
-#define CODEINDEX_SEPARATOR "#"
-#define PCBSTRUCT_SEPARATOR "$"
 
 struct Buffer *new_buffer() {
     struct Buffer *b = malloc(sizeof(Buffer));
@@ -33,6 +29,20 @@ struct Buffer *new_buffer() {
     b->next = 0;
 
     return b;
+}
+
+//Iterator que además recibe un buffer como parámetro
+void dictionary_serialization_iterator(t_dictionary *self, void(*closure)(char*,void*, Buffer*), Buffer* buffer) {
+	int table_index;
+	for (table_index = 0; table_index < self->table_max_size; table_index++) {
+		t_hash_element *element = self->elements[table_index];
+
+		while (element != NULL) {
+			closure(element->key, element->data, buffer);
+			element = element->next;
+
+		}
+	}
 }
 
 char* serializar_Int(char* posicionDeEscritura, int32_t* value){
@@ -117,6 +127,81 @@ void serialize_codeIndex(t_intructions* codeIndex, t_size instructionsCount, Buf
 	}
 }
 
+
+void serialize_dictionary_element(char* key, void* value, Buffer* buffer){
+	serialize_string(key, buffer);
+	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+	serialize_string((char*)value, buffer);
+	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+	serialize_ending_special_character(DICTIONARY_SEPARATOR, buffer);
+}
+
+//Deserializa un diccionario seteando los value como cadenas
+t_dictionary* deserialize_dictionary(char* serializedDictionary, int elementsCount){
+	t_dictionary* resultDictionary = dictionary_create();
+
+	char** deserializedList = string_split(serializedDictionary, DICTIONARY_SEPARATOR);
+	char** deserializedElement;
+
+	int i;
+	for( i = 0 ; i < elementsCount ; i++ ){
+		deserializedElement = string_split(deserializedList[i], PRIMITIVE_SEPARATOR);
+		dictionary_put(resultDictionary, deserializedElement[0], deserializedElement[1]);
+	}
+	return resultDictionary;
+}
+
+//Concatena los elementos de un diccionario
+void serialize_dictionary(t_dictionary* dictionary, Buffer* buffer){
+	dictionary_serialization_iterator(dictionary, serialize_dictionary_element, buffer);
+}
+
+//Concatena una estructura de tipo variable
+void serialize_variable(t_variable* variable, Buffer* buffer){
+	serialize_string(variable->id, buffer);
+	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+	serialize_int(variable->pageNumber, buffer);
+	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+	serialize_int(variable->offset, buffer);
+	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+	serialize_int(variable->size, buffer);
+	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
+}
+
+//Serializa un elemento del Stack
+void serialize_stackContent(t_stackContent* content, Buffer* buffer){
+	//serializar diccionario => arguments
+	serialize_dictionary(content->arguments, buffer);
+	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
+	//serializar diccionario => variables
+	serialize_dictionary(content->variables, buffer);
+	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
+	//serializar t_puntero => returnAdress
+	serialize_int(content->returnAddress, buffer);
+	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
+	//serializar t_variable => returnVariable
+	serialize_variable(content->returnVariable, buffer);
+	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
+}
+
+void serialize_stackIndex(t_list* stack,int stackCount, Buffer* buffer){
+	//Recorrer lista serializando de a uno
+	int i;
+	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
+	for (i = 0 ; i < stackCount ; i++){
+		stackContent = list_get(stack, i);
+		serialize_stackContent(stackContent, buffer);
+		serialize_ending_special_character(STACK_SEPARATOR, buffer);
+	}
+}
+
 t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructionsCount) {
 
 	t_intructions *codeIndex = malloc((sizeof(t_intructions) * instructionsCount));
@@ -137,6 +222,13 @@ t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructi
 	return codeIndex;
 }
 
+t_list* deserialize_stack(char* seralizedStack, int stackCount){
+	t_list* stack = list_create();
+
+	//TODO: Implementar deserialización del stack
+
+	return stack;
+}
 int convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
@@ -144,8 +236,6 @@ int convertToInt32(char* buffer){
 }
 
 char* serialize_pcb(PCB *pcb, Buffer *buffer){
-	//TODO: Serializar
-
 	//PID
 	serialize_int(pcb->processId, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
@@ -161,11 +251,44 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	//codeIndex
 	serialize_codeIndex(pcb->codeIndex, pcb->instructionsCount, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+	//tagIndexSize
+	serialize_int(pcb->tagIndexSize, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 	//tagIndex
 	serialize_string(pcb->tagIndex, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
-	//stackIndex
+	//stackCount
+	serialize_int(pcb->stackCount, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 	//stack
+	serialize_stackIndex(pcb->stack, pcb->stackCount, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
 	return (char*)buffer->data;
+}
+
+PCB* deserialize_pcb(char* serializedPCB){
+	PCB* pcb = new_pcb();
+	char** serializedComponents = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
+
+	//PID
+	pcb->processId = atoi(serializedComponents[0]);
+	//programCounter
+	pcb->programCounter = atoi(serializedComponents[1]);
+	//codePagesCount
+	pcb->codePagesCount = atoi(serializedComponents[2]);
+	//instructionsCount
+	pcb->instructionsCount = atoi(serializedComponents[3]);
+	//codeIndex
+	pcb->codeIndex = deserialize_codeIndex(serializedComponents[4], pcb->instructionsCount);
+	//tagIndexSize
+	pcb->tagIndexSize = atoi(serializedComponents[5]);
+	//tagIndex
+	pcb->tagIndex = serializedComponents[6];
+	//stackCount
+	pcb->stackCount = atoi(serializedComponents[7]);
+	//stack
+	//pcb->stack = deserialize_stack(serializedComponents[8], pcb->stackCount);		TODO:implementar
+
+	return pcb;
 }
