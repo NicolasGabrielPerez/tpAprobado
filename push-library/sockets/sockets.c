@@ -163,7 +163,7 @@ int crear_puerto_escucha(char* port){
 
 void send_dinamic(int sockfd, void* estructura, double tamanioEstructura){
 
-	int tamanio_dato_double;
+	int tamanio_dato_double = 8;
 
 	if (send(sockfd, estructura, tamanio_dato_double, 0) == -1) {
 		  perror("send");
@@ -174,7 +174,7 @@ void send_dinamic(int sockfd, void* estructura, double tamanioEstructura){
 }
 
 void recv_dinamic(int sockfd, double tamanioDouble, int* bufer){
-	int numbytes; //lo uso para poner la cantidad de bytes recibidos
+	int numbytes = 8; //lo uso para poner la cantidad de bytes recibidos
 
 
 

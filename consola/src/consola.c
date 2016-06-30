@@ -10,6 +10,7 @@
 #include <commons/config.h>
 #include <commons/string.h>
 #include <sockets/sockets.h>
+#include <sockets/communication.h>
 
 
 
@@ -17,41 +18,24 @@
 
 void espera_resultados(int socketCliente){
 
-	char* bufer_respuestas;
-	int bufer = &bufer_respuestas;
-	double tamanioDouble = 22; //cantidad de header
-	int fin_program = 1;
-	while(fin_program){
+	response* nucleoResponse = recibirResponse(socketCliente);
+		// deserialize response
 
-		recv_dinamic(socketCliente,  tamanioDouble, bufer);
-		printf("%s", bufer_respuestas);
-		if (!strcmp(bufer_respuestas,"exit\n")) fin_program = 0;
+
+	if (nucleoResponse->ok > 0 ){
+
+		char* mensaje = malloc(nucleoResponse->contenidoSize);
+		mensaje = (nucleoResponse->contenido);
+		printf("%s", mensaje);
+		}
+
+	else{
+			perror("faill respounse");
+		}
+
 	}
-}
-
-//int comando(void* algo){
-
-	//return 0;
-//}
-
-//void cicloInfinito(int socketCliente, int PACKAGESIZE){ // recive comandos de pantalla
 
 
-//	char package[PACKAGESIZE];
-		//int enviar = 1;
-
-
-	//	while(enviar){
-			//	fgets(package, PACKAGESIZE, stdin);
-		//		if (!strcmp(package,"exit\n")) enviar = 0;
-	//			if (comando(package)){
-//				printf("esciviste %s", package);
-					//send_dinamic(socketCliente, package, strlen(package) + 1);
-		//		}
-	//	}
-
-
-//}
 
 
 int main(int argc, char **argv) {
@@ -64,34 +48,18 @@ int main(int argc, char **argv) {
 
 	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
 
-	//int received_bytes;
-	char buf[50];
-	puts("Ingrese comando\n");
-	scanf("%s", buf);
 
-	printf("Ejecutando...\n", buf);
-
-	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo); //socket usado para conectarse a la umc
+	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo);
 
 	//Hago handskae con umc
 	if(handshake(socket_nucleo, "PRUEBA") != 0){
 		puts("Error en handshake con el Núcleo");
 	}
 
-	//Le envio a nucleo el texto ingresado por consola
-	if (send(socket_nucleo, buf, sizeof(buf), 0) == -1) {
-		 perror("send");
-	}
-
-	puts("Se envió comando al Núcleo\n");
-
-
 	//inicio interprete
 	char* file;
 
 	FILE *fp;
-
-
 
 int  length =string_length(argv[1]);
       file = string_substring (argv[1], 2 , length);
@@ -113,8 +81,6 @@ free(paquete);
 
 
 espera_resultados(socket_nucleo );
-
-
 
 	puts("Terminé felizmente");
 
