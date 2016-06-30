@@ -15,8 +15,15 @@
 #include <arpa/inet.h>
 #include <sockets/sockets.h>
 #include <sockets/config.h>
+#include <sockets/pcb.h>>
 
 extern int32_t memoryPageSize;
+extern t_queue* READY_Process_Queue;
+extern t_list* RUNNING_Process_List;
+extern t_queue* BLOCKED_Process_Queue;
+extern t_list* General_Process_List;
+
+extern t_list* IO_Device_List;
 
 	void initNucleo(t_config* config);
 
@@ -25,6 +32,13 @@ extern int32_t memoryPageSize;
 		char* ioId;
 		int sleepTime;
 		t_queue* BlockedProcessesQueue;
-	} IO_Device;
+	} t_IO_Device;
+
+	void set_IO_devices_list();
+
+	void set_pcb_READY(PCB* pcb);
+	void set_pcb_RUNNING(PCB* pcb);
+	void set_pcb_BLOCKED(PCB* pcb);
+	void set_pcb_BLOCKED_by_device(PCB* pcb, t_IO_Device* device);
 
 #endif

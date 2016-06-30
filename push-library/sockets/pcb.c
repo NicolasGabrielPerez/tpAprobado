@@ -19,7 +19,33 @@
 #include "pcb.h"
 #include "serialization.h"
 
-void create_program_PCB(PCB* pcb, char* program){
+extern t_list* General_Process_List;
+
+int get_greater_value(PCB* pcb, int lastId){
+	if(pcb->processId > lastId)
+		return pcb->processId;
+	else
+		return lastId;
+}
+
+int get_next_Process_ID(){
+	int lastId = 0;
+
+	if(list_size(General_Process_List) > 0){
+		t_link_element *element = General_Process_List->head;
+		while (element != NULL) {
+			lastId = get_greater_value(element->data, lastId);
+			element = element->next;
+		}
+		lastId++;
+		return (lastId);
+	}
+	else
+		return 0;
+
+}
+
+void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	t_metadata_program *programMetadata = malloc(sizeof(t_metadata_program));
 	programMetadata = metadata_desde_literal(program);
 
@@ -29,48 +55,84 @@ void create_program_PCB(PCB* pcb, char* program){
 	pcb->tagIndexSize = programMetadata->etiquetas_size;
 	pcb->instructionsCount = programMetadata->instrucciones_size;
 	pcb->codeIndex = programMetadata->instrucciones_serializado;
-	pcb->codePagesCount = 0;		//TODO: Asignar correctamente la cantidad de páginas de memoria
-	pcb->stack = NULL;
+	pcb->codePagesCount = codePagesCount;
+	pcb->stackPosition = 0;
 	pcb->stackIndex = NULL;
 }
 
-
-PCB* init_pcb() {
+PCB* new_pcb() {
 
 	PCB* pcb = malloc(sizeof(PCB));
-	//pcb->indexStack = 0;
-	pcb->stack = list_create();
-
-	StackContent* stackContent = init_stackContent();
-	list_add(pcb->stack, stackContent);
+	pcb->processId = get_next_Process_ID();
+	pcb->stackIndex = list_create();
 
 	return pcb;
 }
 
 void free_pcb(PCB* pcb) {
 
-	int i = 0;
+	//int i = 0;
 	//for(i = 0; i < pcb->indexStack; i++) {
 	//	StackContent* stackContent = list_get(pcb->stack, i);
 	//	free_stackContent(stackContent);
 	//}
 
-	list_destroy(pcb->stack);
+	list_destroy(pcb->stackIndex);
 	free(pcb);
 }
 
-StackContent* init_stackContent() {
+t_stackContent* init_stackContent() {
 
-	StackContent* stackContent = malloc(sizeof(StackContent));
+	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
 	stackContent->arguments = dictionary_create();
 
 	return stackContent;
 }
 
-void free_stackContent(StackContent* stackContent) {
+void free_stackContent(t_stackContent* stackContent) {
 
 	dictionary_destroy(stackContent->arguments);
 	free(stackContent);
 }
 
+//Redefinición de método para buscar dentro de una lista
+static t_link_element* list_find_pcb(t_list *self, int PID, bool(*condition)(void*, int), int* index) {
+	t_link_element *element = self->head;
+	int position = 0;
 
+	while (element != NULL && !condition(element->data, PID)) {
+		element = element->next;
+		position++;
+	}
+
+	if (index != NULL) {
+		*index = position;
+	}
+
+	return element;
+}
+
+//Redefinición de método. Devuelve un PCB según PID
+PCB* pcb_list_find_element(t_list *self, int PID, bool(*condition)(void*, int)) {
+	t_link_element *element = list_find_pcb(self, PID,condition, NULL);
+	return element != NULL ? element->data : NULL;
+}
+
+int find_pcb(PCB* pcb, int PID){
+	return pcb->processId == PID;
+}
+
+PCB* get_pcb_by_ID(t_list* pcbList, int PID){
+	return pcb_list_find_element(pcbList, PID, find_pcb);
+}
+
+PCB* remove_pcb_by_ID(t_list* pcbList, int PID){
+	int index = 0;
+
+	t_link_element* element = list_find_pcb(pcbList, PID, find_pcb, &index);
+	if (element != NULL) {
+		return list_remove(pcbList, index);
+	}
+
+	return NULL;
+}

@@ -6,4 +6,5 @@
 
 	void conectarConUMC(t_config* config);
 
+	//TODO: Pedír páginas de memoria para programa y contestar
 #endif

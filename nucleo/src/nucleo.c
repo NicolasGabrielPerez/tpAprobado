@@ -6,7 +6,8 @@
 
 int main(void) {
 
-	test_serialization();
+	test_planification();
+	//test_serialization();
 	/*
 	t_config* config = getConfig("nucleo.config");
 
