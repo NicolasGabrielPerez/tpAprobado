@@ -7,7 +7,6 @@ char** io_sleep_times;
 
 //Levanta los dispositivos externos desde configuración y arma una lista de t_IO_Device
 void set_IO_devices_list(){
-	t_list* deviceList = list_create();
 	int i = 0;
 	while(io_ids[i] != NULL){
 		t_IO_Device* device = malloc(sizeof(t_IO_Device));

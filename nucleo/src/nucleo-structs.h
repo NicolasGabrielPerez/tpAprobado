@@ -19,11 +19,13 @@
 #include "io-device.h"
 
 extern int32_t memoryPageSize;
-extern t_queue* READY_Process_Queue;	//Cola de procesos listos para ejecución
-extern t_list* RUNNING_Process_List;	//Lista general de procesos en ejecución
-extern t_queue* BLOCKED_Process_Queue;	//Cola general de procesos bloqueados
-extern t_list* General_Process_List;	//Lista general de procesos (PCBs)
-extern t_list* CPU_control_list;		//Lista general que contiene las referencias a todos los CPUs conectado al módulo
+extern t_queue* READY_Process_Queue;			//Cola de procesos listos para ejecución
+extern t_list* RUNNING_Process_List;			//Lista general de procesos en ejecución
+extern t_queue* BLOCKED_Process_Queue;			//Cola general de procesos bloqueados
+extern t_list* General_Process_List;			//Lista general de procesos (PCBs)
+extern t_list* CPU_control_list;				//Lista general que contiene las referencias a todos los CPUs conectado al módulo
+extern t_list* semaforo_control_list;			//Lista general de semáforos dedicado a operaciones privilegiadas
+extern t_dictionary* vars_control_dictionary;	//Diccionario general de variables globales
 
 extern char** io_ids;
 extern char** io_sleep_times;
@@ -33,5 +35,10 @@ void set_IO_devices_list();
 void set_pcb_READY(PCB* pcb);
 void set_pcb_RUNNING(PCB* pcb);
 void set_pcb_BLOCKED(PCB* pcb);
+
+typedef struct {
+	char* sem_id;	//Nombre del semáforo
+	int sem_init;	//Valor inicial
+} t_semaforo;
 
 #endif
