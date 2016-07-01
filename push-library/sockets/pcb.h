@@ -86,7 +86,7 @@ void free_stackContent(t_stackContent* stackContent);
 
 void create_program_PCB(PCB* pcb, char* program, int codePagesCount);
 
-static t_link_element* list_find_pcb(t_list *self, int PID, bool(*condition)(void*, int), int* index);
+static t_link_element* list_find_by_id(t_list *self, int ID, bool(*condition)(void*, int), int* index);
 
 PCB* pcb_list_find_element(t_list *self, int PID, bool(*condition)(void*, int));
 

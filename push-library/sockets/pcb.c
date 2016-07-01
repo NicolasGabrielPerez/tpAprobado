@@ -96,11 +96,11 @@ void free_stackContent(t_stackContent* stackContent) {
 }
 
 //Redefinición de método para buscar dentro de una lista
-static t_link_element* list_find_pcb(t_list *self, int PID, bool(*condition)(void*, int), int* index) {
+static t_link_element* list_find_by_id(t_list *self, int ID, bool(*condition)(void*, int), int* index) {
 	t_link_element *element = self->head;
 	int position = 0;
 
-	while (element != NULL && !condition(element->data, PID)) {
+	while (element != NULL && !condition(element->data, ID)) {
 		element = element->next;
 		position++;
 	}
@@ -114,7 +114,7 @@ static t_link_element* list_find_pcb(t_list *self, int PID, bool(*condition)(voi
 
 //Redefinición de método. Devuelve un PCB según PID
 PCB* pcb_list_find_element(t_list *self, int PID, bool(*condition)(void*, int)) {
-	t_link_element *element = list_find_pcb(self, PID,condition, NULL);
+	t_link_element *element = list_find_by_id(self, PID,condition, NULL);
 	return element != NULL ? element->data : NULL;
 }
 
@@ -129,7 +129,7 @@ PCB* get_pcb_by_ID(t_list* pcbList, int PID){
 PCB* remove_pcb_by_ID(t_list* pcbList, int PID){
 	int index = 0;
 
-	t_link_element* element = list_find_pcb(pcbList, PID, find_pcb, &index);
+	t_link_element* element = list_find_by_id(pcbList, PID, find_pcb, &index);
 	if (element != NULL) {
 		return list_remove(pcbList, index);
 	}
