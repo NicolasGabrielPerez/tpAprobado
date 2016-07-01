@@ -96,7 +96,7 @@ void free_stackContent(t_stackContent* stackContent) {
 }
 
 //Redefinición de método para buscar dentro de una lista
-static t_link_element* list_find_by_id(t_list *self, int ID, bool(*condition)(void*, int), int* index) {
+t_link_element* list_find_by_id(t_list *self, int ID, bool(*condition)(void*, int), int* index) {
 	t_link_element *element = self->head;
 	int position = 0;
 

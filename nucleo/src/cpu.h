@@ -2,13 +2,12 @@
 #define CPU_H_
 
 #include <commons/collections/list.h>
-
-extern t_list* CPU_control_list;	//Lista general que contiene las referencias a todos los CPUs conectado al módulo
+#include <sockets/communication.h>
+#include <sockets/pcb.h>
 
 typedef struct CPU{
-	int socket;					//Identificador del CPU activo
+	int socket;					//Identificador del CPU activo => referencia a la conexión
 	int PID;					//Identificador del proceso actual en ejecución
-	//TODO: agregar referencia a la conexión con la CPU
 } t_CPU;
 
 int CPU_is_free(t_CPU* cpu);

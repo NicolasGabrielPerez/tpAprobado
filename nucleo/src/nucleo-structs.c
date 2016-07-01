@@ -6,12 +6,14 @@ char** io_ids;
 char** io_sleep_times;
 
 int32_t memoryPageSize;
+
 t_queue* READY_Process_Queue;
 t_queue* BLOCKED_Process_Queue;
 t_list* General_Process_List;
 t_list* RUNNING_Process_List;
 
 t_list* IO_Device_List;
+t_list* CPU_control_list;
 
 void initNucleo(t_config* config){
     quantum = config_get_int_value(config, "QUANTUM");
@@ -22,6 +24,7 @@ void initNucleo(t_config* config){
 	//char** semaforos_init_values = config_get_array_value(config, "SEM_INIT");
 	//char** shared_values = config_get_array_value(config, "SHARED_VARS");
 
+	//Estruturas para control de estados
 	READY_Process_Queue = queue_create();
 	BLOCKED_Process_Queue = queue_create();
 	RUNNING_Process_List = list_create();
@@ -30,6 +33,9 @@ void initNucleo(t_config* config){
 	//Creación de lista de dispositivos
 	IO_Device_List = list_create();
 	set_IO_devices_list();
+
+	//Lista de control de CPUs conectadas
+	CPU_control_list = list_create();
 }
 
 int getProgramPagesCount(char* program){

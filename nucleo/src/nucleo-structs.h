@@ -19,10 +19,11 @@
 #include "io-device.h"
 
 extern int32_t memoryPageSize;
-extern t_queue* READY_Process_Queue;
-extern t_list* RUNNING_Process_List;
-extern t_queue* BLOCKED_Process_Queue;
-extern t_list* General_Process_List;
+extern t_queue* READY_Process_Queue;	//Cola de procesos listos para ejecución
+extern t_list* RUNNING_Process_List;	//Lista general de procesos en ejecución
+extern t_queue* BLOCKED_Process_Queue;	//Cola general de procesos bloqueados
+extern t_list* General_Process_List;	//Lista general de procesos (PCBs)
+extern t_list* CPU_control_list;		//Lista general que contiene las referencias a todos los CPUs conectado al módulo
 
 extern char** io_ids;
 extern char** io_sleep_times;
