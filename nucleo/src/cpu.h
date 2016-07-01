@@ -6,7 +6,7 @@
 extern t_list* CPU_control_list;	//Lista general que contiene las referencias a todos los CPUs conectado al módulo
 
 typedef struct CPU{
-	int cpu_id;					//Identificador del CPU activo
+	int socket;					//Identificador del CPU activo
 	int PID;					//Identificador del proceso actual en ejecución
 	//TODO: agregar referencia a la conexión con la CPU
 } t_CPU;
