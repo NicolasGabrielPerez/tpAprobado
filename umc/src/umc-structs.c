@@ -1,5 +1,6 @@
 #include "umc-structs.h"
-#include "clock.h"
+
+#include "pages_replacement.h"
 
 int cantidad_de_marcos;
 int marco_size;
@@ -18,8 +19,11 @@ int initMemoriaPrincipal(t_config* config){
 	algoritmoClockEnable = config_get_int_value(config, "CLOCK");
 	algoritmoClockModificadoEnable = config_get_int_value(config, "CLOCK");
 
-	if(algoritmoClockEnable) agujaClock = 0;
-	if(algoritmoClockModificadoEnable)
+	if(algoritmoClockModificadoEnable){
+		algoritmoActivo = clockModificado;
+	} else{
+		algoritmoActivo = clockComun;
+	}
 
 	memoria_bloque = malloc(cantidad_de_marcos*marco_size); //char* que va a tener el contenido de todas las paginas
 
@@ -30,7 +34,6 @@ int initMemoriaPrincipal(t_config* config){
 		tabla_de_frame_entry* entrada = malloc(sizeof(tabla_de_frame_entry));
 		entrada->nroFrame = i;
 		entrada->ocupado = 0;
-		entrada->referenciado = 0;
 		entrada->direccion_real = &memoria_bloque[i*marco_size];
 		list_add(tablaDeFrames->entradas, entrada);
 		free(entrada);
@@ -83,6 +86,20 @@ char* initProgramaUMC(int pid, int cantPaginas){
 	tabla_de_paginas* tablaDePaginas = malloc(sizeof(tabla_de_paginas));
 	tablaDePaginas->entradas = list_create();
 	tablaDePaginas->pid = pid;
+
+	t_list* presentes = list_create();
+
+	int i;
+	for(i = 0; i<marcos_x_proc; i++){
+		presente* presente = malloc(sizeof(presente));
+		presente->nroFrame = -1;
+		presente->nroPagina = -1;
+		list_add(presentes, presente);
+	}
+
+	tablaDePaginas->presentes = presentes;
+
+	tablaDePaginas->aguja = 0;
 
 	list_add(tablasDePaginas, tablaDePaginas);
 	return string_itoa(RESPUESTA_OK);
@@ -204,9 +221,32 @@ tabla_de_frame_entry* getFrameEntry(int nroFrame){
 	tabla_de_frame_entry* tablaDeFramesEntry;
 	for(i=0; i<list_size(tablaDeFrames->entradas); i++){
 		tablaDeFramesEntry = list_get(tablaDeFrames->entradas, i);
-		if(tablaDeFramesEntry->nroFrame){
+		if(tablaDeFramesEntry->nroFrame == nroFrame){
 			break;
 		}
 	}
 	return tablaDeFramesEntry;
 }
+
+umcResult createUmcResult(int ok, int codError, tabla_de_paginas_entry* paginaEntry, tabla_de_frame_entry* frameEntry){
+	umcResult result;
+	result.ok = ok;
+	result.codError = codError;
+	result.paginaEntry = paginaEntry;
+	result.frameEntry = frameEntry;
+	return result;
+};
+
+umcResult createFAILResult(int codError){
+	return createUmcResult(0, codError, 0, 0);
+}
+
+umcResult createOkPageResult(tabla_de_paginas_entry* paginaEntry){
+	return createUmcResult(1, 0, paginaEntry, 0);
+}
+
+umcResult createOkFrameResult(tabla_de_frame_entry* frameEntry){
+	return createUmcResult(1, 0, 0, frameEntry);
+}
+
+

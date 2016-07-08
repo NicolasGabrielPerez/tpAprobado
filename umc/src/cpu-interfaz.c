@@ -1,6 +1,6 @@
 #include "cpu-interfaz.h"
 
-#include "clock.h"
+#include "pages_replacement.h"
 #include "umc-structs.h"
 
 void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
@@ -48,17 +48,12 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 
 	int nroFrame; //nroFrame a escribir
 
-	if(algoritmoClockEnable){
-		response* clockResponse = clockGetFrame(nroPagina, pidActivo);
-		if(!clockResponse->ok){
-			enviarFAIL(cpu_socket, clockResponse->codError);
-		}
-		memcpy(&nroFrame, clockResponse->contenido, sizeof(int32_t));
-	} else{
-		//implementar clock modificado
+	umcResult result = getPageEntry(tablaDePaginas, nroPagina);
+	if(!result.ok){
+		enviarFAIL(cpu_socket, result.codError);
 	}
 
-	escribirEnFrame(buffer, offset, tamanio, nroFrame);
+	escribirEnFrame(result.frameEntry->direccion_real, offset, tamanio, nroFrame);
 
 	//Actualizar TLB
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
@@ -104,35 +99,16 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 		}
 	}
 
-	char* pagina;
-	int nroFrame; //nroFrame a leer
-	//TODO buscar en la tabla de paginas
-
-	if(nroFrame != -1){ //si ya esta la pagina presente
-		pagina = leerFrame(nroFrame);
-		goto retornar;
+	umcResult result = getPageEntry(tablaDePaginas, nroPagina);
+	if(!result.ok){
+		enviarFAIL(cpu_socket, result.codError);
 	}
-
-	tabla_de_paginas_entry* victima_entry;
-	if(algoritmoClockEnable){
-		//implementar clock
-	} else{
-		victima_entry = clockModificadoGetVictima(tablaDePaginas);
-	}
-
-	if(victima_entry->modificado){
-		char* paginaModificada = leerFrame(victima_entry->nroFrame);
-		escribirPaginaEnSwap(victima_entry->nroPagina, pidActivo, paginaModificada);
-	}
-
-	response* pedidoSwap = pedirPaginaASwap(nroPagina, pidActivo);
-	pagina = pedidoSwap->contenido;
 
 	retornar:
 		//Actualizar TLB
 		if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
 
-		enviarOKConContenido(cpu_socket, marco_size, pagina);
+		enviarOKConContenido(cpu_socket, marco_size, result.frameEntry->direccion_real);
 }
 
 void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){

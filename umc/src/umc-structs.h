@@ -30,7 +30,6 @@
 	typedef struct tabla_de_frame_entry{
 		int nroFrame;
 		char* direccion_real;
-		int referenciado; //valor de referencia para algoritmos de reemplazo Clock
 		int ocupado;
 	} tabla_de_frame_entry;
 
@@ -42,14 +41,40 @@
 		int nroPagina;
 		int presente;
 		int modificado;
+		int uso;
 		int nroFrame;
 		int pid;
 	} tabla_de_paginas_entry;
 
+	typedef struct presente{
+		int nroPagina;
+		int nroFrame;
+		int uso;
+		int modificado;
+	} presente;
+
 	typedef struct tabla_de_paginas{
 		t_list* entradas;
 		int pid;
+		int aguja;
+		t_list* presentes;
 	} tabla_de_paginas;
+
+	//Estrucutra usada para funciones internas de UMC (pasaje entre cpu-interfaz y clock, etc)
+	typedef struct umcResult{
+		int32_t ok;
+		int32_t codError;
+		tabla_de_paginas_entry* paginaEntry;
+		tabla_de_frame_entry* frameEntry;
+	} umcResult;
+
+	umcResult createUmcResult(int ok, int codError, tabla_de_paginas_entry* paginaEntry, tabla_de_frame_entry* frameEntry);
+
+	umcResult createFAILResult(int codError);
+
+	umcResult createOkPageResult(tabla_de_paginas_entry* paginaEntry);
+
+	umcResult createOkFrameResult(tabla_de_frame_entry* frameEntry);
 
 	int initMemoriaPrincipal(t_config* config);
 
@@ -72,5 +97,9 @@
 	int buscarPIDActualDeFrame(int nroFrame);
 
 	int buscarNroPagActualDeFrame(int nroFrame);
+
+	int obtenerFrameDisponible();
+
+	void cargarEnMemoriaPrincipal(char* pagina, int nroFrame);
 
 #endif /* UMC_STRUCTS_H_ */

@@ -109,7 +109,7 @@ void manejarNuevasConexiones(){
 		printf("Hubo error en handshake");
 		return;
 	}
-	if(tipo == TIPO_NUCLEO){
+	if(tipo == TIPO_NUCLEO || tipo == TIPO_CPU){
 		enviarPageSize(new_socket);
 	}
 
