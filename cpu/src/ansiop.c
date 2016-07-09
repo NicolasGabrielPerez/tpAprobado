@@ -1,9 +1,13 @@
 #include "ansiop.h"
 
+#include "cpu.h"
+
 #include <commons/string.h>
 #include <parser/metadata_program.h>
 
 t_variable* getMemoryAddr(t_puntero position) {
+
+	log_trace(logger, string_from_format("ANSISOP: getMemoryAddr, %d", position));
 
 	t_variable* memoryAddr = malloc(sizeof(t_variable));
 	memoryAddr->pageNumber = (position / PAGE_SIZE) + pcb->pageStart;
@@ -15,6 +19,8 @@ t_variable* getMemoryAddr(t_puntero position) {
 
 
 t_puntero definirVariable(t_nombre_variable variable) {
+
+	log_trace(logger, string_from_format("ANSISOP: definirVariable, %s", variable));
 
 	//Reservar memoria, hay que enviar a la UMC?
 	//umcDefine(variable);
@@ -43,6 +49,8 @@ t_puntero definirVariable(t_nombre_variable variable) {
 
 t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
+	log_trace(logger, string_from_format("ANSISOP: obtenerPosicionVariable, %s", variable));
+
 	t_list* stack = pcb->stack;
 	t_stackContent* stackContent = list_get(stack, pcb->stackPosition);
 	t_puntero* memoryAddr = (t_puntero*) dictionary_get(stackContent->variables, &variable);
@@ -53,6 +61,8 @@ t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
 
 t_valor_variable dereferenciar(t_puntero puntero) {
+
+	log_trace(logger, string_from_format("ANSISOP: dereferenciar, %d", puntero));
 
 	t_variable* memoryAddr = getMemoryAddr(puntero);
 	t_valor_variable value = umc_get(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size);
@@ -66,6 +76,8 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 void asignar(t_puntero puntero, t_valor_variable variable) {
 
+	log_trace(logger, string_from_format("ANSISOP: asignar, %d, %d", puntero, variable));
+
 	t_variable* memoryAddr = getMemoryAddr(puntero);
 
 	char* param = string_itoa(variable);
@@ -78,6 +90,8 @@ void asignar(t_puntero puntero, t_valor_variable variable) {
 
 t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
 
+	log_trace(logger, string_from_format("ANSISOP: obtenerValorCompartida, %s", name));
+
 	t_valor_variable value = nucleo_variable_compartida_obtener(name);
 	return value;
 }
@@ -85,17 +99,24 @@ t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
 
 t_valor_variable asignarValorCompartida(t_nombre_compartida name, t_valor_variable value) {
 
+	log_trace(logger, string_from_format("ANSISOP: asignarValorCompartida, %s, %d", name, value));
+
 	nucleo_variable_compartida_asignar(name, value);
 	return value;
 }
 
 
 void irAlLabel(t_nombre_etiqueta etiqueta) {
+
+	log_trace(logger, string_from_format("ANSISOP: irAlLabel, %s", etiqueta));
+
 	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
 	pcb->programCounter = pointer;
 }
 
 void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
+
+	log_trace(logger, string_from_format("ANSISOP: callFunction, %s %d", etiqueta, retornar));
 
 	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
 	pcb->programCounter = pointer;
@@ -115,18 +136,28 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
 void llamarConRetorno(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
+	log_trace(logger, string_from_format("ANSISOP: llamarConRetorno, %s %d", etiqueta, donde_retornar));
+
+
 	callFunction(etiqueta, donde_retornar);
 }
 
 void llamarSinRetorno(t_nombre_etiqueta etiqueta) {
+
+	log_trace(logger, string_from_format("ANSISOP: llamarSinRetorno, %s", etiqueta));
+
 	callFunction(etiqueta, pcb->codeIndex);
 }
 
 void finalizar() {
+	log_trace(logger, string_from_format("ANSISOP: finalizar"));
+
 	nucleo_notificarFinDePrograma(pcb);
 }
 
 void retornar(t_valor_variable valor) {
+
+	log_trace(logger, string_from_format("ANSISOP: retornar %d", valor));
 
 	//Obtener contentido
 	t_list* stack = pcb->stack;
@@ -147,23 +178,38 @@ void retornar(t_valor_variable valor) {
 }
 
 void imprimir(t_valor_variable valor) {
+
+	log_trace(logger, string_from_format("ANSISOP: imprimir %d", valor));
+
 	nucleo_imprimir(valor);
 }
 
 void imprimirTexto(char* texto) {
+
+	log_trace(logger, string_from_format("ANSISOP: imprimirTexto, %s", texto));
+
 	nucleo_imprimir_texto(texto);
 }
 
 void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {
+
+	log_trace(logger, string_from_format("ANSISOP: entradaSalida %s, %d", valor, tiempo));
+
 	nucleo_notificarIO(valor, tiempo);
 }
 
 
 void wait(t_nombre_semaforo id) {
+
+	log_trace(logger, string_from_format("ANSISOP: wait %s", id));
+
 	nucleo_wait(id);
 }
 
 
 void signal(t_nombre_semaforo id) {
+
+	log_trace(logger, string_from_format("ANSISOP: signal %s", id));
+
 	nucleo_signal(id);
 }

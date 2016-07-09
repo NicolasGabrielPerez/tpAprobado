@@ -13,11 +13,13 @@
 #include <parser/sintax.h>
 
 #include <commons/config.h>
+#include <commons/string.h>
 #include <commons/log.h>
 #include <commons/collections/list.h>
 
 #include <sockets/sockets.h>
 
+#include "cpu.h"
 #include "ansiop.h"
 #include "nucleoFunctions.h"
 #include "umcFunctions.h"
@@ -27,11 +29,10 @@
 //static char* IMPRIMIR = "print b";
 //static char* IMPRIMIR_TEXTO = "textPrint foo\n";
 
+t_log* logger;
+
 u_int32_t UMC_PAGE_SIZE = 4;
-u_int32_t QUANTUM_SIZE = 3;
-
-u_int32_t quantumCount = 0;
-
+u_int32_t QUANTUM = 3;
 
 u_int32_t socketNucleo = 0;
 u_int32_t socketUmc = 0;
@@ -59,7 +60,7 @@ AnSISOP_kernel kernel_functions = {
 };
 
 //Devuelve un booleano si tiene que salir del programa.
-int doQuantum(PCB* pcb) {
+int doQuantum(PCB* pcb, int quantumCount) {
 	int hasToExit = 0;
 
 	//Incrementar Program Counter
@@ -68,6 +69,8 @@ int doQuantum(PCB* pcb) {
 	//Pedir a la UMC la siguiente instruccion a ejecutar
 	char* instruction = "test";//umc_get(codeIndex, offset, size);
 
+	log_trace(logger, string_from_format("Ejecutando quantum: %d", quantumCount));
+	log_trace(logger, string_from_format("Ejecutando instruccion: %s", instruction));
 	analizadorLinea(strdup(instruction), &functions, &kernel_functions);
 
 	//Notificar al nucleo que concluyo un quantum
@@ -75,7 +78,7 @@ int doQuantum(PCB* pcb) {
 
 	quantumCount++;
 
-	if(quantumCount >= QUANTUM_SIZE) {
+	if(quantumCount >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
 		char* result = nucleo_notificarFinDeRafaga(pcb);
 		int isDifferent = strcmp(result, "SIGUSR1");
@@ -92,11 +95,13 @@ int doQuantum(PCB* pcb) {
 //Devuelve un booleano si tiene que salir del programa.
 int receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
 
+	log_trace(logger, "Recibido el PCB, ejecutando...");
+
 	int quantumCounter = 0;
 	int hasToExit = 0;
 
 	while(quantumCounter <= QUANTUM_COUNT) {
-		int tmp = doQuantum(pcb);
+		int tmp = doQuantum(pcb, quantumCounter);
 
 		if(hasToExit == 0) hasToExit = tmp;
 		quantumCounter++;
@@ -107,7 +112,8 @@ int receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
 int main(int argc, char **argv) {
 
 
-	//system("dd  if=/dev/zero of=sample.txt bs=2M count=1");
+	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_TRACE);
+	//t_log* loggerError = log_create("log.txt", "CPU", true, LOG_LEVEL_ERROR);
 
 	t_config* config = config_create("cpu.config");
 	if(config==NULL){
@@ -115,19 +121,22 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
+	log_trace(logger, "Iniciada la configuracion");
+
 	nucleo_init(config);
 	umc_init(config);
-
-	//umc_process_active(10);
 
 	int hasToExit = 0;
 	while(hasToExit == 0) {
 		pcb = nucleo_recibir_pcb();
-		hasToExit = receiveInstructions(pcb, 3);
+		umc_process_active(pcb->processId);
+		hasToExit = receiveInstructions(pcb, QUANTUM);
 	}
 
 	umc_delete();
 	nucleo_delete();
+
+	log_destroy(logger);
 
 	return EXIT_SUCCESS;
 }

@@ -21,6 +21,7 @@
 #include <commons/string.h>
 
 #include "nucleoFunctions.h"
+#include "cpu.h"
 
 #include <sockets/sockets.h>
 #include <sockets/communication.h>
@@ -56,7 +57,7 @@ int receiveData(char* bufferResult) {
 		   // connection closed
 		   printf("socket %d hung up\n", socket_nucleo);
 	   } else {
-		   perror("recv");
+		   log_error(logger, "recv");
 	   }
 	   close(socket_nucleo); // bye!
 	} else {
@@ -87,7 +88,7 @@ void nucleo_init(t_config* config) {
 	memcpy(bufferHandshake, &HEADER_NUCLEO_HANDSHAKE, sizeof(int32_t));
 	int bytesHandshake = HEADER_SIZE_NUCLEO;
 	if (send(socket_nucleo, bufferHandshake, bytesHandshake, 0) == -1) {
-			perror("Error enviando handshake nucleo");
+			log_error(logger, "Error enviando handshake nucleo");
 			printf("Cerrando programa");
 			exit(0);
 	};
@@ -98,11 +99,13 @@ void nucleo_init(t_config* config) {
 	memcpy(bufferType, &TIPO_CPU, sizeof(int32_t));
 	int bytesType = HEADER_SIZE_NUCLEO;
 	if (send(socket_nucleo, bufferType, bytesType, 0) == -1) {
-		perror("Error enviando tipo a nucleo");
+		log_error(logger, "Error enviando tipo a nucleo");
 		printf("Cerrando programa");
 		exit(0);
 	};
 	free(bufferType);
+
+	log_trace(logger, "Iniciado socket: Nucleo");
 }
 
 void nucleo_delete(){
@@ -112,6 +115,9 @@ void nucleo_delete(){
 
 
 PCB* nucleo_recibir_pcb() {
+
+
+	log_trace(logger, string_from_format("NUCLEO: recibiendo PCB"));
 
 	int LENGTH = 1024;
 	char* buffer = malloc(sizeof(char*) * LENGTH);
@@ -126,39 +132,51 @@ PCB* nucleo_recibir_pcb() {
 
 void nucleo_notificarIO(t_nombre_dispositivo valor, u_int32_t tiempo) {
 
+	log_trace(logger, string_from_format("NUCLEO: notificar IO"));
+
 	if (send(socket_nucleo, &HEADER_NOTIFICAR_IO, sizeof(int32_t), 0) == -1) {
-		 perror("Error enviando header IO");
+		log_error(logger, "Error enviando header IO");
 	};
 
 	if (send(socket_nucleo, &tiempo, sizeof(u_int32_t), 0) == -1) {
-		 perror("Error enviando tiempo IO");
+		log_error(logger, "Error enviando tiempo IO");
 	};
 }
 
 void nucleo_notificarFinDeQuantum(u_int32_t quantumCount) {
+
+	log_trace(logger, string_from_format("NUCLEO: FIN QUANTUM, %d", quantumCount));
+
 	if (send(socket_nucleo, &HEADER_NOTIFICAR_FIN_QUANTUM, sizeof(int32_t), 0) == -1) {
-		 perror("Error enviando header Fin de Quantum");
+		log_error(logger, "Error enviando header Fin de Quantum");
 	};
 
 	if (send(socket_nucleo, &quantumCount, sizeof(u_int32_t), 0) == -1) {
-		 perror("Error enviando count Fin de Quantum");
+		log_error(logger, "Error enviando count Fin de Quantum");
 	};
 }
 
 void nucleo_notificarFinDePrograma(PCB* pcb) {
+
+
+	log_trace(logger, string_from_format("NUCLEO: fin de programa"));
+
 	if (send(socket_nucleo, &HEADER_NOTIFICAR_FIN_PROGRAMA, sizeof(int32_t), 0) == -1) {
-		 perror("Error enviando header Fin de Programa");
+		log_error(logger, "Error enviando header Fin de Programa");
 	};
 
 	//Enviar PCB
 //	if (send(socket_nucleo, quantumCount, sizeof(u_int32_t), 0) == -1) {
-//		 perror("Error enviando count Fin de Quantum");
+//		 log_error(logger, "Error enviando count Fin de Quantum");
 //	};
 }
 
 char* nucleo_notificarFinDeRafaga(PCB* pcb) {
+
+	log_trace(logger, string_from_format("NUCLEO: fin de rafaga"));
+
 	if (send(socket_nucleo, &HEADER_NOTIFICAR_FIN_RAFAGA, sizeof(int32_t), 0) == -1) {
-		 perror("Error enviando header Fin de Rafaga");
+		 log_error(logger, "Error enviando header Fin de Rafaga");
 	};
 
 
@@ -167,7 +185,7 @@ char* nucleo_notificarFinDeRafaga(PCB* pcb) {
 
 	//Enviar PCB
 	if (send(socket_nucleo, buffer->data, buffer->size, 0) == -1) {
-		 perror("Error enviando count Fin de Rafaga");
+		 log_error(logger, "Error enviando count Fin de Rafaga");
 	};
 
 	buffer_free(buffer);
@@ -176,51 +194,65 @@ char* nucleo_notificarFinDeRafaga(PCB* pcb) {
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {
+
+	log_trace(logger, string_from_format("NUCLEO: wait, %s", semaforo));
+
 	if (send(socket_nucleo, &HEADER_NOTIFICAR_WAIT, sizeof(int32_t), 0) == -1) {
-		 perror("Error enviando header Wait");
+		 log_error(logger, "Error enviando header Wait");
 	};
 
 	if (send(socket_nucleo, semaforo, sizeof(t_nombre_semaforo), 0) == -1) {
-		 perror("Error enviando nombre Wait");
+		 log_error(logger, "Error enviando nombre Wait");
 	};
 }
 
 void nucleo_signal(t_nombre_semaforo semaforo) {
+
+	log_trace(logger, string_from_format("NUCLEO: signal, %s", semaforo));
+
 	if (send(socket_nucleo, &HEADER_NOTIFICAR_SIGNAL, sizeof(int32_t), 0) == -1) {
-		 perror("Error enviando header Signal");
+		 log_error(logger, "Error enviando header Signal");
 	};
 
 	if (send(socket_nucleo, semaforo, sizeof(t_nombre_semaforo), 0) == -1) {
-		 perror("Error enviando nomnre Signal");
+		 log_error(logger, "Error enviando nomnre Signal");
 	};
 }
 
 void nucleo_imprimir(t_valor_variable valor) {
+
+	log_trace(logger, string_from_format("NUCLEO: imprimir variable, %d", valor));
+
 	if (send(socket_nucleo, &HEADER_IMPRIMIR, sizeof(int32_t), 0) == -1) {
-		 perror("Error enviando header Signal");
+		 log_error(logger, "Error enviando header Signal");
 	};
 
 	if (send(socket_nucleo, &valor, sizeof(t_valor_variable), 0) == -1) {
-		 perror("Error enviando nomnre Signal");
+		 log_error(logger, "Error enviando nomnre Signal");
 	};
 }
 
 void nucleo_imprimir_texto(char* texto) {
+
+	log_trace(logger, string_from_format("NUCLEO: imprimir texto, %s", texto));
+
 	if (send(socket_nucleo, &HEADER_IMPRIMIR_TEXTO, sizeof(int32_t), 0) == -1) {
-		 perror("Error enviando header Signal");
+		 log_error(logger, "Error enviando header Signal");
 	};
 
 	if (send(socket_nucleo, texto, sizeof(char) * (string_length(texto) + 1), 0) == -1) {
-		 perror("Error enviando nomnre Signal");
+		 log_error(logger, "Error enviando nomnre Signal");
 	};
 }
 
 t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable) {
 
+	log_trace(logger, string_from_format("NUCLEO: obtener variable compartida, %s", variable));
+
 	return 0;
 }
 
 void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_variable valor){
-
+	log_trace(logger, string_from_format("NUCLEO: asignar variable compartida, %s %d", variable, valor));
 }
 

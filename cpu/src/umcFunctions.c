@@ -19,6 +19,7 @@
 #include <sys/socket.h>
 #include <commons/string.h>
 
+#include "cpu.h"
 #include "umcFunctions.h"
 
 #include <sockets/sockets.h>
@@ -56,7 +57,7 @@ void umc_init(t_config* config){
 
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok != RESPUESTA_OK) {
-		perror("Error recibiendo respuesta proceso activo");
+		log_error(logger, "Error recibiendo respuesta proceso activo");
 	}
 
 	PAGE_SIZE = (u_int32_t) respuesta->contenido;
@@ -72,6 +73,8 @@ void umc_process_active(int32_t processId) {
 	//Enviar processID
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
+
+	log_trace(logger, string_from_format("UMC: Cambio proceso activo: %d", processId));
 
 	char bufferHeader[HEADER_SIZE_UMC];
 	memcpy(bufferHeader, &processId, sizeof(int32_t));
@@ -92,12 +95,13 @@ void umc_process_active(int32_t processId) {
 
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok != RESPUESTA_OK) {
-		perror("Error recibiendo respuesta proceso activo");
+		log_error(logger, "Error recibiendo respuesta proceso activo");
 	}
 }
 
 void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 
+	log_trace(logger, string_from_format("UMC: set (%d, %d, %d, %s", page, offset, size, buffer));
 
 	//Envio header: HEADER_ALMACENAR_PAGINAS
 	char* param = string_itoa(HEADER_ALMACENAR_PAGINAS);
@@ -125,13 +129,16 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok != RESPUESTA_OK) {
-		perror("Error insertando memoria: RESPONSE");
+		log_error(logger, "Error insertando memoria: RESPONSE");
 	}
 
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 }
 
 t_valor_variable umc_get(t_puntero page, t_puntero offset, t_size size) {
+
+	log_trace(logger, string_from_format("UMC: get (%d, %d, %d", page, offset, size));
+
 
 	//Envio header: HEADER_SOLICITAR_PAGINAS
 	char* param = string_itoa(HEADER_SOLICITAR_PAGINAS);
@@ -156,7 +163,7 @@ t_valor_variable umc_get(t_puntero page, t_puntero offset, t_size size) {
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok != RESPUESTA_OK) {
-		perror("Error obteniendo memoria: RESPONSE");
+		log_error(logger, "Error obteniendo memoria: RESPONSE");
 	}
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
