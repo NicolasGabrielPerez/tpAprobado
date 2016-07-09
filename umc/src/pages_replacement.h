@@ -3,13 +3,6 @@
 
 #include "umc-structs.h"
 
-	enum AlgoritmoReemplazo{
-		clockComun,
-		clockModificado
-	};
-
-	extern enum AlgoritmoReemplazo algoritmoActivo;
-
 	umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina);
 
 #endif

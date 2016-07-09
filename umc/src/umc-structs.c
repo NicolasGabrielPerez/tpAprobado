@@ -8,21 +8,19 @@ int marcos_x_proc;
 char* memoria_bloque;
 tabla_de_frames* tablaDeFrames;
 t_list* tablasDePaginas;
-int algoritmoClockEnable;
-int algoritmoClockModificadoEnable;
+enum AlgoritmoReemplazo algoritmoActivo;
 
 int initMemoriaPrincipal(t_config* config){
 	cantidad_de_marcos = config_get_int_value(config, "MARCOS");
 	marco_size = config_get_int_value(config, "MARCO_SIZE");
 	marcos_x_proc = config_get_int_value(config, "MARCOS_X_PROC");
 
-	algoritmoClockEnable = config_get_int_value(config, "CLOCK");
-	algoritmoClockModificadoEnable = config_get_int_value(config, "CLOCK");
+	char* algoritmo = config_get_int_value(config, "ALGORITMO");
 
-	if(algoritmoClockModificadoEnable){
-		algoritmoActivo = clockModificado;
-	} else{
+	if(string_equals_ignore_case(algoritmo, "clock")){
 		algoritmoActivo = clockComun;
+	} else{
+		algoritmoActivo = clockModificado;
 	}
 
 	memoria_bloque = malloc(cantidad_de_marcos*marco_size); //char* que va a tener el contenido de todas las paginas
