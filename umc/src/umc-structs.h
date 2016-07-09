@@ -25,6 +25,8 @@
 	extern int marco_size;
 	extern int marcos_x_proc;
 
+	extern int retardo;
+
 	enum AlgoritmoReemplazo{
 		clockComun,
 		clockModificado

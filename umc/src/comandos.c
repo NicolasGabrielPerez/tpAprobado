@@ -1,7 +1,7 @@
 #include "comandos.h"
 
-void setRetardo(int retardo){
-	;
+void setRetardo(int newRetardo){
+	retardo = newRetardo;
 }
 
 void dumpAllTables(){

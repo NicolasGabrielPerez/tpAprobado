@@ -5,10 +5,30 @@
 int cantidad_de_marcos;
 int marco_size;
 int marcos_x_proc;
+int retardo;
+
 char* memoria_bloque;
 tabla_de_frames* tablaDeFrames;
 t_list* tablasDePaginas;
 enum AlgoritmoReemplazo algoritmoActivo;
+
+void demorarSolicitud()
+{
+   struct timespec req, rem;
+
+   if(retardo > 999)
+   {
+        req.tv_sec = (int)(retardo / 1000);                            /* Must be Non-Negative */
+        req.tv_nsec = (retardo - ((long)req.tv_sec * 1000)) * 1000000; /* Must be in range of 0 to 999999999 */
+   }
+   else
+   {
+        req.tv_sec = 0;                         /* Must be Non-Negative */
+        req.tv_nsec = retardo * 1000000;    /* Must be in range of 0 to 999999999 */
+   }
+
+   return nanosleep(&req , &rem);
+}
 
 int initMemoriaPrincipal(t_config* config){
 	cantidad_de_marcos = config_get_int_value(config, "MARCOS");
