@@ -68,8 +68,9 @@ void asignar(t_puntero puntero, t_valor_variable variable) {
 
 	t_variable* memoryAddr = getMemoryAddr(puntero);
 
-	umc_set(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size, &variable);
-
+	char* param = string_itoa(variable);
+	umc_set(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size, param);
+	free(param);
 	free(memoryAddr);
 
 	printf("Asignando en %d el valor %d\n", puntero, variable);
@@ -102,7 +103,7 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 	t_list* stack = pcb->stack;
 
 	//Get current stack content
-	t_stackContent* currentStackContent = list_get(stack, pcb->stackPosition);
+	//t_stackContent* currentStackContent = list_get(stack, pcb->stackPosition);
 
 	//Push
 	t_stackContent* newStackContent = init_stackContent();

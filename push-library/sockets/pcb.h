@@ -27,8 +27,8 @@ extern t_list* General_Process_List;
 //--------------------------Structs
 typedef struct Variable{
 	char* id;
-	int32_t pageNumber;
-	int32_t offset;
+	t_puntero pageNumber;
+	t_puntero offset;
 	t_size size;
 } t_variable;
 

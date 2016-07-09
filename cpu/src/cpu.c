@@ -22,10 +22,10 @@
 #include "nucleoFunctions.h"
 #include "umcFunctions.h"
 
-static char* DEFINICION_VARIABLES = "variables a, b, c";
-static char* ASIGNACION = "a = b + 12";
-static char* IMPRIMIR = "print b";
-static char* IMPRIMIR_TEXTO = "textPrint foo\n";
+//static char* DEFINICION_VARIABLES = "variables a, b, c";
+//static char* ASIGNACION = "a = b + 12";
+//static char* IMPRIMIR = "print b";
+//static char* IMPRIMIR_TEXTO = "textPrint foo\n";
 
 u_int32_t UMC_PAGE_SIZE = 4;
 u_int32_t QUANTUM_SIZE = 3;
@@ -52,6 +52,7 @@ AnSISOP_funciones functions = {
 	.AnSISOP_imprimirTexto	= imprimirTexto,
 	.AnSISOP_entradaSalida	= entradaSalida
 };
+
 AnSISOP_kernel kernel_functions = {
 		.AnSISOP_wait	= wait,
 		.AnSISOP_signal	= signal

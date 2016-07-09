@@ -45,20 +45,14 @@ void umc_init(t_config* config){
 	printf("UMC FD: %d\n", socket_umc);
 
 	//Hago handshake con umc
-	char* bufferHandshake[HEADER_SIZE_UMC];
-	memcpy(bufferHandshake, &HEADER_HANDSHAKE, sizeof(int32_t));
-
-	enviarOKConContenido(socket_umc, sizeof(int32_t), bufferHandshake );
-
-	free(bufferHandshake);
+	char* param = string_itoa(HEADER_HANDSHAKE);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	// Envio mi tipo: CPUs
-	char* bufferType[HEADER_SIZE_UMC];
-	memcpy(bufferType, &TIPO_CPU, sizeof(int32_t));
-
-	enviarOKConContenido(socket_umc, sizeof(int32_t), bufferType);
-
-	free(bufferType);
+	param = string_itoa(TIPO_CPU);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok != RESPUESTA_OK) {
@@ -79,7 +73,7 @@ void umc_process_active(int32_t processId) {
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
-	char* bufferHeader[HEADER_SIZE_UMC];
+	char bufferHeader[HEADER_SIZE_UMC];
 	memcpy(bufferHeader, &processId, sizeof(int32_t));
 
 	int bytesHeader = HEADER_SIZE_UMC;
@@ -102,22 +96,31 @@ void umc_process_active(int32_t processId) {
 	}
 }
 
-void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
+void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
+
 
 	//Envio header: HEADER_ALMACENAR_PAGINAS
-	enviarOKConContenido(socket_umc, sizeof(int32_t), &HEADER_ALMACENAR_PAGINAS);
+	char* param = string_itoa(HEADER_ALMACENAR_PAGINAS);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	//Enviar page
-	enviarOKConContenido(socket_umc, sizeof(t_puntero), &page);
+	param = string_itoa(page);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	//Enviar offset
-	enviarOKConContenido(socket_umc, sizeof(t_puntero), &offset);
+	param = string_itoa(offset);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	//Enviar size
-	enviarOKConContenido(socket_umc, sizeof(u_int32_t), &size);
+	param = string_itoa(size);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	//Enviar buffer
-	enviarOKConContenido(socket_umc, size, &buffer);
+	enviarOKConContenido(socket_umc, size, buffer);
 
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);
@@ -128,19 +131,27 @@ void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer) {
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 }
 
-t_valor_variable umc_get(t_puntero page, t_puntero offset, u_int32_t size) {
+t_valor_variable umc_get(t_puntero page, t_puntero offset, t_size size) {
 
 	//Envio header: HEADER_SOLICITAR_PAGINAS
-	enviarOKConContenido(socket_umc, sizeof(int32_t), &HEADER_SOLICITAR_PAGINAS);
+	char* param = string_itoa(HEADER_SOLICITAR_PAGINAS);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	//Enviar page
-	enviarOKConContenido(socket_umc, sizeof(t_puntero), &page);
+	param = string_itoa(page);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	//Enviar offset
-	enviarOKConContenido(socket_umc, sizeof(t_puntero), &offset);
+	param = string_itoa(offset);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	//Enviar size
-	enviarOKConContenido(socket_umc, sizeof(u_int32_t), &size);
+	param = string_itoa(size);
+	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
+	free(param);
 
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);

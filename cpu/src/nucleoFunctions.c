@@ -88,6 +88,8 @@ void nucleo_init(t_config* config) {
 	int bytesHandshake = HEADER_SIZE_NUCLEO;
 	if (send(socket_nucleo, bufferHandshake, bytesHandshake, 0) == -1) {
 			perror("Error enviando handshake nucleo");
+			printf("Cerrando programa");
+			exit(0);
 	};
 	if(bufferHandshake != 0) free(bufferHandshake);
 
@@ -97,6 +99,8 @@ void nucleo_init(t_config* config) {
 	int bytesType = HEADER_SIZE_NUCLEO;
 	if (send(socket_nucleo, bufferType, bytesType, 0) == -1) {
 		perror("Error enviando tipo a nucleo");
+		printf("Cerrando programa");
+		exit(0);
 	};
 	free(bufferType);
 }
@@ -111,10 +115,9 @@ PCB* nucleo_recibir_pcb() {
 
 	int LENGTH = 1024;
 	char* buffer = malloc(sizeof(char*) * LENGTH);
-	int bytesReceived = receiveData(buffer);
+	receiveData(buffer);
 
-	//TODO: Falta Serializar
-	PCB* pcb = new_pcb();
+	PCB* pcb = deserialize_pcb(buffer);
 
 	free(buffer);
 
@@ -158,12 +161,18 @@ char* nucleo_notificarFinDeRafaga(PCB* pcb) {
 		 perror("Error enviando header Fin de Rafaga");
 	};
 
-	//Enviar PCB
-//	if (send(socket_nucleo, quantumCount, sizeof(u_int32_t), 0) == -1) {
-//		 perror("Error enviando count Fin de Rafaga");
-//	};
 
-	return "Test";
+	Buffer* buffer = new_buffer();
+	serialize_pcb(pcb, buffer);
+
+	//Enviar PCB
+	if (send(socket_nucleo, buffer->data, buffer->size, 0) == -1) {
+		 perror("Error enviando count Fin de Rafaga");
+	};
+
+	buffer_free(buffer);
+
+	return "Que tengo que devolver?";
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {
