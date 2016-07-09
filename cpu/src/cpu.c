@@ -60,8 +60,8 @@ AnSISOP_kernel kernel_functions = {
 };
 
 //Devuelve un booleano si tiene que salir del programa.
-int doQuantum(PCB* pcb, int quantumCount) {
-	int hasToExit = 0;
+bool doQuantum(PCB* pcb, int quantumCount) {
+	bool hasToExit = false;
 
 	//Incrementar Program Counter
 	pcb->programCounter++;
@@ -83,7 +83,7 @@ int doQuantum(PCB* pcb, int quantumCount) {
 		char* result = nucleo_notificarFinDeRafaga(pcb);
 		int isDifferent = strcmp(result, "SIGUSR1");
 		if(isDifferent == 0) {
-			hasToExit = 1;
+			hasToExit = true;
 		}
 
 		quantumCount = 0;
@@ -93,17 +93,17 @@ int doQuantum(PCB* pcb, int quantumCount) {
 }
 
 //Devuelve un booleano si tiene que salir del programa.
-int receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
+bool receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
 
 	log_trace(logger, "Recibido el PCB, ejecutando...");
 
 	int quantumCounter = 0;
-	int hasToExit = 0;
+	int hasToExit = false;
 
 	while(quantumCounter <= QUANTUM_COUNT) {
-		int tmp = doQuantum(pcb, quantumCounter);
+		bool tmp = doQuantum(pcb, quantumCounter);
 
-		if(hasToExit == 0) hasToExit = tmp;
+		if(hasToExit == false) hasToExit = tmp;
 		quantumCounter++;
 	}
 	return hasToExit;
@@ -136,8 +136,8 @@ int main(int argc, char **argv) {
 	nucleo_init(config);
 	umc_init(config);
 
-	int hasToExit = 0;
-	while(hasToExit == 0) {
+	bool hasToExit = false;
+	while(hasToExit == false) {
 		pcb = nucleo_recibir_pcb();
 		umc_process_active(pcb->processId);
 		hasToExit = receiveInstructions(pcb, QUANTUM);

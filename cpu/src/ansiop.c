@@ -128,7 +128,9 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
 	//Push
 	t_stackContent* newStackContent = init_stackContent();
-	newStackContent->returnAddress = donde_retornar;
+	if(donde_retornar != 0) {
+		newStackContent->returnAddress = donde_retornar;
+	}
 
 	pcb->stackIndex++;
 	list_add(stack, newStackContent);
@@ -146,7 +148,7 @@ void llamarSinRetorno(t_nombre_etiqueta etiqueta) {
 
 	log_trace(logger, string_from_format("ANSISOP: llamarSinRetorno, %s", etiqueta));
 
-	callFunction(etiqueta, pcb->codeIndex);
+	callFunction(etiqueta, 0);
 }
 
 void finalizar() {
@@ -162,19 +164,25 @@ void retornar(t_valor_variable valor) {
 	//Obtener contentido
 	t_list* stack = pcb->stack;
 	t_stackContent* content = list_get(stack, pcb->stackPosition);
-	content->returnVariable = valor; //Setear ubicacion de la variable a retornar
 
-	//Asignar variable de retorno y program counter
-	pcb->codeIndex = content->returnAddress;
+	pcb->programCounter = content->returnAddress;
 
-	//TODO
-	pcb->programCounter = 0;
-	valor = content->returnVariable;
+	//Liberar del stack de variables en UMC, ver la manera de restar el index
+	pcb->memoryIndex--;
 
 	//Pop
 	free_stackContent(content);
-	list_remove(stack, pcb->stackIndex);
+	list_remove(stack, pcb->stackPosition);
 	pcb->stackIndex--;
+
+	//Settear el valor en la siguiente posicion de UMC
+	pcb->memoryIndex++;
+	t_variable* addr = getMemoryAddr(pcb->memoryIndex);
+	content->returnVariable = addr;
+
+	char* param = string_itoa(valor);
+	umc_set(addr->pageNumber, addr->offset, addr->size, param);
+	free(param);
 }
 
 void imprimir(t_valor_variable valor) {
