@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
 
 	int hasToExit = 0;
 	while(hasToExit == 0) {
-		pcb = nucleo_recibirInstruccion();
+		pcb = nucleo_recibir_pcb();
 		hasToExit = receiveInstructions(pcb, 3);
 	}
 
