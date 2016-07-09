@@ -67,7 +67,12 @@ void dumpTable(int pid){
 }
 
 void dumpAllData(){
-	;
+	int i;
+	tabla_de_paginas* tablaActual;
+	for(i = 0; i<list_size(tablasDePaginas); i++){
+		tablaActual = list_get(tablasDePaginas, i);
+		printData(tablaActual);
+	}
 }
 
 void dumpData(int pid){
