@@ -1,6 +1,7 @@
 #include "umc-structs.h"
 
 #include "pages_replacement.h"
+#include <time.h>
 
 int cantidad_de_marcos;
 int marco_size;
@@ -27,7 +28,7 @@ void demorarSolicitud()
         req.tv_nsec = retardo * 1000000;    /* Must be in range of 0 to 999999999 */
    }
 
-   return nanosleep(&req , &rem);
+   nanosleep(&req , &rem);
 }
 
 int initMemoriaPrincipal(t_config* config){
@@ -66,7 +67,6 @@ tabla_de_paginas* buscarPorPID(int pidABuscar){
 	int i;
 	for(i=0; i<list_size(tablasDePaginas);i++){
 		tabla_de_paginas* actual = list_get(tablasDePaginas, i);
-		printf("pid actual:%d\n", actual->pid);
 		if(actual->pid == pidABuscar){
 			return actual;
 		}
@@ -78,7 +78,6 @@ tabla_de_paginas_entry* buscarEntradaPorPagina(tabla_de_paginas* tablaDePaginas,
 	int i;
 	for(i=0; i<list_size(tablaDePaginas->entradas);i++){
 		tabla_de_paginas_entry* actual = list_get(tablaDePaginas->entradas, i);
-		printf("nroPagina actual:%d\n", actual->nroPagina);
 		if(actual->nroPagina == nroPagina){
 			return actual;
 		}
