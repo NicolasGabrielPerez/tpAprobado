@@ -36,6 +36,17 @@
 	extern int32_t TIPO_CPU;
 	extern int32_t TIPO_SIZE;
 
+	typedef struct message{
+		int32_t header;
+		int contenidoSize;
+		char* contenido; //serializado
+		int32_t codError; // if(-1) ok
+	} message;
+
+	message* receiveMessage(int socket);
+
+	int32_t sendMessage(int socket, int header, int contenidoSize, char* contenidoSerializado);
+
 	response* recibirResponse(int socket);
 
 	//Creador de response con campo ok=1, el resto en 0

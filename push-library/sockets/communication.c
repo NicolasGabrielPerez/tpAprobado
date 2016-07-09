@@ -61,21 +61,17 @@ response* recibirResponse(int socket){
 	response* respuesta = malloc(sizeof(response));
 	if (recv(socket, &respuesta->ok, sizeof(int32_t), 0) == -1) {
 		perror("recv");
-		exit(1);
 	}
 	if (recv(socket, &respuesta->codError, sizeof(int32_t), 0) == -1) {
 		perror("recv");
-		exit(1);
 	}
 	if (recv(socket, &respuesta->contenidoSize, sizeof(int32_t), 0) == -1) {
 		perror("recv");
-		exit(1);
 	}
 	if(respuesta->contenidoSize >0){
 		respuesta->contenido = malloc(respuesta->contenidoSize);
 		if (recv(socket, respuesta->contenido, respuesta->contenidoSize, 0) == -1) {
 			perror("recv");
-			exit(1);
 		}
 	} else{
 		respuesta->contenido = 0;
@@ -105,11 +101,7 @@ response* createFAILResponse(int codError){
 int enviarResponse(int socket, response* respuesta){
 	int respuestaSize;
 	char* respuestaSerializada = serializarResponse(respuesta, &respuestaSize);
-	if (send(socket, respuestaSerializada, respuestaSize, 0) == -1) {
-		perror("recv");
-		return EXIT_FAILURE;
-	}
-	return EXIT_SUCCESS;
+	return send(socket, respuestaSerializada, respuestaSize, 0);
 }
 
 int enviarOKSinContenido(int socket){
@@ -133,4 +125,46 @@ void enviarResultado(response* response, int socket){
 	} else{
 		enviarFAIL(socket, response->codError);
 	}
+}
+
+message* receiveMessage(int socket){
+	message* message = malloc(sizeof(message));
+
+	// HEADER
+	response* responseHeader = recibirResponse(socket);
+	if(!responseHeader->ok){
+		message->codError = responseHeader->codError;
+		deleteResponse(responseHeader);
+		return message;
+	}
+	message->header = convertToInt32(responseHeader->contenido);
+	deleteResponse(responseHeader);
+
+	//PAYLOAD
+	response* responsePayload = recibirResponse(socket);
+	message->contenido = responsePayload->contenido;
+	message->contenidoSize = responsePayload->contenidoSize;
+	if(!responsePayload->ok){
+		message->codError = responsePayload->codError;
+		deleteResponse(responsePayload);
+		return message;
+	}
+	deleteResponse(responsePayload);
+
+	return message;
+}
+
+int32_t sendMessage(int socket, int header, int contenidoSize, char* contenidoSerializado){
+	//HEADER
+	char* headerSerializado = malloc(sizeof(int32_t));
+	serializarInt(headerSerializado, header);
+	int headerResult = enviarOKConContenido(socket, sizeof(int32_t), headerSerializado);
+
+	if(headerResult == -1){
+		return headerResult;
+	}
+
+	//PAYLOAD
+	int payloadResult = enviarOKConContenido(socket, contenidoSize, contenidoSerializado);
+	return payloadResult;
 }
