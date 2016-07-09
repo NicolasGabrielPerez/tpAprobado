@@ -90,8 +90,42 @@ int getEspacioContiguoStart(int cantPaginas){
 	return -1;
 }
 
+frame_entry* getNextUsed(int aPartirDe){
+	int i;
+	for(i=aPartirDe; i<cantPaginasSwap; i++){
+		if(!frameDisponible(i)){
+			return getFrameEntryPorNroFrame(i);
+		}
+	}
+	return NULL;
+}
+
+void setearOcupado(int nroFrame){
+	bitarray_set_bit(swapAdmin->bitMap, nroFrame);
+}
+
+void setearLibre(int nroFrame){
+	bitarray_clean_bit(swapAdmin->bitMap, nroFrame);
+}
+
+int bajarNextUsed(int nroFrameDisponible){ //return -1 si no hay nada que bajar. Es decir, no hay ningun frame ocupado a partir de esa posicion
+	frame_entry* nextUsed = getNextUsed(nroFrameDisponible);
+	if(nextUsed == NULL) return -1;
+
+	escribirEnParticion(nroFrameDisponible*paginaSize, leerDeFrame(nextUsed), paginaSize);
+	setearOcupado(nroFrameDisponible);
+	setearLibre(nextUsed);
+	return 1;
+}
+
 void desfragmentarParticion(){
-	return;
+	int i;
+
+	for(i = 0; i< cantPaginasSwap; i++){
+		if(frameDisponible()){
+			if(bajarNextUsed(i) == -1) return; //si no hay que seguir compactando => terminar desfragmentacion
+		}
+	}
 }
 
 void initPaginas(int pid, int cantPaginas, char* codFuente){
