@@ -40,10 +40,9 @@ void umc_init(t_config* config){
 
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
 	char* ip_umc = config_get_string_value(config, "IP_UMC");
-	printf("Config: PUERTO_UMC=%s\n", puerto_umc);
+	log_trace(logger, "UMC IP: %s PUERTO: %s\n", ip_umc, puerto_umc);
 
 	socket_umc = crear_socket_cliente(ip_umc, puerto_umc); //socket usado para conectarse a la umc
-	printf("UMC FD: %d\n", socket_umc);
 
 	//Hago handshake con umc
 	char* param = string_itoa(HEADER_HANDSHAKE);
@@ -58,6 +57,7 @@ void umc_init(t_config* config){
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok != RESPUESTA_OK) {
 		log_error(logger, "Error recibiendo respuesta proceso activo");
+		exitProgram();
 	}
 
 	PAGE_SIZE = (u_int32_t) respuesta->contenido;

@@ -78,10 +78,9 @@ void nucleo_init(t_config* config) {
 
 	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
 	char* ip_nucleo = config_get_string_value(config, "IP_NUCLEO");
-	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
+	log_trace(logger, "NUCLEO IP: %s PUERTO: %s\n", ip_nucleo, puerto_nucleo);
 
 	socket_nucleo = crear_socket_cliente(ip_nucleo, puerto_nucleo); //socket usado para conectarse al nucleo
-	printf("NUCLEO FD: %d\n", socket_nucleo);
 
 	//Hago handshake con umc
 	char* bufferHandshake[HEADER_SIZE_NUCLEO];
@@ -89,8 +88,7 @@ void nucleo_init(t_config* config) {
 	int bytesHandshake = HEADER_SIZE_NUCLEO;
 	if (send(socket_nucleo, bufferHandshake, bytesHandshake, 0) == -1) {
 			log_error(logger, "Error enviando handshake nucleo");
-			printf("Cerrando programa");
-			exit(0);
+			exitProgram();
 	};
 	if(bufferHandshake != 0) free(bufferHandshake);
 
@@ -100,8 +98,7 @@ void nucleo_init(t_config* config) {
 	int bytesType = HEADER_SIZE_NUCLEO;
 	if (send(socket_nucleo, bufferType, bytesType, 0) == -1) {
 		log_error(logger, "Error enviando tipo a nucleo");
-		printf("Cerrando programa");
-		exit(0);
+		exitProgram();
 	};
 	free(bufferType);
 
@@ -115,7 +112,6 @@ void nucleo_delete(){
 
 
 PCB* nucleo_recibir_pcb() {
-
 
 	log_trace(logger, string_from_format("NUCLEO: recibiendo PCB"));
 

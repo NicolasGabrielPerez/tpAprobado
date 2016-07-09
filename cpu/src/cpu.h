@@ -6,4 +6,6 @@
 extern t_log* logger;
 
 
+void exitProgram();
+
 #endif

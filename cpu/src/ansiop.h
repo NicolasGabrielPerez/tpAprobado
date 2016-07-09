@@ -1,5 +1,5 @@
-#ifndef DUMMY_ANSISOP_H_
-	#define DUMMY_ANSISOP_H_
+#ifndef ANSISOP_H
+	#define ANSISOP_H
 
 
 	#include <stdio.h>

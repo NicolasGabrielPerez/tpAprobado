@@ -109,16 +109,26 @@ int receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
 	return hasToExit;
 }
 
+void exitProgram() {
+
+	log_trace(logger, "Cerrando programa");
+
+	umc_delete();
+	nucleo_delete();
+
+	log_destroy(logger);
+	exit(EXIT_SUCCESS);
+}
+
 int main(int argc, char **argv) {
 
-
 	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_TRACE);
-	//t_log* loggerError = log_create("log.txt", "CPU", true, LOG_LEVEL_ERROR);
+//	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_ERROR);
 
 	t_config* config = config_create("cpu.config");
-	if(config==NULL){
-		printf("No se pudo leer la configuración");
-		return EXIT_FAILURE;
+	if(config == NULL){
+		log_error(logger, "No se pudo leer la configuración");
+		exitProgram();
 	}
 
 	log_trace(logger, "Iniciada la configuracion");
@@ -133,10 +143,7 @@ int main(int argc, char **argv) {
 		hasToExit = receiveInstructions(pcb, QUANTUM);
 	}
 
-	umc_delete();
-	nucleo_delete();
-
-	log_destroy(logger);
+	exitProgram();
 
 	return EXIT_SUCCESS;
 }
