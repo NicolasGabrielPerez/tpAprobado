@@ -76,7 +76,7 @@ typedef struct PCB {
 //--------------------------Structs
 
 //--------------------------Functions
-PCB* init_pcb();
+PCB* new_pcb();
 
 void free_pcb(PCB* pcb);
 

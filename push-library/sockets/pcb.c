@@ -19,7 +19,7 @@
 #include "pcb.h"
 #include "serialization.h"
 
-extern t_list* General_Process_List;
+t_list* General_Process_List;
 
 int get_greater_value(PCB* pcb, int lastId){
 	if(pcb->processId > lastId)
