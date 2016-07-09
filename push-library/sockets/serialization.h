@@ -34,6 +34,7 @@
 	char* serializarResponse(response* response, int* responseSize);
 
 	struct Buffer *new_buffer();
+	void buffer_free(Buffer* buffer);
 
 	void dictionary_serialization_iterator(t_dictionary *self, void(*closure)(char*,void*, Buffer*), Buffer* buffer);
 
@@ -68,5 +69,8 @@
 	t_dictionary* deserialize_dictionary(char* serializedDictionary, int elementsCount);
 
 	int convertToInt32(char* buffer);
+
+	char* serialize_pcb(PCB *pcb, Buffer *buffer);
+	PCB* deserialize_pcb(char* serializedPCB);
 
 #endif

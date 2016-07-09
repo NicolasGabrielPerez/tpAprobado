@@ -31,6 +31,11 @@ struct Buffer *new_buffer() {
     return b;
 }
 
+void buffer_free(Buffer* buffer) {
+	free(buffer->data);
+	free(buffer);
+}
+
 //Iterator que además recibe un buffer como parámetro
 void dictionary_serialization_iterator(t_dictionary *self, void(*closure)(char*,void*, Buffer*), Buffer* buffer) {
 	int table_index;
