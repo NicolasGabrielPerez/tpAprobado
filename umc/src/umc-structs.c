@@ -15,7 +15,7 @@ int initMemoriaPrincipal(t_config* config){
 	marco_size = config_get_int_value(config, "MARCO_SIZE");
 	marcos_x_proc = config_get_int_value(config, "MARCOS_X_PROC");
 
-	char* algoritmo = config_get_int_value(config, "ALGORITMO");
+	char* algoritmo = config_get_string_value(config, "ALGORITMO");
 
 	if(string_equals_ignore_case(algoritmo, "clock")){
 		algoritmoActivo = clockComun;

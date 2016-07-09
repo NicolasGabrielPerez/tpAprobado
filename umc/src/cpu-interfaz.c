@@ -122,5 +122,9 @@ void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){
 		enviarFAIL(cpu_socket, PID_NO_EXISTE);
 		return;
 	}
+	if(TLBEnable){
+		flush(pidActivo);
+	}
 	*pidActivo = pid;
+
 }

@@ -9,18 +9,21 @@
 	typedef struct tlb_entry{
 		int pid;
 		int nroPagina;
-		int frame;
+		int nroFrame;
+		char* last_use;
 	} tlb_entry;
 
 	typedef struct tlb{
-		tlb_entry* entradas;
-		t_queue* usedPages; //cola de indices de las entradas
+		t_list* entradas;
+		int size; //cantidad de entradas
 	} tlb;
 
 	void initTLB(t_config* config);
 
-	int actualizarTLB(int nroPagina, int pid);
+	void actualizarTLB(int nroPagina, int pid, int nroFrame);
 
 	int buscarEnTLB(int nroPagina, int pid);
+
+	void flush(int pid);
 
 #endif /* TLB_H_ */
