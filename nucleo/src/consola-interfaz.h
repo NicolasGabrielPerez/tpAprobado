@@ -10,4 +10,8 @@
 
 	void manejarConexionesConsolas();
 
+	void sendResults(int socket, char* result);
+
+	void* recivirProgramaANSISOP(int socket);
+
 #endif

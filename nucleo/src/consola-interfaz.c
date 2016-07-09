@@ -1,9 +1,30 @@
 #include "consola-interfaz.h"
 #include <sockets/communication.h>
+#include <sockets/sockets.h>
 
 int consola_listener;
 fd_set consola_sockets_set;
 int fd_consola_max;
+
+void sendResults(int socket, char* result){
+int	contenidoSize = sizeof(result);
+
+	if (enviarOKConContenido(socket,contenidoSize, result)< 0){
+		perror("send request");
+		exit(1);
+	}
+
+}
+
+void* recivirProgramaANSISOP(int socket){
+void* program;
+	if (recv_dinamic(socket, program)<0){
+		perror("program");
+	exit(1);
+	}
+
+return program;
+}
 
 int convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
