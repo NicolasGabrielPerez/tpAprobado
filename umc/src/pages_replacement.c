@@ -49,21 +49,57 @@ presente* siguientePresente(tabla_de_paginas* tablaDePaginas){
 	return list_get(presentes, tablaDePaginas->aguja);
 }
 
-presente* obtenerSegunClockModificado(tabla_de_paginas* tablaDePaginas){
+presente* clockModificado_Paso1(tabla_de_paginas* tablaDePaginas){
 	presente* actual = list_get(tablaDePaginas->presentes, tablaDePaginas->aguja);
 
-		while(actual){ //forever hasta enconctrar con bit u=0
+	int agujaOriginal = tablaDePaginas->aguja;
 
-			if(!actual->uso){
-				return actual;
-			}
+	while(1){
 
-			actual->uso = 0;
-
-			actual = siguientePresente(tablaDePaginas);
+		if(!actual->uso && !actual->modificado){
+			return actual;
 		}
 
-		return 0; //este return no deberia ocurrir nunca
+		actual = siguientePresente(tablaDePaginas);
+
+		if(tablaDePaginas->aguja == agujaOriginal)return NULL; //se cumplio un ciclo
+	}
+}
+
+presente* clockModificado_Paso2(tabla_de_paginas* tablaDePaginas){
+	presente* actual = list_get(tablaDePaginas->presentes, tablaDePaginas->aguja);
+
+	int agujaOriginal = tablaDePaginas->aguja;
+
+	while(1){
+
+		if(!actual->uso && actual->modificado){
+			return actual;
+		}
+
+		actual->uso = 0;
+
+		actual = siguientePresente(tablaDePaginas);
+
+		if(tablaDePaginas->aguja == agujaOriginal)return NULL; //se cumplio un ciclo
+	}
+}
+
+presente* obtenerSegunClockModificado(tabla_de_paginas* tablaDePaginas){
+
+	presente* victima = clockModificado_Paso1(tablaDePaginas);
+
+	if(victima != NULL){
+		return victima;
+	}
+
+	victima = clockModificado_Paso2(tablaDePaginas);
+
+	if(victima != NULL){
+		return victima;
+	}
+
+	return obtenerSegunClockModificado(tablaDePaginas);
 }
 
 presente* obtenerSegunClock(tabla_de_paginas* tablaDePaginas){
@@ -129,7 +165,7 @@ umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina){
 	presente* presenteACargar = obtenerIndiceDondeCargar(tablaDePaginas);
 	prepararPresenteParaSerCargado(presenteACargar, tablaDePaginas, nroPagina);
 
-	cargarEnPresentes(tablaDePaginas->pid, presente); //cargar nuevo presente en memoria real
+	cargarEnPresentes(tablaDePaginas->pid, presenteACargar); //cargar nuevo presente en memoria real
 	tabla_de_frame_entry* frameCargado = obtenerEntradaDeFrame(presenteACargar->nroFrame);
 
 	return createUmcResult(1, 0, pageEntry, frameCargado);
