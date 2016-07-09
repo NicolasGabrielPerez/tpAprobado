@@ -18,6 +18,8 @@
 		int size; //cantidad de entradas
 	} tlb;
 
+	extern tlb* TLB;
+
 	void initTLB(t_config* config);
 
 	void actualizarTLB(int nroPagina, int pid, int nroFrame);
