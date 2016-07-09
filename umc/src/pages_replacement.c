@@ -4,6 +4,8 @@
 
 enum AlgoritmoReemplazo algoritmo;
 
+pthread_mutex_t search_free_frame = PTHREAD_MUTEX_INITIALIZER;
+
 void init(enum AlgoritmoReemplazo algoritmoReemplzao){
 	algoritmo = algoritmoReemplzao;
 }
@@ -17,11 +19,12 @@ void prepararPresenteParaSerCargado(presente* presente, tabla_de_paginas* tablaD
 	}
 
 	if(presente->nroPagina == -1){ //Todavia hay lugar libre
-		// ----semaphore starts -----
-		int nroFrameDisponible = obtenerFrameDisponible();
-		tabla_de_frame_entry* frameDisponible = obtenerEntradaDeFrame(nroFrameDisponible);
-		frameDisponible->ocupado = 1;
-		// ----semaphore ends -----
+		pthread_mutex_lock(&search_free_frame);
+			int nroFrameDisponible = obtenerFrameDisponible();
+			tabla_de_frame_entry* frameDisponible = obtenerEntradaDeFrame(nroFrameDisponible);
+			frameDisponible->ocupado = 1;
+		pthread_mutex_unlock(&search_free_frame);
+
 		presente->nroFrame = nroFrameDisponible;
 	}
 	presente->nroPagina = nroPagina;
