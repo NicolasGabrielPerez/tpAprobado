@@ -17,7 +17,12 @@ void setRetardo(int newRetardo){
 }
 
 void dumpAllTables(){
-	;
+	int i;
+	tabla_de_paginas* tablaActual;
+	for(i = 0; i<list_size(tablasDePaginas); i++){
+		tablaActual = list_get(tablasDePaginas, i);
+		printPagesTable(tablaActual);
+	}
 }
 
 void dumpTable(int pid){
