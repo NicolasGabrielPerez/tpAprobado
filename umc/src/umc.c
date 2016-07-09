@@ -3,8 +3,7 @@
 #include "cpu-interfaz.h"
 #include "nucleo-interfaz.h"
 #include "tlb.h"
-
-//TODO en caso de Fallo, enviar un int32 adicional con el codigo de error
+#include "console-umc.h"
 
 pthread_attr_t attr;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
@@ -139,8 +138,7 @@ int main(void) {
 
 	config_destroy(config);
 
-	//TODO
-	// Crear hilo para consola
+	initUmcConsole();
 
 	while(1){
 		printf("Esperando conexiones...");
