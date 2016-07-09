@@ -5,15 +5,35 @@ t_queue* READY_Process_Queue;
 char** io_ids;
 char** io_sleep_times;
 
+pthread_attr_t attr;
+
+//Función que se cargará en el hilo de dispositivo
+void ioDeviceProgram(t_IO_Device* device){
+	while(1){
+		if(!queue_is_empty(device->BlockedProcessesQueue)){
+			attend_blocked_processes(device);
+		}
+	}
+}
+
 //Levanta los dispositivos externos desde configuración y arma una lista de t_IO_Device
 void set_IO_devices_list(){
 	int i = 0;
+
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
 	while(io_ids[i] != NULL){
 		t_IO_Device* device = malloc(sizeof(t_IO_Device));
 		device->ioId = io_ids[i];
 		device->sleepTime = io_sleep_times[i];
 		device->BlockedProcessesQueue = queue_create();
 		list_add(IO_Device_List, device);
+
+		//TODO: Crear hilo por dispositivo
+		pthread_t deviceThread;
+		pthread_create(&deviceThread, &attr, &ioDeviceProgram, (void*) device);
+
 		i++;
 	}
 	//TODO: debo liberar la memoria de los arrays de configuración????
@@ -25,7 +45,7 @@ void set_pcb_BLOCKED_by_device(PCB* pcb, t_IO_Device* device){
 }
 
 void change_status_BLOCKED_to_READY(int PID){
-
+//	TODO:Implementar
 }
 
 void execute_process_IO(int sleepTime){

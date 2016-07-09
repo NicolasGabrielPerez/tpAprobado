@@ -71,8 +71,6 @@ void print_dictionary(t_dictionary* dictionary){
 	dictionary_iterator(dictionary, print_dictionary_element);
 }
 
-//TODO: Serializar índice de etiquetas
-
 //TODO: Serializar estructura de stack
 
 //Serializa la estructura de código de programa entera

@@ -16,7 +16,8 @@
 #include <arpa/inet.h>
 #include <sockets/sockets.h>
 #include <sockets/config.h>
-#include <sockets/pcb.h>>
+#include <sockets/pcb.h>
+#include <pthread.h>
 
 extern t_list* IO_Device_List;
 

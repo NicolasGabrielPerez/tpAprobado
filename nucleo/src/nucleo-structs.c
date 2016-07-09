@@ -1,12 +1,13 @@
 #include "nucleo-structs.h"
 
 int quantum;
-int quantum_sleep ;
+int quantum_sleep;
 char** io_ids;
 char** io_sleep_times;
 char** semaforos_ids;
 char** semaforos_init_values;
 char** shared_values;
+int stack_size;
 
 int32_t memoryPageSize;
 
@@ -28,6 +29,7 @@ void initNucleo(t_config* config){
     semaforos_ids = config_get_array_value(config, "SEM_IDS");
 	semaforos_init_values = config_get_array_value(config, "SEM_INIT");
 	shared_values = config_get_array_value(config, "SHARED_VARS");
+	stack_size = config_get_array_value(config, "STACK_SIZE");
 
 	//Estruturas para control de estados
 	READY_Process_Queue = queue_create();
@@ -51,11 +53,11 @@ void initNucleo(t_config* config){
 	set_vars_dictionary();
 }
 
-//Devuelve la cantidad de páginas requeridas en SWAP para salvar el código TODO:agregar tamaño de stack
+//Devuelve la cantidad de páginas requeridas en SWAP para salvar el código
 int getProgramPagesCount(char* program){
 	int pagesCount = 0;
 	if(memoryPageSize != 0){
-		pagesCount =  strlen(program) % memoryPageSize;
+		pagesCount =  (strlen(program) % memoryPageSize) + stack_size;
 	}
 
 	return pagesCount;
