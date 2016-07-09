@@ -63,7 +63,7 @@ void recibirPedidoPagina(){
 		exit(1);
 	}
 
-	response* paginaResult = clockGetPagina(nroPagina, pid);
+	response* paginaResult = getPagina(nroPagina, pid);
 	enviarResultado(paginaResult, umc_socket);
 }
 

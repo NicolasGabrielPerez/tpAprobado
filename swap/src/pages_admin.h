@@ -20,4 +20,6 @@
 
 	response* finalizarPrograma(int pid);
 
+	response* getPagina(int nroPagina, int pid);
+
 #endif /* PAGES_ADMIN_H_ */

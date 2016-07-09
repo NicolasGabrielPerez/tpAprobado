@@ -42,6 +42,14 @@ int hayEspacioDisponible(int cantPaginas){
 }
 
 int existePid(int pid){
+	int i;
+	frame_entry* entry;
+	for(i = 0; i< cantPaginasSwap; i++){
+		entry = getFrameEntryPorNroFrame(i);
+		if(entry->pid == pid){
+			return 1;
+		}
+	}
 	return 0;
 }
 
@@ -142,7 +150,21 @@ void initPaginas(int pid, int cantPaginas, char* codFuente){
 }
 
 response* getPagina(int nroPagina, int pid){
-	return NULL;
+	int i;
+
+	if(!existePid(pid)){
+		return createFAILResponse(PID_NO_EXISTE);
+	}
+
+	frame_entry* entry;
+	for(i = 0; i< cantPaginasSwap; i++){
+		entry = getFrameEntryPorNroFrame(i);
+		if(entry->pid == pid && entry->nroPagina == nroPagina){
+			return createResponse(1, 0, paginaSize, leerDeFrame(entry));
+		}
+	}
+
+	return createFAILResponse(PAGINA_NO_EXISTE);
 }
 
 void liberarFrame(int nroFrame){

@@ -34,7 +34,6 @@
 
 	typedef struct frame_entry{
 		int nroFrame;
-		int particionOffset;
 		int pid;
 		int nroPagina;
 	} frame_entry;
