@@ -93,6 +93,16 @@ void flushTlb(){
 }
 
 void flushMemory(int pid){
-	;
+	tabla_de_paginas* tabla = buscarPorPID(pid);
+	if(tabla == NULL){
+		printf("Fallo: tabla no encontrada");
+	};
+
+	int i;
+	tabla_de_paginas_entry* entry;
+	for(i=0; i<tabla->entradas->elements_count; i++){
+		entry = list_get(tabla, i);
+		entry->modificado = 0;
+	}
 }
 

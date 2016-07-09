@@ -46,7 +46,7 @@ void parsearDumpTable(char* command){
 	int offset = sizeof("dump table") - 1;
 	char* sPid = string_substring_from(command, offset);
 
-	int pid = strtol(pid, NULL, 10);
+	int pid = strtol(sPid, NULL, 10);
 
 	if(pid <= 0){
 		dumpAllTables();
@@ -60,7 +60,7 @@ void parsearDumpData(char* command){
 	int offset = sizeof("dump data") - 1;
 	char* sPid = string_substring_from(command, offset);
 
-	int pid = strtol(pid, NULL, 10);
+	int pid = strtol(sPid, NULL, 10);
 
 	if(pid <= 0){
 		dumpAllData();
@@ -74,7 +74,7 @@ void parsearFlushMemory(char* command){
 	int offset = sizeof("dump data") - 1;
 	char* sPid = string_substring_from(command, offset);
 
-	int pid = strtol(pid, NULL, 10);
+	int pid = strtol(sPid, NULL, 10);
 
 	if(pid <= 0){
 		printf("Fallo: pid invalido o vacio");
@@ -141,6 +141,6 @@ void initUmcConsole(){
 	printf("retardo <milisegundos> *Retardo a esperar ante una solicitud\n");
 	printf("dump <info> <pid> *info: 'table' o 'data'. Pid vacio => todos los procesos.\n");
 	printf("flush tlb *Limpiar toda la tlb\n");
-	printf("flush memory <pid> *Marca como modificada todas las paginas del pid\n");
+	printf("flush memory <pid> *Marca como modificadas todas las paginas del pid\n");
 	printf("----------------------------------------------------------------------------\n");
 }

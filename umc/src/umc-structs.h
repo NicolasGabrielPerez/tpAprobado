@@ -109,4 +109,6 @@
 
 	void cargarEnMemoriaPrincipal(char* pagina, int nroFrame);
 
+	tabla_de_frame_entry* obtenerEntradaDeFrame(int nroFrame);
+
 #endif /* UMC_STRUCTS_H_ */
