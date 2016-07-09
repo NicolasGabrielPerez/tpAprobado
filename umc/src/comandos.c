@@ -84,7 +84,12 @@ void dumpData(int pid){
 }
 
 void flushTlb(){
-	;
+	if(!TLBEnable){
+		printf("La TLB no esta habilitada\n");
+		return;
+	}
+
+	list_clean(TLB->entradas);
 }
 
 void flushMemory(int pid){
