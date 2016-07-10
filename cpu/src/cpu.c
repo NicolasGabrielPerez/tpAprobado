@@ -24,6 +24,17 @@
 #include "nucleoFunctions.h"
 #include "umcFunctions.h"
 
+
+/*
+ * testing-serialization.c set_pcb_test_list
+ * pcb.h (push library) create_program_PCB
+ *
+ */
+
+
+
+
+
 //static char* DEFINICION_VARIABLES = "variables a, b, c";
 //static char* ASIGNACION = "a = b + 12";
 //static char* IMPRIMIR = "print b";

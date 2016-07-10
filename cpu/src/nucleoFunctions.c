@@ -83,19 +83,17 @@ void nucleo_init(t_config* config) {
 	socket_nucleo = crear_socket_cliente(ip_nucleo, puerto_nucleo); //socket usado para conectarse al nucleo
 
 	//Hago handshake con umc
-	char* bufferHandshake[HEADER_SIZE_NUCLEO];
-	memcpy(bufferHandshake, &HEADER_NUCLEO_HANDSHAKE, sizeof(int32_t));
-	int bytesHandshake = HEADER_SIZE_NUCLEO;
+	char* bufferHandshake = string_itoa(HEADER_SIZE_NUCLEO);
+	int bytesHandshake = sizeof(char) * (string_length(bufferHandshake) + 1);
 	if (send(socket_nucleo, bufferHandshake, bytesHandshake, 0) == -1) {
 			log_error(logger, "Error enviando handshake nucleo");
 			exitProgram();
 	};
-	if(bufferHandshake != 0) free(bufferHandshake);
+	free(bufferHandshake);
 
 	// Envio mi tipo: CPUs
-	char* bufferType[HEADER_SIZE_NUCLEO];
-	memcpy(bufferType, &TIPO_CPU, sizeof(int32_t));
-	int bytesType = HEADER_SIZE_NUCLEO;
+	char* bufferType = string_itoa(HEADER_SIZE_NUCLEO);
+	int bytesType = sizeof(char) * (string_length(bufferType) + 1);
 	if (send(socket_nucleo, bufferType, bytesType, 0) == -1) {
 		log_error(logger, "Error enviando tipo a nucleo");
 		exitProgram();
