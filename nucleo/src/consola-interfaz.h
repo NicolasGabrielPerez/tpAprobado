@@ -14,8 +14,8 @@
 
 	void sendResults(int socket, char* result);
 
-	int reciveEndOfProgram(int socket);
-
-	char* recivirProgramaANSISOP(int socket);
+	void* header(int socket);
+	// develve el header de fin de programa o el programa ansisop entrero
+	// todo recivido de consola
 
 #endif

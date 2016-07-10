@@ -6,15 +6,31 @@ int consola_listener;
 fd_set consola_sockets_set;
 int fd_consola_max;
 
+void* header(int socket){
+	message Program;
+	Program receiveMessage(int socket);
+
+	 switch(Program->header) {
+	      case HEADER_FIN_PROGRAMA :
+	    	  return reciveEndOfProgram(Program);
+	         break;
+	      case HEADER_INIT_PROGRAMA :
+	    	  return recivirProgramaANSISOP(Program);
+	         break;
+	      default :
+	         perror("header invalido");
+	   }
+}
+
+
 void endOfProgram(int socket){
 	sendMessage(socket, HEADER_FIN_PROGRAMA, 0, "");
 }
-int reciveEndOfProgram(int socket){
-	message end;
-	int result =0;
-	end receiveMessage(int socket);
-	if (end->header == HEADER_FIN_PROGRAMA){result = -10;}
-return result;
+// SEND
+
+int reciveEndOfProgram(message end){
+
+return HEADER_FIN_PROGRAMA;
 }
 
 
@@ -25,17 +41,11 @@ int header = HEADER_RESULTADOS;
 sendMessage( socket, header, contenidoSize,  result);
 
 }
+// SEND
 
-char* recivirProgramaANSISOP(int socket){
+char* recivirProgramaANSISOP(message ANSISOP){
 
 
-message ANSISOP;
-ANSISOP receiveMessage(int socket);
-
-	if (ANSISOP->header != HEADER_INIT_PROGRAMA){
-		perror("error dentro del prrograma ansisop");
-	exit(1);
-	}
 char* program = malloc(ANSISOP->contenidoSize);
 program = ANSISOP->contenido;
 return program;

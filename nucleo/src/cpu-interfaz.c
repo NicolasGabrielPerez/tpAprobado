@@ -7,6 +7,46 @@ fd_set cpu_sockets_set;
 int fd_cpu_max;
 
 
+
+
+PCB* nucleo_recibir_pcb(int socket){
+	message* programBlock;
+	programBlock receiveMessage(socket);
+	char* PCBSerialized = malloc(programBlock->contenidoSize);
+	PCBSerialized = programBlock->contenido;
+	PCB Deserializado = deserialize_pcb(PCBSerialized);
+	return Deserializado;
+}
+
+
+
+
+void nucleo_notificarIO(t_nombre_dispositivo valor, u_int32_t tiempo){
+
+
+}
+
+
+void nucleo_notificarFinDeQuantum(u_int32_t quantumCount){
+
+	message* programBlock;
+	programBlock receiveMessage(socket);
+
+
+}
+
+
+
+char* nucleo_notificarFinDeRafaga(PCB* pcb){}
+void nucleo_notificarFinDePrograma(PCB* pcb){}
+void nucleo_wait(t_nombre_semaforo semaforo){}
+void nucleo_signal(t_nombre_semaforo semaforo){}
+void nucleo_imprimir(t_valor_variable valor){}
+void nucleo_imprimir_texto(char* texto){}
+t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable){}
+void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_variable valor){}
+
+
 void sendInstruction(int socket,char* instruccion){
 	int contenidoSize = sizeof(instruccion);
 

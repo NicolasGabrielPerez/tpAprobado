@@ -25,7 +25,7 @@ int FEOP=0;
 void espera_resultados(int socketCliente){
 
 int fin_program = 1;
-while(fin_program){
+while(fin_program || (FEOP==1)){
 
 
 	message nucleoResponse;
@@ -108,7 +108,7 @@ pthread_create(&resultados, &attr, &espera_resultados, (void*) socket_nucleo);
 pthread_create(&comando, &attr, &comandosPorPantalla, (void*) socket_nucleo);
 espera_resultados(socket_nucleo);
 
-comandosPorPantalla(socket_nucleo);
+
 
 
 	puts("Terminé felizmente");
