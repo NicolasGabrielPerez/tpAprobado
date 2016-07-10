@@ -11,33 +11,49 @@
 #include <commons/string.h>
 #include <sockets/sockets.h>
 #include <sockets/communication.h>
+#include <pthread.h>
 
 
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once
+int FEOP=0;
+
+
 
 void espera_resultados(int socketCliente){
+
 int fin_program = 1;
 while(fin_program){
 
-	response* nucleoResponse = recibirResponse(socketCliente);
+
+	message nucleoResponse;
+	nucleoResponse receiveMessage(int socket);
 		// deserialize response
-
-
-	if (nucleoResponse->ok > 0 ){
 
 		char* mensaje = malloc(nucleoResponse->contenidoSize);
 		mensaje = (nucleoResponse->contenido);
-		if (!strcmp(mensaje,"exit\n")) fin_program = 0;
-		printf("%s", mensaje);
+		if (nucleoResponse->header == HEADER_FIN_PROGRAMA) {
+			fin_program = 0;
+			FEOP = 1;
 		}
-	else{
-			perror("faill respounse");
+		printf("%s", mensaje);
 		}
 
 	}
-}
 
+void comandosPorPantalla(int socketCliente){
+	char package[MAXDATASIZE];
+	int enviar = 1;
+	while(enviar || (FEOP == 1)){
+	fgets(package, MAXDATASIZE, stdin);
+
+	if (!strcmp(package,"kill")) {
+		enviar = 0;
+		sendMessage(socketCliente, HEADER_FIN_PROGRAMA, 0, "");
+		}
+	}
+
+}
 
 
 int main(int argc, char **argv) {
@@ -78,11 +94,16 @@ char *paquete = malloc(len);
 
 fscanf(fp, "%s" , paquete);
 
-send_dinamic( socket_nucleo, paquete, len);
+int header = HEADER_INIT_PROGRAMA;
+sendMessage(socket_nucleo, header, len, paquete);
 free(paquete);
 
 
-espera_resultados(socket_nucleo );
+
+espera_resultados(socket_nucleo);
+
+comandosPorPantalla(socket_nucleo);
+
 
 	puts("Terminé felizmente");
 

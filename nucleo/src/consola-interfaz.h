@@ -10,8 +10,12 @@
 
 	void manejarConexionesConsolas();
 
+	void endOfProgram(int socket);
+
 	void sendResults(int socket, char* result);
 
-	void* recivirProgramaANSISOP(int socket);
+	int reciveEndOfProgram(int socket);
+
+	char* recivirProgramaANSISOP(int socket);
 
 #endif

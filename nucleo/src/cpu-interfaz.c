@@ -6,6 +6,19 @@ int cpu_listener;
 fd_set cpu_sockets_set;
 int fd_cpu_max;
 
+
+void sendInstruction(int socket,char* instruccion){
+	int contenidoSize = sizeof(instruccion);
+
+	if (enviarOKConContenido(socket,contenidoSize,instruccion)<0){
+		perror ("send instruccion");
+		exit(1);
+	}
+
+}
+
+
+
 void initCPUListener(t_config* config){
 	char* puerto_cpu = config_get_string_value(config, "PUERTO_CPU");
     cpu_listener = crear_puerto_escucha(puerto_cpu);

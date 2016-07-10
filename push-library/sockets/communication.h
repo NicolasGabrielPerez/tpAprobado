@@ -27,7 +27,8 @@
 	extern int32_t HEADER_SOLICITAR_PAGINAS;
 	extern int32_t HEADER_ALMACENAR_PAGINAS;
 	extern int32_t HEADER_FIN_PROGRAMA;
-	extern int32_t HEADER_CAMBIO_PROCESO_ACTIVO;
+	extern int32_t HEADER_RESULTADOS;
+
 
 	extern int32_t TIPO_CONSOLA;
 	extern int32_t TIPO_NUCLEO;
