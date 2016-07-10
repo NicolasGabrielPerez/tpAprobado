@@ -14,6 +14,8 @@
 #include <pthread.h>
 
 
+pthread_t resultados;
+pthread_t comando;
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once
 int FEOP=0;
@@ -57,6 +59,9 @@ void comandosPorPantalla(int socketCliente){
 
 
 int main(int argc, char **argv) {
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+
 	t_config* config = config_create("consola.config");
 	if(config==NULL){
 		printf("No se pudo leer la configuración");
@@ -99,7 +104,8 @@ sendMessage(socket_nucleo, header, len, paquete);
 free(paquete);
 
 
-
+pthread_create(&resultados, &attr, &espera_resultados, (void*) socket_nucleo);
+pthread_create(&comando, &attr, &comandosPorPantalla, (void*) socket_nucleo);
 espera_resultados(socket_nucleo);
 
 comandosPorPantalla(socket_nucleo);
