@@ -17,6 +17,11 @@ void sendoPCB(int socket ,PCB* unPCB){
 	sendMessage(socket, HEADER_ENVIAR_PCB,size , pcbzerial);
 	}
 
+void notificar_a_cpu_su_muerte(int socket){
+
+	sendMessage(socket, SIGUSR1, 0 , "");
+}
+
 void swichCPU_HEADER(int socket){
 
 	message* mensaje;

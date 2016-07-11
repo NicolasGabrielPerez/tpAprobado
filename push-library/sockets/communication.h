@@ -38,6 +38,9 @@
 	extern int32_t HEADER_NOTIFICAR_SIGNAL = 1008;
 	extern int32_t HEADER_IMPRIMIR = 1009;
 	extern int32_t HEADER_IMPRIMIR_TEXTO = 1010;
+	extern int32_t SIGUSR1;
+
+
 
 
 	extern int32_t TIPO_CONSOLA;
