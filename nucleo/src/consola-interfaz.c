@@ -39,7 +39,6 @@ void finalizarFelizmenteTodo(int socket){
 	//TODO sacar de cpu en ejecucion
 }
 
-
 // falta una parte
 void initNewProgram(char* ANSiSop){
 	PCB* nuevoPCB;
@@ -64,7 +63,6 @@ void endOfProgram(int socket){
 int reciveEndOfProgram(message end){
 	return HEADER_FIN_PROGRAMA;
 }
-
 
 void sendResults(int socket, char* result){
 	int	contenidoSize = sizeof(result);
