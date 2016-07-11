@@ -43,5 +43,6 @@ void conectarConUMC(t_config* config){
 	 }
 	 else{
 		 puts("Tamaño de página no recibido");
+
 	 }
 }

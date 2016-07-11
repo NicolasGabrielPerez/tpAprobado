@@ -12,6 +12,11 @@ void header(int socket){
 	program = receiveMessage(socket);
 
 	//Saqué el switch case porque googleé que no funciona con constantes definidas como las usamos nosotros. La solución, el if...
+
+	if(program->header == HEADER_HANDSHAKE){
+		makeHandshake(socket);
+	}
+
 	if(program->header == HEADER_FIN_PROGRAMA){
 		finalizarFelizmenteTodo(socket);
 	}
@@ -19,9 +24,12 @@ void header(int socket){
 		if(program->header == HEADER_INIT_PROGRAMA){
 			char* programaANSISOP = recibirProgramaANSISOP(program);
 			initNewProgram(programaANSISOP);
+			free(programaANSISOP);
+			free(program);
 		}
 		else{
 			perror("header invalido");
+			enviarFAIL(socket, HEADER_INVALIDO);
 		}
 	}
 }
@@ -67,7 +75,8 @@ void sendResults(int socket, char* result){
 
 char* recibirProgramaANSISOP(message* ANSISOP){
 	char* program = malloc(ANSISOP->contenidoSize);
-	program = ANSISOP->contenido;
+	memcpy(program, ANSISOP->contenido, ANSISOP->contenidoSize);
+
 
 	return program;
 }
@@ -94,10 +103,9 @@ void makeHandshake(int consola_socket){
 	sendMessage(consola_socket, HEADER_HANDSHAKE, 0, NULL);
 }
 
-void initPrograma(char* program){
-
-}
-
+//hecho arriba mas completo
+void initPrograma(char* program){}
+//hecho arriba mas completo
 void handleConsolaRequest(int consola_socket){
 	message* message = receiveMessage(consola_socket);
 
