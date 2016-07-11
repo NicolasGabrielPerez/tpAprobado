@@ -8,12 +8,12 @@ int CPU_is_free(t_CPU* cpu){
 }
 
 int free_CPU(t_CPU* cpu, int socket){
-	return cpu->socket == socket;
+	return cpu->cpuSocket == socket;
 }
 
 //Valida que el identificador de CPU sea cpu_id (cpu_id contiene el socket de la conexión al CPU)
 int find_CPU(t_CPU* cpu, int cpu_id){
-	return cpu->socket == cpu_id;
+	return cpu->cpuSocket == cpu_id;
 }
 
 //Función auxiliar para traer un CPU de la lista general por ID
@@ -40,8 +40,8 @@ void liberarCpu(int socket){
 
 void enviar_a_cpu_libre(int PID, char* serializado){
 	 int contenidoSize = sizeof(serializado);
-	 t_CPU* cpuLibre =get_next_free_CPU();
+	 t_CPU* cpuLibre = get_next_free_CPU();
 	 cpuLibre->PID = PID;
-	 int sockete = cpuLibre->socket;
+	 int sockete = cpuLibre->cpuSocket;
 	 int enviarOKConContenido(sockete, contenidoSize, serializado);
 }

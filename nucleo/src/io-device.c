@@ -16,6 +16,7 @@ void ioDeviceProgram(t_IO_Device* device){
 	}
 }
 
+
 //Levanta los dispositivos externos desde configuración y arma una lista de t_IO_Device
 void set_IO_devices_list(){
 	int i = 0;
@@ -39,6 +40,7 @@ void set_IO_devices_list(){
 	//TODO: debo liberar la memoria de los arrays de configuración????
 }
 
+//Instrucción privilegiada
 //Encola pcb en la cola de bloqueados de device
 void set_pcb_BLOCKED_by_device(PCB* pcb, t_IO_Device* device){
 	queue_push(device->BlockedProcessesQueue, pcb);
@@ -52,7 +54,7 @@ void execute_process_IO(int sleepTime){
 	usleep(sleepTime);
 }
 
-//Ejecuta las IO encoladas del dispositivo y las encola en READY
+//Ejecuta TODAS las IO encoladas del dispositivo y las encola en READY
 void attend_blocked_processes(t_IO_Device* io_device){
 	PCB* pcb;
 

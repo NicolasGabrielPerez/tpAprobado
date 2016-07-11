@@ -38,9 +38,10 @@ void set_pcb_BLOCKED(PCB* pcb);
 
 int getProgramPagesCount(char* program);
 
-typedef struct {
-	char* sem_id;	//Nombre del semáforo
-	int sem_init;	//Valor inicial
+typedef struct semaforo{
+	char* sem_id;					//Nombre del semáforo
+	u_int32_t sem_value;			//Valor
+	t_queue* blocked_process_queue;	//Cola de procesos bloqueados
 } t_semaforo;
 
 #endif
