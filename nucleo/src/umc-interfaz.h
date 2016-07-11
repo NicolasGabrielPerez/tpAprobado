@@ -6,5 +6,11 @@
 
 	void conectarConUMC(t_config* config);
 
+	void notificarFinDePrograma();
+
+	void almacenamientoPosible(int canPaginas);
+
+
+
 	//TODO: Pedír páginas de memoria para programa y contestar
 #endif

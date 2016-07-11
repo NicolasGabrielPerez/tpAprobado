@@ -3,6 +3,25 @@
 
 int socket_umc ;
 
+int almacenamientoPosible(int canPaginas){
+
+	char* paginas;
+	char* cantPAginasSerializada = serializarInt(paginas, canPaginas);
+
+	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINA, sizeof(cantPAginasSerializada), cantPAginasSerializada);
+	message respuesta = receiveMessage(socket_umc);
+	if (respuesta->header == HEADER_PAGINAS_DISPONIBLES)return true;
+	if (respuesta->header == HEADER_PAGINAS_NO_DISPONIBLES)return false;
+return false;
+}
+
+
+void notificarFinDePrograma(){
+
+		sendMessage(socket_umc, HEADER_FIN_PROGRAMA, 0, "");
+}
+
+
 void conectarConUMC(t_config* config){
 	 char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto de UMC
 	 socket_umc = crear_socket_cliente("utnso40", puerto_umc);

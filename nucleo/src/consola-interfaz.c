@@ -1,27 +1,51 @@
 #include "consola-interfaz.h"
 #include <sockets/communication.h>
 #include <sockets/sockets.h>
+#include "umc-interfaz.h"
+
 
 int consola_listener;
 fd_set consola_sockets_set;
 int fd_consola_max;
 
-void* header(int socket){
+void header(int socket){
 	message Program;
 	Program receiveMessage(int socket);
 
 	 switch(Program->header) {
 	      case HEADER_FIN_PROGRAMA :
-	    	  return reciveEndOfProgram(Program);
+	    	  finalizarFelizmenteTodo(socket);
 	         break;
 	      case HEADER_INIT_PROGRAMA :
-	    	  return recivirProgramaANSISOP(Program);
-	         break;
+	    	  char* programaANSISOP = recivirProgramaANSISOP(Program);
+	    	  initNewProgram(programaANSISOP);
+	    	  break;
 	      default :
 	         perror("header invalido");
 	   }
 }
 
+void finalizarFelizmenteTodo(int socket){
+	notificarFinDePrograma(socket);
+
+}
+
+
+// falta una parte
+void initNewProgram(char* ANSiSop){
+	PCB nuevoPCB;
+	nuevoPCB = new_pcb();
+	int cantPage;
+	cantPage = getProgramPagesCount(ANSiSop);
+	create_program_PCB(nuevoPCB, ANSiSop,cantPage);
+
+	if (almacenamientoPosible(cantPage)){
+	add_pcb_to_general_list(nuevoPCB);}
+	else {
+		endOfProgram(nuevoPCB->processId);
+		free_pcb(nuevoPCB);
+		}
+}
 
 void endOfProgram(int socket){
 	sendMessage(socket, HEADER_FIN_PROGRAMA, 0, "");
@@ -49,6 +73,8 @@ char* recivirProgramaANSISOP(message ANSISOP){
 char* program = malloc(ANSISOP->contenidoSize);
 program = ANSISOP->contenido;
 return program;
+
+
 }
 
 int convertToInt32(char* buffer){
