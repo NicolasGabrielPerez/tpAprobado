@@ -47,7 +47,7 @@ void initNewProgram(char* ANSiSop){
 	cantPage = getProgramPagesCount(ANSiSop);
 	create_program_PCB(nuevoPCB, ANSiSop,cantPage);
 
-	almacenamientoPosible(cantPage,nuevoPCB);
+	almacenamientoPosible(cantPage,nuevoPCB,ANSiSop);
 
 }
 

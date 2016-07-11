@@ -5,21 +5,27 @@
 
 int socket_umc;
 
-int almacenamientoPosible(int paginas,PCB* nuevoPCB){//TODO: hacer q envie el pid y verificar la respuesta es el mismo pid
-	char* canPaginas;
+void almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hacer q envie el pid y verificar la respuesta es el mismo pid
+	int bytes_recibidos;
+	int32_t pid = nuevoPCB->processId;
+	int32_t cantPaginas = paginas;
+	int codFuente_size = sizeof(ANSiSop);
+	char* codFuente = ANSiSop;
 
-	char* cantPAginasSerializada = serializar_Int(canPaginas, paginas);
+	if ((bytes_recibidos = send(socket_umc, pid, sizeof(int32_t), 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
+	if ((bytes_recibidos = send(socket_umc, &cantPaginas, sizeof(int32_t), 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
 
-	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(cantPAginasSerializada), cantPAginasSerializada);
-	message* respuesta = receiveMessage(socket_umc);		//receiveMessage devuelve un message*
 
-	if (respuesta->header == HEADER_PAGINAS_DISPONIBLES)return true;
-	if (respuesta->header == HEADER_PAGINAS_NO_DISPONIBLES)return false;
-
-
-
-
-	return false;
+	if ((bytes_recibidos = send(socket_umc, codFuente, codFuente_size, 0)) == -1) {
+		perror("recv");
+		exit(1);
+	}
 }
 
 
