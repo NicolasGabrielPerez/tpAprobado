@@ -23,7 +23,7 @@ void header(int socket){
 	else{
 		if(program->header == HEADER_INIT_PROGRAMA){
 			char* programaANSISOP = recibirProgramaANSISOP(program);
-			initNewProgram(programaANSISOP);
+			initNewProgram(programaANSISOP, socket);
 			free(programaANSISOP);
 			free(program);
 		}
@@ -36,6 +36,7 @@ void header(int socket){
 
 void finalizarFelizmenteTodo(int socket){
 	notificarFinDePrograma(socket);
+	//TODO sacar de cpu en ejecucion
 }
 
 
@@ -47,7 +48,7 @@ void initNewProgram(char* ANSiSop){
 	cantPage = getProgramPagesCount(ANSiSop);
 	create_program_PCB(nuevoPCB, ANSiSop,cantPage);
 
-	if (almacenamientoPosible(cantPage)){
+	if (almacenamientoPosible(cantPage,nuevoPCB->processId)){
 	add_pcb_to_general_list(nuevoPCB);}
 	else {
 		endOfProgram(nuevoPCB->processId);

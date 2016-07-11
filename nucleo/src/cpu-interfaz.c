@@ -6,9 +6,65 @@ int cpu_listener;
 fd_set cpu_sockets_set;
 int fd_cpu_max;
 
-PCB* nucleo_recibir_pcb(int socket){
-	message* programBlock;
-	programBlock = receiveMessage(socket);
+
+// SEND
+void sendoPCB(int socket ,PCB* unPCB){
+	Buffer *buffer = malloc(sizeof(Buffer));
+	buffer = new_buffer();
+	char* pcbzerial = serialize_pcb(unPCB ,buffer);
+	int size = sizeof(pcbzerial);
+	buffer_free( buffer);
+	sendMessage(socket, HEADER_ENVIAR_PCB,size , pcbzerial);
+	}
+
+void swichCPU_HEADER(int socket){
+
+	message* mensaje;
+	mensaje = receiveMessage(socket);
+
+
+		if(mensaje->header == HEADER_HANDSHAKE){
+			makeHandshakeWithCPU(socket);
+		}
+		if(mensaje->header == HEADER_ENVIAR_PCB){
+			protocoloConPCBllegado(mensaje);
+		}
+
+		if(mensaje->header == HEADER_NOTIFICAR_IO){
+			nucleo_notificarIO(mensaje);
+		}
+
+		if(mensaje->header == HEADER_NOTIFICAR_FIN_QUANTUM){
+			nucleo_notificarFinDeQuantum(mensaje);
+		}
+		if(mensaje->header == HEADER_FIN_PROGRAMA){
+			nucleo_notificarFinDePrograma(mensaje);
+		}
+		if(mensaje->header == HEADER_NOTIFICAR_FIN_RAFAGA){
+		nucleo_notificarFinDeRafaga(mensaje);
+		}
+		if(mensaje->header == HEADER_NOTIFICAR_WAIT){
+			nucleo_wait(mensaje);
+		}
+		if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
+			nucleo_signal(mensaje);
+		}
+		if(mensaje->header == HEADER_IMPRIMIR){
+			nucleo_imprimir(mensaje);
+		}
+		if(mensaje->header == HEADER_IMPRIMIR_TEXTO){
+			nucleo_imprimir_texto(mensaje);
+		}
+		perror("header invalido");
+		enviarFAIL(socket, HEADER_INVALIDO);
+}
+
+
+void protocoloConPCBllegado(message* mensaje){
+
+}
+
+PCB* nucleo_recibir_pcb(message* programBlock){
 
 	char* PCBSerialized = malloc(programBlock->contenidoSize);
 	PCBSerialized = programBlock->contenido;
@@ -17,12 +73,12 @@ PCB* nucleo_recibir_pcb(int socket){
 	return Deserializado;
 }
 
-void nucleo_notificarIO(t_nombre_dispositivo valor, u_int32_t tiempo){
+void nucleo_notificarIO(message* mensaje){
 
 }
 
 //TODO:Qué hace esto?
-void nucleo_notificarFinDeQuantum(u_int32_t quantumCount){
+void nucleo_notificarFinDeQuantum(message* mensaje){
 	message* programBlock;
 
 	//programBlock = receiveMessage(socket); //Se agregó el igual a la asignación
@@ -30,15 +86,17 @@ void nucleo_notificarFinDeQuantum(u_int32_t quantumCount){
 
 
 //TODO: Implementar
-char* nucleo_notificarFinDeRafaga(PCB* pcb){
+char* nucleo_notificarFinDeRafaga(message* mensaje){
 	char* v;	//Agrego variable para evitar error de sintaxis
 	return v;
 }
-void nucleo_notificarFinDePrograma(PCB* pcb){}
-void nucleo_wait(t_nombre_semaforo semaforo){}
-void nucleo_signal(t_nombre_semaforo semaforo){}
-void nucleo_imprimir(t_valor_variable valor){}
-void nucleo_imprimir_texto(char* texto){}
+void nucleo_notificarFinDePrograma(message* mensaje){}
+void nucleo_wait(message* mensaje){}
+void nucleo_signal(message* mensaje){}
+void nucleo_imprimir(message* mensaje){}
+void nucleo_imprimir_texto(message* mensaje){}
+
+//duda sobre estas dos
 t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable){
 	t_valor_variable v;	//Agrego variable para evitar error de sintaxis
 	return v;
@@ -73,7 +131,7 @@ void makeHandshakeWithCPU(int cpu_socket){
 }
 
 void finPrograma(int cpu_socket){
-
+	sendMessage(cpu_socket, HEADER_FIN_PROGRAMA, 0, "");
 }
 
 void handleCPURequest(int cpu_socket){

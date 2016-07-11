@@ -7,5 +7,6 @@
 	extern int cpu_listener;
 
 	void initCPUListener(t_config* config);
-
+	void swichCPU_HEADER(int socket);
+	void sendoPCB(int socket ,PCB* unPCB);
 #endif
