@@ -1,6 +1,8 @@
 #ifndef CONSOLA_INTERFAZ_H_
 #define CONSOLA_INTERFAZ_H_
 #include "nucleo-structs.h"
+#include <sockets/communication.h>
+#include <sockets/serialization.h>
 
 	extern fd_set consola_sockets_set;
 	extern int fd_consola_max;

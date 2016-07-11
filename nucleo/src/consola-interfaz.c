@@ -1,5 +1,4 @@
 #include "consola-interfaz.h"
-#include <sockets/communication.h>
 #include <sockets/sockets.h>
 #include "umc-interfaz.h"
 
@@ -96,26 +95,29 @@ void actualizarFdMax(int socket){
 }
 
 void makeHandshake(int consola_socket){
-	enviarOKConContenido(consola_socket,11,"Soy Nucleo");
+	sendMessage(consola_socket, HEADER_HANDSHAKE, 0, NULL);
 }
 
-void initPrograma(int consola_socket){
+void initPrograma(char* program){
 
 }
 
 void handleConsolaRequest(int consola_socket){
-	char* header = malloc(HEADER_SIZE);
-	if (recv((int)socket, header, HEADER_SIZE, 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	int32_t iHeader = convertToInt32(header);
-	if(iHeader == HEADER_HANDSHAKE){
+	message* message = receiveMessage(consola_socket);
+
+	if(message->header == HEADER_HANDSHAKE){
 		makeHandshake(consola_socket);
+
 		return;
 	}
-	if(iHeader == HEADER_INIT_PROGRAMA){
-		initPrograma(consola_socket);
+
+	if(message->header == HEADER_INIT_PROGRAMA){
+		//TODO:testear cómo viene el programa desde la consola.
+		char* program = malloc(message->contenidoSize);
+		memcpy(program, message->contenido, message->contenidoSize);
+		initPrograma(program);
+
+		free(program);
 		return;
 	}
 	enviarFAIL(consola_socket, HEADER_INVALIDO);
@@ -137,7 +139,7 @@ void manejarConexionesConsolas(){
 	read_fds = consola_sockets_set;
 	if (select(fd_consola_max+1, &read_fds, NULL, NULL, NULL) == -1) {
 	   perror("select");
-	   exit(4);
+	   //exit(4);
 	}
 
 	int i;

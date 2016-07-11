@@ -73,14 +73,6 @@ void print_dictionary(t_dictionary* dictionary){
 
 //TODO: Serializar estructura de stack
 
-//Serializa la estructura de código de programa entera
-void serialize_pcb(PCB *pcb, Buffer *output) {
-    serialize_int(pcb->processId, output);
-    serialize_int(pcb->programCounter, output);
-    serialize_int(pcb->codePagesCount, output);
-    serialize_int(pcb->stackIndex, output);
-}
-
 
 void initialize_pcb_test(PCB *pcb){
 	pcb->processId = 493;
