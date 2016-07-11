@@ -59,9 +59,9 @@ void swichCPU_HEADER(int socket){
 		enviarFAIL(socket, HEADER_INVALIDO);
 }
 
-
+//TODO terminar protocolo
 void protocoloConPCBllegado(message* mensaje){
-
+	PCB* unpcb = nucleo_recibir_pcb(mensaje);
 }
 
 PCB* nucleo_recibir_pcb(message* programBlock){
@@ -72,12 +72,12 @@ PCB* nucleo_recibir_pcb(message* programBlock){
 	PCB* Deserializado = deserialize_pcb(PCBSerialized);
 	return Deserializado;
 }
-
+//TODO: Implementar
 void nucleo_notificarIO(message* mensaje){
 
 }
 
-//TODO:Qué hace esto?
+
 void nucleo_notificarFinDeQuantum(message* mensaje){
 	message* programBlock;
 
@@ -85,7 +85,7 @@ void nucleo_notificarFinDeQuantum(message* mensaje){
 }
 
 
-//TODO: Implementar
+
 char* nucleo_notificarFinDeRafaga(message* mensaje){
 	char* v;	//Agrego variable para evitar error de sintaxis
 	return v;

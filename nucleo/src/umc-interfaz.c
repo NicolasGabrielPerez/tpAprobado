@@ -1,8 +1,11 @@
 #include "umc-interfaz.h"
+#include "nucleo-structs.h"
+#include "consola-interfaz.h"
+
 
 int socket_umc;
 
-int almacenamientoPosible(int paginas,int PID){//TODO: hacer q envie el pid y verificar la respuesta es el mismo pid
+int almacenamientoPosible(int paginas,PCB* nuevoPCB){//TODO: hacer q envie el pid y verificar la respuesta es el mismo pid
 	char* canPaginas;
 
 	char* cantPAginasSerializada = serializar_Int(canPaginas, paginas);
@@ -12,6 +15,9 @@ int almacenamientoPosible(int paginas,int PID){//TODO: hacer q envie el pid y ve
 
 	if (respuesta->header == HEADER_PAGINAS_DISPONIBLES)return true;
 	if (respuesta->header == HEADER_PAGINAS_NO_DISPONIBLES)return false;
+
+
+
 
 	return false;
 }
@@ -28,7 +34,7 @@ void swichRecivirPorHEADER(){
 
 	}
 	if(mensaje->header == HEADER_PAGINAS_DISPONIBLES){
-
+		aceptarPrograma(mensaje);
 	}
 	if(mensaje->header == HEADER_PAGINAS_NO_DISPONIBLES){
 	rechazarPrograma(mensaje);
@@ -40,7 +46,15 @@ void swichRecivirPorHEADER(){
 }
 
 void rechazarPrograma(message* mensaje){
+	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
+	endOfProgram(nuevoPCB->processId);
+	free_pcb(nuevoPCB);
 
+}
+
+void aceptarPrograma(message* mensaje){
+	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
+	add_pcb_to_general_list(nuevoPCB);
 
 }
 

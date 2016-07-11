@@ -47,12 +47,8 @@ void initNewProgram(char* ANSiSop){
 	cantPage = getProgramPagesCount(ANSiSop);
 	create_program_PCB(nuevoPCB, ANSiSop,cantPage);
 
-	if (almacenamientoPosible(cantPage,nuevoPCB->processId)){
-	add_pcb_to_general_list(nuevoPCB);}
-	else {
-		endOfProgram(nuevoPCB->processId);
-		free_pcb(nuevoPCB);
-	}
+	almacenamientoPosible(cantPage,nuevoPCB);
+
 }
 
 void endOfProgram(int socket){
