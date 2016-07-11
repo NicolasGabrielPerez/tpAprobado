@@ -36,6 +36,8 @@ void set_pcb_READY(PCB* pcb);
 void set_pcb_RUNNING(PCB* pcb);
 void set_pcb_BLOCKED(PCB* pcb);
 
+int getProgramPagesCount(char* program);
+
 typedef struct {
 	char* sem_id;	//Nombre del semáforo
 	int sem_init;	//Valor inicial

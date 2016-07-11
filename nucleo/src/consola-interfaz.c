@@ -8,31 +8,32 @@ fd_set consola_sockets_set;
 int fd_consola_max;
 
 void header(int socket){
-	message Program;
-	Program receiveMessage(int socket);
+	message* program;
+	program = receiveMessage(socket);
 
-	 switch(Program->header) {
-	      case HEADER_FIN_PROGRAMA :
-	    	  finalizarFelizmenteTodo(socket);
-	         break;
-	      case HEADER_INIT_PROGRAMA :
-	    	  char* programaANSISOP = recivirProgramaANSISOP(Program);
-	    	  initNewProgram(programaANSISOP);
-	    	  break;
-	      default :
-	         perror("header invalido");
-	   }
+	//Saqué el switch case porque googleé que no funciona con constantes definidas como las usamos nosotros. La solución, el if...
+	if(program->header == HEADER_FIN_PROGRAMA){
+		finalizarFelizmenteTodo(socket);
+	}
+	else{
+		if(program->header == HEADER_INIT_PROGRAMA){
+			char* programaANSISOP = recibirProgramaANSISOP(program);
+			initNewProgram(programaANSISOP);
+		}
+		else{
+			perror("header invalido");
+		}
+	}
 }
 
 void finalizarFelizmenteTodo(int socket){
 	notificarFinDePrograma(socket);
-
 }
 
 
 // falta una parte
 void initNewProgram(char* ANSiSop){
-	PCB nuevoPCB;
+	PCB* nuevoPCB;
 	nuevoPCB = new_pcb();
 	int cantPage;
 	cantPage = getProgramPagesCount(ANSiSop);
@@ -43,7 +44,7 @@ void initNewProgram(char* ANSiSop){
 	else {
 		endOfProgram(nuevoPCB->processId);
 		free_pcb(nuevoPCB);
-		}
+	}
 }
 
 void endOfProgram(int socket){
@@ -52,28 +53,23 @@ void endOfProgram(int socket){
 // SEND
 
 int reciveEndOfProgram(message end){
-
-return HEADER_FIN_PROGRAMA;
+	return HEADER_FIN_PROGRAMA;
 }
 
 
 void sendResults(int socket, char* result){
-int	contenidoSize = sizeof(result);
-int header = HEADER_RESULTADOS;
+	int	contenidoSize = sizeof(result);
+	int header = HEADER_RESULTADOS;
 
-sendMessage( socket, header, contenidoSize,  result);
-
+	sendMessage( socket, header, contenidoSize,  result);
 }
 // SEND
 
-char* recivirProgramaANSISOP(message ANSISOP){
+char* recibirProgramaANSISOP(message* ANSISOP){
+	char* program = malloc(ANSISOP->contenidoSize);
+	program = ANSISOP->contenido;
 
-
-char* program = malloc(ANSISOP->contenidoSize);
-program = ANSISOP->contenido;
-return program;
-
-
+	return program;
 }
 
 int convertToInt32(char* buffer){

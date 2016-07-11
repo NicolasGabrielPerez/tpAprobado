@@ -6,44 +6,43 @@ int cpu_listener;
 fd_set cpu_sockets_set;
 int fd_cpu_max;
 
-
-
-
 PCB* nucleo_recibir_pcb(int socket){
 	message* programBlock;
-	programBlock receiveMessage(socket);
+	programBlock = receiveMessage(socket);
+
 	char* PCBSerialized = malloc(programBlock->contenidoSize);
 	PCBSerialized = programBlock->contenido;
-	PCB Deserializado = deserialize_pcb(PCBSerialized);
+
+	PCB* Deserializado = deserialize_pcb(PCBSerialized);
 	return Deserializado;
 }
 
-
-
-
 void nucleo_notificarIO(t_nombre_dispositivo valor, u_int32_t tiempo){
 
-
 }
 
-
+//TODO:Qué hace esto?
 void nucleo_notificarFinDeQuantum(u_int32_t quantumCount){
-
 	message* programBlock;
-	programBlock receiveMessage(socket);
 
-
+	//programBlock = receiveMessage(socket); //Se agregó el igual a la asignación
 }
 
 
-
-char* nucleo_notificarFinDeRafaga(PCB* pcb){}
+//TODO: Implementar
+char* nucleo_notificarFinDeRafaga(PCB* pcb){
+	char* v;	//Agrego variable para evitar error de sintaxis
+	return v;
+}
 void nucleo_notificarFinDePrograma(PCB* pcb){}
 void nucleo_wait(t_nombre_semaforo semaforo){}
 void nucleo_signal(t_nombre_semaforo semaforo){}
 void nucleo_imprimir(t_valor_variable valor){}
 void nucleo_imprimir_texto(char* texto){}
-t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable){}
+t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable){
+	t_valor_variable v;	//Agrego variable para evitar error de sintaxis
+	return v;
+}
 void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_variable valor){}
 
 
@@ -56,8 +55,6 @@ void sendInstruction(int socket,char* instruccion){
 	}
 
 }
-
-
 
 void initCPUListener(t_config* config){
 	char* puerto_cpu = config_get_string_value(config, "PUERTO_CPU");

@@ -1,16 +1,15 @@
 #ifndef UMC_INTERFAZ_H_
 #define UMC_INTERFAZ_H_
 #include "nucleo-structs.h"
+#include <sockets/communication.h>
 
-	extern int socket_umc;
+extern int socket_umc;
 
-	void conectarConUMC(t_config* config);
+void conectarConUMC(t_config* config);
 
-	void notificarFinDePrograma();
+void notificarFinDePrograma();
 
-	void almacenamientoPosible(int canPaginas);
+int almacenamientoPosible(int canPaginas);
 
-
-
-	//TODO: Pedír páginas de memoria para programa y contestar
+//TODO: Pedír páginas de memoria para programa y contestar
 #endif

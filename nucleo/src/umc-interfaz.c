@@ -1,24 +1,23 @@
 #include "umc-interfaz.h"
-#include <sockets/communication.h>
 
-int socket_umc ;
+int socket_umc;
 
 int almacenamientoPosible(int canPaginas){
-
 	char* paginas;
-	char* cantPAginasSerializada = serializarInt(paginas, canPaginas);
+	char* cantPAginasSerializada = serializarInt(paginas, canPaginas);	//TODO: revisar. SerializarInt recibe un puntero a un entero
 
-	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINA, sizeof(cantPAginasSerializada), cantPAginasSerializada);
-	message respuesta = receiveMessage(socket_umc);
+	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(cantPAginasSerializada), cantPAginasSerializada);
+	message* respuesta = receiveMessage(socket_umc);		//receiveMessage devuelve un message*
+
 	if (respuesta->header == HEADER_PAGINAS_DISPONIBLES)return true;
 	if (respuesta->header == HEADER_PAGINAS_NO_DISPONIBLES)return false;
-return false;
+
+	return false;
 }
 
 
 void notificarFinDePrograma(){
-
-		sendMessage(socket_umc, HEADER_FIN_PROGRAMA, 0, "");
+	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, 0, "");
 }
 
 

@@ -1,5 +1,6 @@
 #ifndef CONSOLA_INTERFAZ_H_
 #define CONSOLA_INTERFAZ_H_
+
 #include "nucleo-structs.h"
 #include <sockets/communication.h>
 #include <sockets/serialization.h>
@@ -16,7 +17,9 @@
 
 	void sendResults(int socket, char* result);
 
-	void* header(int socket);
+	void header(int socket);
+
+	char* recibirProgramaANSISOP(message* ANSISOP);
 	// develve el header de fin de programa o el programa ansisop entrero
 	// todo recivido de consola
 

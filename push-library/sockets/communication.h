@@ -72,6 +72,8 @@
 
 	void enviarResultado(response* response, int socket);
 
+	char* serializarInt(char* posicionDeEscritura, int32_t* value);
+
 //CPU a UMC
 typedef struct cpu_to_umc {
 
