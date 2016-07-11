@@ -53,6 +53,86 @@ void initNucleo(t_config* config){
 	set_vars_dictionary();
 }
 
+//Redefinición de método para buscar dentro de una lista por nombre
+t_link_element* list_find_by_id_char(t_list *self, char* ID, bool(*condition)(void*, int), int* index) {
+	t_link_element *element = self->head;
+	int position = 0;
+
+	while (element != NULL && !condition(element->data, ID)) {
+		element = element->next;
+		position++;
+	}
+
+	if (index != NULL) {
+		*index = position;
+	}
+
+	return element;
+}
+
+//---------------------------------------------- <SEMÁFOROS>
+
+//Redefinición de método. Devuelve un PCB según PID
+t_semaforo* semaforo_list_find_element(t_list *self, char* id, bool(*condition)(void*, int)) {
+	t_link_element *element = list_find_by_id(self, id,condition, NULL);
+	return element != NULL ? element->data : NULL;
+}
+
+int find_semaforo(t_semaforo* semaforo, char* id){
+	return semaforo->sem_id == id;
+}
+
+//Devuelve un semaforo con id = id dentro de list
+t_semaforo* get_semaforo_by_ID(t_list* list, char* id){
+	return semaforo_list_find_element(list, id, find_semaforo);
+}
+
+//Setea la lista general de semáforos con los valores cargados por configuración
+void set_semaforo_list(){
+	int i = 0;
+	while(semaforos_ids[i] != NULL){
+		t_semaforo* semaforo = malloc(sizeof(t_semaforo));
+		semaforo->sem_id = semaforos_ids[i];
+		semaforo->sem_value = (u_int32_t)semaforos_init_values[i];
+		semaforo->blocked_process_queue = queue_create();
+		list_add(semaforo_control_list, semaforo);
+		i++;
+	}
+}
+
+//Encola un proceso en la cola de bloqueados de un semáforo
+void queue_blocked_process_to_semaforo(char* id, PCB* pcb){
+	t_semaforo* semaforo = get_semaforo_by_ID(semaforo_control_list, id);
+	queue_push(semaforo->blocked_process_queue, pcb);
+}
+
+//Instrucción privilegiada
+void signal(char* id){
+	t_semaforo* semaforo = get_semaforo_by_ID(semaforo_control_list, id);
+	semaforo->sem_value ++;
+
+	if(!queue_is_empty(semaforo->blocked_process_queue)){
+		//Poner en cola de ready al próximo proceso bloqueado
+		set_pcb_READY(queue_pop(semaforo->blocked_process_queue));
+	}
+}
+
+//Instrucción privilegiada
+void wait(char* id){
+	t_semaforo* semaforo = get_semaforo_by_ID(semaforo_control_list, id);
+	if(semaforo->sem_value > 0){
+		semaforo->sem_value --;
+	}
+	else{
+		//TODO: GUTI - implementar
+		//Bloquear proceso => desalojar de CPU
+		//Disparar la rutina de cambio de contexto
+	}
+}
+//---------------------------------------------- </SEMÁFOROS>
+
+//---------------------------------------------- <PCBs>
+
 //Devuelve la cantidad de páginas requeridas en SWAP para salvar el código
 int getProgramPagesCount(char* program){
 	int pagesCount = 0;
@@ -101,19 +181,9 @@ void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
 	t_IO_Device* device = get_device_by_id(deviceID);
 	queue_push(BLOCKED_Process_Queue, device);
 }
+//---------------------------------------------- </PCBs>
 
-//Setea la lista general de semáforos con los valores cargados por configuración
-void set_semaforo_list(){
-	int i = 0;
-	while(semaforos_ids[i] != NULL){
-		t_semaforo* semaforo = malloc(sizeof(t_semaforo));
-		semaforo->sem_id = semaforos_ids[i];
-		semaforo->sem_init = semaforos_init_values[i];
-		list_add(semaforo_control_list, semaforo);
-		i++;
-	}
-}
-
+//---------------------------------------------- <VARIABLES>
 //Setea el diccionario general de variables globales definidos por configuración, iniciándolas en cero
 void set_vars_dictionary(){
 	int i = 0;
@@ -137,3 +207,4 @@ int get_var_value(char* var_name){
 	}
 	return 0;
 }
+//---------------------------------------------- </VARIABLES>

@@ -6,7 +6,8 @@
 #include <sockets/pcb.h>
 
 typedef struct CPU{
-	int socket;					//Identificador del CPU activo => referencia a la conexión
+	int cpuSocket;				//Identificador del CPU activo => referencia a la conexión
+	//int consoleSocket;			//Identificador de la consola que inició el proceso
 	int PID;					//Identificador del proceso actual en ejecución
 } t_CPU;
 
