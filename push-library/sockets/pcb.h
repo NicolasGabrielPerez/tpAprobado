@@ -69,7 +69,7 @@ typedef struct PCB {
 	u_int32_t pagesCount;
 	t_puntero memoryIndex;
 	t_list* stackIndex;
-	int stackPosition;
+	u_int32_t stackPosition;
 
 
 } PCB;

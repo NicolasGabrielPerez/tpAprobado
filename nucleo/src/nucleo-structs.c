@@ -78,6 +78,7 @@ t_semaforo* semaforo_list_find_element(t_list *self, char* id, bool(*condition)(
 	return element != NULL ? element->data : NULL;
 }
 
+//Función auxiliar
 int find_semaforo(t_semaforo* semaforo, char* id){
 	return semaforo->sem_id == id;
 }
