@@ -20,12 +20,15 @@
 #include <commons/txt.h>
 #include <commons/string.h>
 #include "tlb.h"
+#include <commons/log.h>
 
 	extern int cantidad_de_marcos;
 	extern int marco_size;
 	extern int marcos_x_proc;
 
 	extern int retardo;
+
+	extern t_log* logger;
 
 	enum AlgoritmoReemplazo{
 		clockComun,
@@ -115,4 +118,6 @@
 
 	tabla_de_frame_entry* obtenerEntradaDeFrame(int nroFrame);
 
-#endif /* UMC_STRUCTS_H_ */
+	void initLogger();
+
+	#endif /* UMC_STRUCTS_H_ */

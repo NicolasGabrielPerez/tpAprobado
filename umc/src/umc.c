@@ -45,22 +45,20 @@ void *gestionarNucleo(void* socket){
 	printf("Creado hilo de gestión de Nucleo\n");
 	printf("De socket: %d\n", (int)socket);
 
-	int32_t headerInt;
-	char* header = malloc(HEADER_SIZE);
 	while(1){
-		if (recv((int)socket, header, HEADER_SIZE, 0) == -1) {
-			perror("recv");
-			exit(1);
-		}
-		memcpy(&headerInt, header, sizeof(int32_t));
-		if(headerInt==HEADER_INIT_PROGRAMA){
+
+		message* message = receiveMessage((int) socket);
+
+		if(message->header == HEADER_INIT_PROGRAMA){
 			recbirInitPrograma((int)socket);
 			continue;
 		}
-		if(headerInt==HEADER_FIN_PROGRAMA){
+		if(message->header == HEADER_FIN_PROGRAMA){
 			recibirFinalizarPrograma((int)socket);
 			continue;
 		}
+
+		//TODO deleteMessage(response);
 	}
 
 	return 0;
@@ -91,14 +89,14 @@ response* recibir(int socket, int size){
 }
 
 void enviarPageSize(int socket){
-	enviarOKConContenido(socket, sizeof(int32_t), string_itoa(marco_size));
+	char* pageSizeSerializado;
+	serializarInt(pageSizeSerializado, marco_size);
+	sendMessage(socket, HEADER_SIZE, sizeof(int32_t), pageSizeSerializado);
 }
 
 int makeHandshake(int socket){
-	recibirResponse(socket);
-	//TODO validar header
-	response* tipo = recibirResponse(socket);
-	return convertToInt32(tipo->contenido);
+	message* message = receiveMessage(socket);
+	return convertToInt32(message->contenido);
 }
 
 void manejarNuevasConexiones(){
@@ -122,9 +120,10 @@ int main(void) {
 		return EXIT_FAILURE;
 	}
 
-	// int retardo = config_get_int_value(config, "RETARDO");
+	initLogger();
 
 	initMemoriaPrincipal(config);
+
 	initTLB(config);
 
 	initSwap(config);

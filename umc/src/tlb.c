@@ -35,6 +35,8 @@ void llenarTLB(int nroPagina, int pid, int nroFrame){
 	entry->nroFrame = nroFrame;
 	entry->last_use = temporal_get_string_time();
 	list_add(TLB->entradas, entry);
+
+	log_trace(logger, "[TLB] Entrada agregada: pid=%d, page=%d, frame=%d, ref=%s", pid, nroPagina, nroFrame, entry->last_use);
 }
 
 //Retorna true si es verdad que la anterior es anterior a la posterior :P
@@ -56,7 +58,7 @@ void actualizarTLB(int nroPagina, int pid, int nroFrame){
 	//A partir de aca, es necesario hacer reemplazo de pagina
 	int i = 0;
 	tlb_entry* actual = list_get(TLB->entradas, i);
-	tlb_entry* leastRecentlyUsed = actual;
+	tlb_entry* leastRecentlyUsed = actual; //victima
 	for(i=1; i< TLB->size; i++){
 		actual = list_get(TLB->entradas, i);
 		if(esFechaAnterior(actual->last_use, leastRecentlyUsed->last_use)){
@@ -64,10 +66,16 @@ void actualizarTLB(int nroPagina, int pid, int nroFrame){
 		}
 	}
 
+	log_warning(logger, "[TLB] Reemplazo: pid=%d, page=%d, frame=%d, ref=%s", leastRecentlyUsed->pid,
+			leastRecentlyUsed->nroPagina, leastRecentlyUsed->nroFrame, leastRecentlyUsed->last_use);
+
 	leastRecentlyUsed->nroFrame = nroFrame;
 	leastRecentlyUsed->nroPagina = nroPagina;
 	leastRecentlyUsed->pid = pid;
 	leastRecentlyUsed->last_use = temporal_get_string_time();
+
+	log_warning(logger, "[TLB] Se agrega: pid=%d, page=%d, frame=%d, ref=%s", leastRecentlyUsed->pid,
+				leastRecentlyUsed->nroPagina, leastRecentlyUsed->nroFrame, leastRecentlyUsed->last_use);
 }
 
 int buscarEnTLB(int nroPagina, int pid){
@@ -77,14 +85,18 @@ int buscarEnTLB(int nroPagina, int pid){
 		actual = list_get(TLB->entradas, i);
 		if(actual->pid == pid && actual->nroPagina == nroPagina){
 			actual->last_use = temporal_get_string_time();
+			log_trace(logger, "[TLB] Hit: pid=%d, page=%d, frame=%d, ref=%s", pid, nroPagina, actual->nroFrame, actual->last_use);
 			return actual->nroFrame;
 		}
 	}
 
+	log_trace(logger, "[TLB] Miss: pid=%d, page=%d", pid, nroPagina);
 	return -1;
 }
 
 void destroyTlbEntry(void* entry){
+	log_trace(logger, "Flush de TLB");
+
 	tlb_entry* tlbEntry = (tlb_entry*) entry;
 	free(tlbEntry->last_use);
 	free(tlbEntry);

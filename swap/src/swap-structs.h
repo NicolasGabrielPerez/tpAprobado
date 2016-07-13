@@ -31,6 +31,9 @@
 #include <commons/config.h>
 #include <commons/txt.h>
 #include <commons/string.h>
+#include <commons/log.h>
+
+	extern t_log* logger;
 
 	typedef struct frame_entry{
 		int nroFrame;

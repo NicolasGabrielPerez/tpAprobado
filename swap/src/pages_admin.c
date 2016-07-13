@@ -1,5 +1,12 @@
 #include "pages_admin.h"
 
+t_log* logger;
+
+void initLogger(){
+	logger = log_create("swap.log", "SWAP",true, LOG_LEVEL_TRACE);
+	log_trace(logger, "---------------INIT LOG----------------");
+}
+
 char* leerDeFrame(frame_entry* frameEntry){
 	char* buffer = malloc(paginaSize);
 	int offset = frameEntry->nroFrame * paginaSize;
@@ -122,7 +129,7 @@ int bajarNextUsed(int nroFrameDisponible){ //return -1 si no hay nada que bajar.
 
 	escribirEnParticion(nroFrameDisponible*paginaSize, leerDeFrame(nextUsed), paginaSize);
 	setearOcupado(nroFrameDisponible);
-	setearLibre(nextUsed);
+	setearLibre(nextUsed->nroFrame);
 	return 1;
 }
 
@@ -130,7 +137,7 @@ void desfragmentarParticion(){
 	int i;
 
 	for(i = 0; i< cantPaginasSwap; i++){
-		if(frameDisponible()){
+		if(frameDisponible(i)){
 			if(bajarNextUsed(i) == -1) return; //si no hay que seguir compactando => terminar desfragmentacion
 		}
 	}

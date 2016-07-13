@@ -46,7 +46,15 @@ char* generarComandoDD(){
 }
 
 int crearParticion(){
-	system(generarComandoDD());
+	int result = system(generarComandoDD());
+	if(result == -1){
+		log_error(logger, "Fallo al crear particion");
+		return EXIT_FAILURE;
+	}
+
+	log_trace(logger, "Particion <%s> creada! Marcos disponibles:%d, tamanio de marco: %d. Total de bytes:%d",
+											particionFileName, cantPaginasSwap, paginaSize, cantPaginasSwap*paginaSize);
+
 	return EXIT_SUCCESS;
 }
 
@@ -61,7 +69,6 @@ void crearFrames(){
 	for(i=0; i<cantPaginasSwap; i++){
 		frame_entry* frameEntry = malloc(sizeof(frame_entry));
 		frameEntry->nroFrame = i;
-		frameEntry->particionOffset = i*paginaSize;
 		list_add(framesEntries, frameEntry);
 	}
 	swapAdmin->framesEntries = framesEntries;

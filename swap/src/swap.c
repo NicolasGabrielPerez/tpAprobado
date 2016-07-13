@@ -32,11 +32,11 @@ int main(void) {
 		return EXIT_FAILURE;
 	}
 
-	int init_swap = initSwap(config);
-	if(init_swap==-1) return EXIT_FAILURE;
+	initLogger();
 
-	int init_umc = initUmc(config);
-	if(init_umc==-1) return EXIT_FAILURE;
+	initSwap(config);
+
+	initUmc(config);
 
 	int bytes_recibidos = 1;
 	char* header = malloc(HEADER_SIZE);

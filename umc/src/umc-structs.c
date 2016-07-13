@@ -13,6 +13,8 @@ tabla_de_frames* tablaDeFrames;
 t_list* tablasDePaginas;
 enum AlgoritmoReemplazo algoritmoActivo;
 
+t_log* logger;
+
 void demorarSolicitud()
 {
    struct timespec req, rem;
@@ -46,6 +48,8 @@ int initMemoriaPrincipal(t_config* config){
 
 	memoria_bloque = malloc(cantidad_de_marcos*marco_size); //char* que va a tener el contenido de todas las paginas
 
+	log_trace(logger, "Reservada memoria. Cantidad de marcos:%d, tamanio de marco:%d. Total de bytes:%d", cantidad_de_marcos, marco_size, cantidad_de_marcos*marco_size);
+
 	tablaDeFrames = malloc(sizeof(tablaDeFrames));
 	tablaDeFrames->entradas = list_create();
 	int i;
@@ -57,6 +61,8 @@ int initMemoriaPrincipal(t_config* config){
 		list_add(tablaDeFrames->entradas, entrada);
 		free(entrada);
 	}
+
+	log_trace(logger, "Creada tabla de frames! Cantidad de entradas:%d", list_size(tablaDeFrames));
 
 	tablasDePaginas = list_create();
 
@@ -266,4 +272,8 @@ umcResult createOkFrameResult(tabla_de_frame_entry* frameEntry){
 	return createUmcResult(1, 0, 0, frameEntry);
 }
 
+void initLogger(){
+	logger = log_create("umc.log", "UMC",true, LOG_LEVEL_TRACE);
+	log_trace(logger, "---------------INIT LOG----------------");
+}
 
