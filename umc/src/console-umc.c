@@ -111,7 +111,7 @@ void ejecutarComando(char* command){
 	printf("Comando invalido\n");
 }
 
-void consolaDeComandos(){
+void* consolaDeComandos(){
 	int rc;
 	char buff[30];
 

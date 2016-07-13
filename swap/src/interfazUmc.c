@@ -10,6 +10,9 @@ int initUmc(t_config* config){
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
 	int umc_listener = crear_puerto_escucha(puerto_umc);
 	umc_socket = esperarConexionUMC(umc_listener);
+
+	log_trace(logger, "Conexion iniciada con UMC. Socket: %d", umc_socket);
+
 	return EXIT_SUCCESS;
 }
 
