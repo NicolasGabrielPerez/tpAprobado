@@ -6,9 +6,9 @@
 
 int main(void) {
 
-	test_planification();
+	//test_planification();
 	//test_serialization();
-	/*
+
 	t_config* config = getConfig("nucleo.config");
 
 	initNucleo(config); //lee valores de quantum y io
@@ -21,6 +21,6 @@ int main(void) {
 		manejarConexionesCPUs();
 	}
 
-*/
+
 	return EXIT_SUCCESS;
 }

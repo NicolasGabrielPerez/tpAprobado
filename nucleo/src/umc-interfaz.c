@@ -27,14 +27,13 @@ int almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hacer
 	if ((bytes_recibidos = send(socket_umc, codFuente, codFuente_size, 0)) == -1) {
 		perror("recv");
 		exit(1);
-	;
 	}
 	return bytes_recibidos;
 	//TODO: Recibir respuesta de UMC (OK/No hay lugar) y retornarla
 	//TODO: Hay que mandar stack?
 }
 
-void switchRecibirPorHEADER(){
+void handleUMCRquests(){
 	message* mensaje = receiveMessage(socket_umc);
 	if(mensaje->header == HEADER_HANDSHAKE){
 		handshake_con_UMC();
@@ -49,24 +48,22 @@ void switchRecibirPorHEADER(){
 	enviarFAIL(socket_umc, HEADER_INVALIDO);
 }
 
-void finalizarProgramaenUMC(message* mensaje){
+//TODO: Desglosar esta función
+void finalizarProgramaEnUMC(message* mensaje){
 	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
-	endOfProgram(nuevoPCB->processId);
+	sendConsoleEndOfProgram(nuevoPCB->processId);
 	int size = sizeof(nuevoPCB->processId);
 	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, size, nuevoPCB->processId);
 	free_pcb(nuevoPCB);
-
 }
 
 void aceptarPrograma(message* mensaje){
 	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
-
 	add_pcb_to_general_list(nuevoPCB);
-
 }
 
 //Envía el PID del programa a finalizar
-void notificarFinDePrograma(int processID){
+void umc_notificarFinDePrograma(int processID){
 	char* stringPID = string_itoa(processID);		//Convierte el ID a string
 	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, sizeof(stringPID), stringPID);
 }

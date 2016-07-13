@@ -13,11 +13,11 @@
 
 	void manejarConexionesConsolas();
 
-	void endOfProgram(int socket);
+	void sendConsoleEndOfProgram(int socket);
 
 	void sendResults(int socket, char* result);
 
-	void header(int socket);
+	void handleConsoleRquests(int socket);
 
 	char* recibirProgramaANSISOP(message* ANSISOP);
 	// develve el header de fin de programa o el programa ansisop entrero

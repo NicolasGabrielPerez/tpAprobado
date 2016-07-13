@@ -7,12 +7,11 @@ int consola_listener;
 fd_set consola_sockets_set;
 int fd_consola_max;
 
+//Ex header()
 //Recibe mensajes y llama a las funciones correspondientes según el HEADER
-void header(int consoleSocket){
+void handleConsoleRquests(int consoleSocket){
 	message* message;
 	message = receiveMessage(consoleSocket);
-
-	//Saqué el switch case porque googleé que no funciona con constantes definidas como las usamos nosotros. La solución, el if...
 
 	if(message->header == HEADER_HANDSHAKE){
 		makeHandshake(consoleSocket);
@@ -36,13 +35,13 @@ void header(int consoleSocket){
 }
 
 void finalizarFelizmenteTodo(int processID){
-	notificarFinDePrograma(processID);		//Notifica fin de programa a UMC
-	end_process(processID);//Destruye las estructuras del proceso dentro del núcleo
-	endOfProgram(processID);
-
+	umc_notificarFinDePrograma(processID);		//Notifica fin de programa a UMC
+	end_process(processID);						//Destruye las estructuras del proceso dentro del núcleo
+	sendConsoleEndOfProgram(processID);			//Notifica fin de programa a Consola
 }
 
 // falta una parte
+//TODO: Esta función no debe ser parte de la consola. Debe formar parte del programa principal
 void initNewProgram(char* ANSiSop, int consoleSocket){
 	PCB* nuevoPCB;
 	nuevoPCB = new_pcb(consoleSocket);
@@ -64,7 +63,8 @@ else {
 }
 }
 
-void endOfProgram(int socket){
+//Envía mensaje de finalización de programa
+void sendConsoleEndOfProgram(int socket){
 	sendMessage(socket, HEADER_FIN_PROGRAMA, 0, "");
 }
 // SEND
@@ -119,7 +119,7 @@ void manejarCambiosEnSocket(int socket, fd_set* read_set){
 			actualizarFdMax(new_fd);
 	   } else{
 		   //Cambio en socket consola => interpretar los mensajes de forma apropiada
-		   header(socket);
+		   handleConsoleRquests(socket);
 	   }
    };
 }

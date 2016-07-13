@@ -16,7 +16,6 @@ void ioDeviceProgram(t_IO_Device* device){
 	}
 }
 
-
 //Levanta los dispositivos externos desde configuración y arma una lista de t_IO_Device
 void set_IO_devices_list(){
 	int i = 0;
@@ -27,7 +26,7 @@ void set_IO_devices_list(){
 	while(io_ids[i] != NULL){
 		t_IO_Device* device = malloc(sizeof(t_IO_Device));
 		device->ioId = io_ids[i];
-		device->sleepTime = io_sleep_times[i];
+		device->sleepTime = (u_int32_t)io_sleep_times[i];
 		device->BlockedProcessesQueue = queue_create();
 		list_add(IO_Device_List, device);
 
@@ -45,10 +44,6 @@ void set_pcb_BLOCKED_by_device(PCB* pcb, t_IO_Device* device){
 	queue_push(device->BlockedProcessesQueue, pcb);
 }
 
-void change_status_BLOCKED_to_READY(int PID){
-//	TODO:Implementar
-}
-
 void execute_process_IO(int sleepTime){
 	usleep(sleepTime);
 }
@@ -60,7 +55,7 @@ void attend_blocked_processes(t_IO_Device* io_device){
 	while(queue_size(io_device->BlockedProcessesQueue) > 0){
 		pcb = queue_pop(io_device->BlockedProcessesQueue);
 		execute_process_IO(io_device->sleepTime);
-		queue_push(READY_Process_Queue, pcb);
+		set_pcb_READY(pcb);
 	}
 }
 

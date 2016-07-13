@@ -18,6 +18,7 @@
 #include <sockets/config.h>
 #include <sockets/pcb.h>
 #include <pthread.h>
+#include "nucleo-structs.h"
 
 extern t_list* IO_Device_List;
 

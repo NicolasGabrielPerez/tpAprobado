@@ -9,7 +9,7 @@ void swichRecivirPorHEADER();
 
 void conectarConUMC(t_config* config);
 
-void notificarFinDePrograma();
+void umc_notificarFinDePrograma();
 
 int almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop);
 
