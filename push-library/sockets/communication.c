@@ -156,7 +156,7 @@ message* receiveMessage(int socket){
 
 	//PAYLOAD
 	response* responsePayload = recibirResponse(socket);
-	message->contenido = responsePayload->contenido;
+	memcpy(message->contenido, responsePayload->contenido, responsePayload->contenidoSize);
 	message->contenidoSize = responsePayload->contenidoSize;
 	if(!responsePayload->ok){
 		message->codError = responsePayload->codError;
@@ -171,7 +171,12 @@ message* receiveMessage(int socket){
 int32_t sendMessage(int socket, int header, int contenidoSize, char* contenidoSerializado){
 	//HEADER
 	char* headerSerializado = malloc(sizeof(int32_t));
-	serializarInt(headerSerializado, header);
+	int32_t headerSelf;
+	memcpy(&headerSelf, &header, sizeof(int32_t));
+
+	printf("Header a enviar: %d\n", headerSelf);
+
+	memcpy(headerSerializado, &headerSelf, sizeof(int32_t));
 	int headerResult = enviarOKConContenido(socket, sizeof(int32_t), headerSerializado);
 
 	if(headerResult == -1){
