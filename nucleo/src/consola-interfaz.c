@@ -37,8 +37,9 @@ void header(int consoleSocket){
 
 void finalizarFelizmenteTodo(int processID){
 	notificarFinDePrograma(processID);		//Notifica fin de programa a UMC
-	end_process(processID);					//Destruye las estructuras del proceso dentro del núcleo
-	//TODO: notificar a consola que se finalizó el proceso
+	end_process(processID);//Destruye las estructuras del proceso dentro del núcleo
+	endOfProgram(processID);
+
 }
 
 // falta una parte
@@ -49,14 +50,18 @@ void initNewProgram(char* ANSiSop, int consoleSocket){
 	cantPage = getProgramPagesCount(ANSiSop);
 	create_program_PCB(nuevoPCB, ANSiSop,cantPage);
 
-	almacenamientoPosible(cantPage,nuevoPCB,ANSiSop);
-	//TODO: validar respuesta de UMC y notificar a la consola
 
+	// validar respuesta de UMC y notificar a la consola
+if(almacenamientoPosible(cantPage,nuevoPCB,ANSiSop)){
 	//Si hay espacio en UMC => mover PCB a la cola de ready y lista global
 	//if(sePuedeGuardar){
 	set_pcb_READY(nuevoPCB);
 	add_pcb_to_general_list(nuevoPCB);
-	//}
+	}
+else {
+	void endOfProgram( consoleSocket);
+
+}
 }
 
 void endOfProgram(int socket){

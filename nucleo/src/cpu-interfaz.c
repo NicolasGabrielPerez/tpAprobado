@@ -1,4 +1,6 @@
 #include "cpu-interfaz.h"
+#include "umc-interfaz.h"
+
 
 int cpu_listener;
 fd_set cpu_sockets_set;
@@ -91,7 +93,9 @@ void nucleo_notificarFinDeQuantum(message* mensaje){
 	//TODO: loguear evento
 }
 void nucleo_notificarFinDeRafaga(message* mensaje){}
-void nucleo_notificarFinDePrograma(message* mensaje){}
+void nucleo_notificarFinDePrograma(message* mensaje){//FINALIZADA
+	finalizarProgramaenUMC(mensaje);
+}
 void nucleo_wait(message* mensaje){}
 void nucleo_signal(message* mensaje){}
 void nucleo_imprimir(message* mensaje){}

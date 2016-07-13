@@ -32,12 +32,16 @@ while(fin_program || (FEOP==1)){
 	nucleoResponse receiveMessage(int socket);
 		// deserialize response
 
-		char* mensaje = malloc(nucleoResponse->contenidoSize);
-		mensaje = (nucleoResponse->contenido);
+
 		if (nucleoResponse->header == HEADER_FIN_PROGRAMA) {
+			printf("FIN DE PROGRAMA");
 			fin_program = 0;
 			FEOP = 1;
 		}
+		if (nucleoResponse->header == HEADER_RESULTADOS){
+			char* mensaje = malloc(nucleoResponse->contenidoSize);
+				mensaje = (nucleoResponse->contenido);
+
 		printf("%s", mensaje);
 		}
 
