@@ -32,18 +32,15 @@ void almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hace
 void swichRecivirPorHEADER(){
 	message* mensaje = receiveMessage(socket_umc);
 	if(mensaje->header == HEADER_HANDSHAKE){
-
+		Handshake_con_UMC();
 	}
 
-	if(mensaje->header == HEADER_ENVIAR_PCB){
-		 hacerProtocoloPCB(mensaje);
 
-	}
-	if(mensaje->header == HEADER_PAGINAS_DISPONIBLES){
+	if(mensaje->header == HEADER_INIT_PROGRAMA){
 		aceptarPrograma(mensaje);
 	}
-	if(mensaje->header == HEADER_PAGINAS_NO_DISPONIBLES){
-	rechazarPrograma(mensaje);
+	if(mensaje->header == HEADER_FIN_PROGRAMA){
+	finalizarProgramaenUMC(mensaje);
 	}
 	perror("header invalido");
 	enviarFAIL(socket_umc, HEADER_INVALIDO);
@@ -51,53 +48,37 @@ void swichRecivirPorHEADER(){
 
 }
 
-void rechazarPrograma(message* mensaje){
+void finalizarProgramaenUMC(message* mensaje){
 	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
 	endOfProgram(nuevoPCB->processId);
+	int size = sizeof(nuevoPCB->processId);
+	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, size, nuevoPCB->processId);
 	free_pcb(nuevoPCB);
 
 }
 
 void aceptarPrograma(message* mensaje){
 	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
+
 	add_pcb_to_general_list(nuevoPCB);
 
 }
 
-void hacerProtocoloPCB(message* mensaje){
-
-
-}
-//TODO: dessarollar funciones al recivir un pcb de una umc
-PCB* recivirPCB(message pcbSerial){
-
-	PCB* unpcb = deserialize_pcb(pcbSerial->contenido);
-
-return unpcb;
-}
-
-
-// SEND
-void sendoPCB(PCB* unPCB){
-	Buffer *buffer = malloc(sizeof(Buffer));
-	buffer = new_buffer();
-	char* pcbzerial = serialize_pcb(unPCB ,buffer);
-	int size = sizeof(pcbzerial);
-	buffer_free( buffer);
-	sendMessage(socket_umc, HEADER_ENVIAR_PCB,size , pcbzerial);
-	}
 
 void notificarFinDePrograma(){
 	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, 0, "");
 }
 
+vfinalizarProgrmaEnUMC(int processId){
 
+
+}
 void conectarConUMC(t_config* config){
 	 char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto de UMC
 	 socket_umc = crear_socket_cliente("utnso40", puerto_umc);
 
 	 //TODO: crear función para enviar header
-	 //Handshake con UMC
+
 	 char* content = string_itoa(HEADER_HANDSHAKE);
 	 int32_t size = sizeof(int32_t);
 	 enviarOKConContenido(socket_umc, size, content);
