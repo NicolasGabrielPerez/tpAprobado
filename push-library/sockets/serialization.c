@@ -276,22 +276,14 @@ PCB* deserialize_pcb(char* serializedPCB){
 	PCB* pcb = new_pcb();
 	char** serializedComponents = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
 
-	//PID
-	pcb->processId = atoi(serializedComponents[0]);
-	//programCounter
-	pcb->programCounter = atoi(serializedComponents[1]);
-	//codePagesCount
-	pcb->codePagesCount = atoi(serializedComponents[2]);
-	//instructionsCount
-	pcb->instructionsCount = atoi(serializedComponents[3]);
-	//codeIndex
-	pcb->codeIndex = deserialize_codeIndex(serializedComponents[4], pcb->instructionsCount);
-	//tagIndexSize
-	pcb->tagIndexSize = atoi(serializedComponents[5]);
-	//tagIndex
-	pcb->tagIndex = serializedComponents[6];
-	//stackCount
-	pcb->stackCount = atoi(serializedComponents[7]);
+	pcb->processId = atoi(serializedComponents[0]);						//PID
+	pcb->programCounter = atoi(serializedComponents[1]);				//programCounter
+	pcb->codePagesCount = atoi(serializedComponents[2]);				//codePagesCount
+	pcb->instructionsCount = atoi(serializedComponents[3]);				//instructionsCount
+	pcb->codeIndex = deserialize_codeIndex(serializedComponents[4], pcb->instructionsCount);	//codeIndex
+	pcb->tagIndexSize = atoi(serializedComponents[5]);					//tagIndexSize
+	pcb->tagIndex = serializedComponents[6];							//tagIndex
+	pcb->stackCount = atoi(serializedComponents[7]);					//stackCount
 	//stack
 	//pcb->stack = deserialize_stack(serializedComponents[8], pcb->stackCount);		TODO:implementar
 
