@@ -157,7 +157,6 @@ message* receiveMessage(int socket){
 	//PAYLOAD
 	response* responsePayload = recibirResponse(socket);
 	message->contenido = responsePayload->contenido;
-	//memcpy(message->contenido, responsePayload->contenido, responsePayload->contenidoSize);
 	message->contenidoSize = responsePayload->contenidoSize;
 	if(!responsePayload->ok){
 		message->codError = responsePayload->codError;
@@ -186,4 +185,41 @@ int32_t sendMessage(int socket, int header, int contenidoSize, char* contenidoSe
 	//PAYLOAD
 	int payloadResult = enviarOKConContenido(socket, contenidoSize, contenidoSerializado);
 	return payloadResult;
+}
+
+int32_t sendMessageInt(int socket, int header, int value){
+	//HEADER
+	char* headerSerializado = malloc(sizeof(int32_t));
+	int32_t headerSelf;
+	memcpy(&headerSelf, &header, sizeof(int32_t));
+
+	printf("Header a enviar: %d\n", headerSelf);
+
+	memcpy(headerSerializado, &headerSelf, sizeof(int32_t));
+	int headerResult = enviarOKConContenido(socket, sizeof(int32_t), headerSerializado);
+
+	if(headerResult == -1){
+		return headerResult;
+	}
+
+	int32_t payloadSelf;
+	memcpy(&payloadSelf, &value, sizeof(int32_t));
+
+	char* serializedValue = malloc(sizeof(int32_t));
+	serializarInt(serializedValue, &value);
+
+	//PAYLOAD
+	return enviarOKConContenido(socket, sizeof(int32_t), serializedValue);
+}
+
+int32_t sendErrorMessage(int socket, int header, int errorCode){
+	//HEADER
+	char* headerSerializado = malloc(sizeof(int32_t));
+	int32_t headerSelf;
+	memcpy(&headerSelf, &header, sizeof(int32_t));
+
+	printf("Header a enviar: %d\n", headerSelf);
+
+	memcpy(headerSerializado, &headerSelf, sizeof(int32_t));
+	return enviarFAIL(socket,errorCode);
 }

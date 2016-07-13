@@ -40,9 +40,6 @@
 	extern int32_t HEADER_IMPRIMIR_TEXTO;
 	extern int32_t SIGUSR1;
 
-
-
-
 	extern int32_t TIPO_CONSOLA;
 	extern int32_t TIPO_NUCLEO;
 	extern int32_t TIPO_UMC;
@@ -60,6 +57,10 @@
 	message* receiveMessage(int socket);
 
 	int32_t sendMessage(int socket, int header, int contenidoSize, char* contenidoSerializado);
+
+	int32_t sendMessageInt(int socket, int header, int value);
+
+	int32_t sendErrorMessage(int socket, int header, int errorCode);
 
 	response* recibirResponse(int socket);
 
