@@ -7,48 +7,56 @@ int consola_listener;
 fd_set consola_sockets_set;
 int fd_consola_max;
 
-void header(int socket){
-	message* program;
-	program = receiveMessage(socket);
+//Recibe mensajes y llama a las funciones correspondientes según el HEADER
+void header(int consoleSocket){
+	message* message;
+	message = receiveMessage(consoleSocket);
 
 	//Saqué el switch case porque googleé que no funciona con constantes definidas como las usamos nosotros. La solución, el if...
 
-	if(program->header == HEADER_HANDSHAKE){
-		makeHandshake(socket);
+	if(message->header == HEADER_HANDSHAKE){
+		makeHandshake(consoleSocket);
 	}
 
-	if(program->header == HEADER_FIN_PROGRAMA){
-		finalizarFelizmenteTodo(socket);
+	if(message->header == HEADER_FIN_PROGRAMA){
+		finalizarFelizmenteTodo(consoleSocket);		//consoleSocket == PID
 	}
 	else{
-		if(program->header == HEADER_INIT_PROGRAMA){
-			char* programaANSISOP = recibirProgramaANSISOP(program);
-			initNewProgram(programaANSISOP, socket);
+		if(message->header == HEADER_INIT_PROGRAMA){
+			char* programaANSISOP = recibirProgramaANSISOP(message);
+			initNewProgram(programaANSISOP, consoleSocket);
 			free(programaANSISOP);
-			free(program);
+			free(message);
 		}
 		else{
 			perror("header invalido");
-			enviarFAIL(socket, HEADER_INVALIDO);
+			enviarFAIL(consoleSocket, HEADER_INVALIDO);
 		}
 	}
 }
 
-void finalizarFelizmenteTodo(int socket){
-	notificarFinDePrograma(socket);
-	//TODO sacar de cpu en ejecucion
+void finalizarFelizmenteTodo(int processID){
+	notificarFinDePrograma(processID);		//Notifica fin de programa a UMC
+	end_process(processID);					//Destruye las estructuras del proceso dentro del núcleo
+	//TODO: notificar a consola que se finalizó el proceso
 }
 
 // falta una parte
-void initNewProgram(char* ANSiSop){
+void initNewProgram(char* ANSiSop, int consoleSocket){
 	PCB* nuevoPCB;
-	nuevoPCB = new_pcb();
+	nuevoPCB = new_pcb(consoleSocket);
 	int cantPage;
 	cantPage = getProgramPagesCount(ANSiSop);
 	create_program_PCB(nuevoPCB, ANSiSop,cantPage);
 
 	almacenamientoPosible(cantPage,nuevoPCB,ANSiSop);
+	//TODO: validar respuesta de UMC y notificar a la consola
 
+	//Si hay espacio en UMC => mover PCB a la cola de ready y lista global
+	//if(sePuedeGuardar){
+	set_pcb_READY(nuevoPCB);
+	add_pcb_to_general_list(nuevoPCB);
+	//}
 }
 
 void endOfProgram(int socket){
@@ -60,6 +68,7 @@ int reciveEndOfProgram(message end){
 	return HEADER_FIN_PROGRAMA;
 }
 
+//Envía mensajes a la consola con lo que debe mostrar en pantalla
 void sendResults(int socket, char* result){
 	int	contenidoSize = sizeof(result);
 	int header = HEADER_RESULTADOS;
@@ -68,10 +77,10 @@ void sendResults(int socket, char* result){
 }
 // SEND
 
+//Devuelve el programa serializado recibido en un mensaje
 char* recibirProgramaANSISOP(message* ANSISOP){
 	char* program = malloc(ANSISOP->contenidoSize);
 	memcpy(program, ANSISOP->contenido, ANSISOP->contenidoSize);
-
 
 	return program;
 }
@@ -98,41 +107,19 @@ void makeHandshake(int consola_socket){
 	sendMessage(consola_socket, HEADER_HANDSHAKE, 0, NULL);
 }
 
-//hecho arriba mas completo
-void initPrograma(char* program){}
-//hecho arriba mas completo
-void handleConsolaRequest(int consola_socket){
-	message* message = receiveMessage(consola_socket);
-
-	if(message->header == HEADER_HANDSHAKE){
-		makeHandshake(consola_socket);
-
-		return;
-	}
-
-	if(message->header == HEADER_INIT_PROGRAMA){
-		//TODO:testear cómo viene el programa desde la consola.
-		char* program = malloc(message->contenidoSize);
-		memcpy(program, message->contenido, message->contenidoSize);
-		initPrograma(program);
-
-		free(program);
-		return;
-	}
-	enviarFAIL(consola_socket, HEADER_INVALIDO);
-}
-
 void manejarCambiosEnSocket(int socket, fd_set* read_set){
 	if (FD_ISSET(socket, read_set)) {
 	   if (socket == consola_listener) { //nuevo cpu
 			int new_fd = aceptarNuevaConexion(consola_listener);
 			actualizarFdMax(new_fd);
 	   } else{
-		   handleConsolaRequest(socket);
+		   //Cambio en socket consola => interpretar los mensajes de forma apropiada
+		   header(socket);
 	   }
    };
 }
 
+//Select principal de consolas
 void manejarConexionesConsolas(){
 	fd_set read_fds; //set auxiliar
 	read_fds = consola_sockets_set;

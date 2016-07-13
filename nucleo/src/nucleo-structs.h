@@ -30,6 +30,12 @@ extern t_dictionary* vars_control_dictionary;	//Diccionario general de variables
 extern char** io_ids;
 extern char** io_sleep_times;
 
+typedef struct semaforo{
+	char* sem_id;					//Nombre del semáforo
+	u_int32_t sem_value;			//Valor
+	t_queue* blocked_process_queue;	//Cola de procesos bloqueados
+} t_semaforo;
+
 void initNucleo(t_config* config);
 void set_IO_devices_list();
 void set_pcb_READY(PCB* pcb);
@@ -38,10 +44,10 @@ void set_pcb_BLOCKED(PCB* pcb);
 
 int getProgramPagesCount(char* program);
 
-typedef struct semaforo{
-	char* sem_id;					//Nombre del semáforo
-	u_int32_t sem_value;			//Valor
-	t_queue* blocked_process_queue;	//Cola de procesos bloqueados
-} t_semaforo;
+void end_process(int PID);
+
+void add_pcb_to_general_list(PCB* pcb);
+
+
 
 #endif

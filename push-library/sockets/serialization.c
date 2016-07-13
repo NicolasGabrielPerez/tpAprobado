@@ -273,7 +273,7 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 }
 
 PCB* deserialize_pcb(char* serializedPCB){
-	PCB* pcb = new_pcb();
+	PCB* pcb = new_pcb(0);
 	char** serializedComponents = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
 
 	pcb->processId = atoi(serializedComponents[0]);						//PID

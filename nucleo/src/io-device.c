@@ -31,7 +31,6 @@ void set_IO_devices_list(){
 		device->BlockedProcessesQueue = queue_create();
 		list_add(IO_Device_List, device);
 
-		//TODO: Crear hilo por dispositivo
 		pthread_t deviceThread;
 		pthread_create(&deviceThread, &attr, &ioDeviceProgram, (void*) device);
 

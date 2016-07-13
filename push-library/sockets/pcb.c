@@ -58,10 +58,10 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	pcb->stackPosition = 0;
 }
 
-PCB* new_pcb() {
+PCB* new_pcb(int processID) {
 
 	PCB* pcb = malloc(sizeof(PCB));
-	pcb->processId = get_next_Process_ID();
+	pcb->processId = processID;
 	pcb->stackIndex = list_create();
 
 	return pcb;

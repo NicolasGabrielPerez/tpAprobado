@@ -1,6 +1,4 @@
 #include "cpu-interfaz.h"
-#include <sockets/communication.h>
-#include <sockets/serialization.h>
 
 int cpu_listener;
 fd_set cpu_sockets_set;
@@ -8,25 +6,24 @@ int fd_cpu_max;
 
 
 // SEND
-void sendoPCB(int socket ,PCB* unPCB){
+void sendPCB(int socket ,PCB* unPCB){
 	Buffer *buffer = malloc(sizeof(Buffer));
 	buffer = new_buffer();
 	char* pcbzerial = serialize_pcb(unPCB ,buffer);
 	int size = sizeof(pcbzerial);
 	buffer_free( buffer);
 	sendMessage(socket, HEADER_ENVIAR_PCB,size , pcbzerial);
-	}
+}
 
 void notificar_a_cpu_su_muerte(int socket){
 
 	sendMessage(socket, SIGUSR1, 0 , "");
 }
 
-void swichCPU_HEADER(int socket){
+void switchCPU_HEADER(int socket){
 
 	message* mensaje;
 	mensaje = receiveMessage(socket);
-
 
 		if(mensaje->header == HEADER_HANDSHAKE){
 			makeHandshakeWithCPU(socket);
@@ -34,9 +31,9 @@ void swichCPU_HEADER(int socket){
 		if(mensaje->header == HEADER_ENVIAR_PCB){
 			protocoloConPCBllegado(mensaje);
 		}
-
 		if(mensaje->header == HEADER_NOTIFICAR_IO){
 			nucleo_notificarIO(mensaje);
+			//TODO: Recibir PCB
 		}
 
 		if(mensaje->header == HEADER_NOTIFICAR_FIN_QUANTUM){
@@ -46,10 +43,12 @@ void swichCPU_HEADER(int socket){
 			nucleo_notificarFinDePrograma(mensaje);
 		}
 		if(mensaje->header == HEADER_NOTIFICAR_FIN_RAFAGA){
-		nucleo_notificarFinDeRafaga(mensaje);
+			nucleo_notificarFinDeRafaga(mensaje);
+			//TODO: recibir PCB
 		}
 		if(mensaje->header == HEADER_NOTIFICAR_WAIT){
 			nucleo_wait(mensaje);
+			//TODO: Enviar señal de bloqueo si el semaforo está en cero
 		}
 		if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
 			nucleo_signal(mensaje);
@@ -62,14 +61,17 @@ void swichCPU_HEADER(int socket){
 		}
 		perror("header invalido");
 		enviarFAIL(socket, HEADER_INVALIDO);
+
+		//TODO: Setear variable
+		//TODO: Obtener valor de variable
 }
 
 //TODO terminar protocolo
 void protocoloConPCBllegado(message* mensaje){
-	PCB* unpcb = nucleo_recibir_pcb(mensaje);
+	PCB* unpcb = nucleo_obtener_pcb(mensaje);
 }
 
-PCB* nucleo_recibir_pcb(message* programBlock){
+PCB* nucleo_obtener_pcb(message* programBlock){
 
 	char* PCBSerialized = malloc(programBlock->contenidoSize);
 	PCBSerialized = programBlock->contenido;
@@ -77,24 +79,18 @@ PCB* nucleo_recibir_pcb(message* programBlock){
 	PCB* Deserializado = deserialize_pcb(PCBSerialized);
 	return Deserializado;
 }
+
 //TODO: Implementar
 void nucleo_notificarIO(message* mensaje){
 
 }
 
-
 void nucleo_notificarFinDeQuantum(message* mensaje){
 	message* programBlock;
-
 	//programBlock = receiveMessage(socket); //Se agregó el igual a la asignación
+	//TODO: loguear evento
 }
-
-
-
-char* nucleo_notificarFinDeRafaga(message* mensaje){
-	char* v;	//Agrego variable para evitar error de sintaxis
-	return v;
-}
+void nucleo_notificarFinDeRafaga(message* mensaje){}
 void nucleo_notificarFinDePrograma(message* mensaje){}
 void nucleo_wait(message* mensaje){}
 void nucleo_signal(message* mensaje){}
@@ -108,7 +104,7 @@ t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable
 }
 void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_variable valor){}
 
-
+//No se precisa
 void sendInstruction(int socket,char* instruccion){
 	int contenidoSize = sizeof(instruccion);
 
@@ -164,7 +160,8 @@ void manejarSocketChanges(int socket, fd_set* read_set){
 			int new_fd = aceptarNuevaConexion(cpu_listener);
 			actualizarFdCPUMax(new_fd);
 	   } else{
-		   handleCPURequest(socket);
+		   //handleCPURequest(socket);
+		   switchCPU_HEADER(socket);
 	   }
    };
 }

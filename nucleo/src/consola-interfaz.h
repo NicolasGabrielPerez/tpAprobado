@@ -23,4 +23,10 @@
 	// develve el header de fin de programa o el programa ansisop entrero
 	// todo recivido de consola
 
+	void makeHandshake(int consola_socket);
+
+	void finalizarFelizmenteTodo(int processID);
+
+	void initNewProgram(char* ANSiSop, int consoleSocket);
+
 #endif

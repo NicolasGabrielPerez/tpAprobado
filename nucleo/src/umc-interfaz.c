@@ -5,6 +5,7 @@
 
 int socket_umc;
 
+//Valida con la UMC si es posible almacenar el nuevo programa y lo almacena
 void almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hacer q envie el pid y verificar la respuesta es el mismo pid
 	int bytes_recibidos;
 	int32_t pid = nuevoPCB->processId;
@@ -12,40 +13,39 @@ void almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hace
 	int codFuente_size = sizeof(ANSiSop);
 	char* codFuente = ANSiSop;
 
+	//TODO: chequear como implementa UMC el pedido de espacio
+
 	if ((bytes_recibidos = send(socket_umc, pid, sizeof(int32_t), 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
-	if ((bytes_recibidos = send(socket_umc, &cantPaginas, sizeof(int32_t), 0)) == -1) {
+	if ((bytes_recibidos = send(socket_umc, cantPaginas, sizeof(int32_t), 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
-
 
 	if ((bytes_recibidos = send(socket_umc, codFuente, codFuente_size, 0)) == -1) {
 		perror("recv");
 		exit(1);
 	}
+
+	//TODO: Recibir respuesta de UMC (OK/No hay lugar) y retornarla
+	//TODO: Hay que mandar stack?
 }
 
-
-void swichRecivirPorHEADER(){
+void switchRecibirPorHEADER(){
 	message* mensaje = receiveMessage(socket_umc);
 	if(mensaje->header == HEADER_HANDSHAKE){
-		Handshake_con_UMC();
+		handshake_con_UMC();
 	}
-
 
 	if(mensaje->header == HEADER_INIT_PROGRAMA){
 		aceptarPrograma(mensaje);
 	}
-	if(mensaje->header == HEADER_FIN_PROGRAMA){
-	finalizarProgramaenUMC(mensaje);
-	}
+
+	//TODO: validar correctamente el header erróneo
 	perror("header invalido");
 	enviarFAIL(socket_umc, HEADER_INVALIDO);
-
-
 }
 
 void finalizarProgramaenUMC(message* mensaje){
@@ -64,15 +64,12 @@ void aceptarPrograma(message* mensaje){
 
 }
 
-
-void notificarFinDePrograma(){
-	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, 0, "");
+//Envía el PID del programa a finalizar
+void notificarFinDePrograma(int processID){
+	char* stringPID = string_itoa(processID);		//Convierte el ID a string
+	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, sizeof(stringPID), stringPID);
 }
 
-vfinalizarProgrmaEnUMC(int processId){
-
-
-}
 void conectarConUMC(t_config* config){
 	 char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto de UMC
 	 socket_umc = crear_socket_cliente("utnso40", puerto_umc);
@@ -97,4 +94,8 @@ void conectarConUMC(t_config* config){
 		 puts("Tamaño de página no recibido");
 
 	 }
+}
+
+void handshake_con_UMC(){
+	//TODO: Implementar
 }

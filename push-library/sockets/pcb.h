@@ -76,7 +76,7 @@ typedef struct PCB {
 //--------------------------Structs
 
 //--------------------------Functions
-PCB* new_pcb();
+PCB* new_pcb(int processID);
 
 void free_pcb(PCB* pcb);
 

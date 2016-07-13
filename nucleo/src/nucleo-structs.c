@@ -182,6 +182,11 @@ void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
 	t_IO_Device* device = get_device_by_id(deviceID);
 	queue_push(BLOCKED_Process_Queue, device);
 }
+
+//Finalizar un proceso
+void end_process(int PID){
+
+}
 //---------------------------------------------- </PCBs>
 
 //---------------------------------------------- <VARIABLES>

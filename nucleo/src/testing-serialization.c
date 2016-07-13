@@ -107,29 +107,29 @@ t_dictionary* create_testing_dictionary(int dictionarySize){
 //Agrega elementos en la lista general de PCBs
 void set_pcb_test_list(){
 	PCB* pcb1 = malloc(sizeof(PCB));
-	pcb1 = new_pcb();
+	pcb1 = new_pcb(0);
 	pcb1->tagIndex = "Hola guti\n";
 	list_add(General_Process_List, pcb1);
 
 	PCB* pcb2 = malloc(sizeof(PCB));
-	pcb2 = new_pcb();
+	pcb2 = new_pcb(1);
 	pcb2->tagIndex = "Cómo andás?\n";
 	list_add(General_Process_List, pcb2);
 
 	PCB* pcb3 = malloc(sizeof(PCB));
-	pcb3 = new_pcb();
+	pcb3 = new_pcb(2);
 	pcb3->tagIndex = "PCB 3\n";
 	list_add(General_Process_List, pcb3);
 
 	PCB* pcb4 = malloc(sizeof(PCB));
-	pcb4 = new_pcb();
+	pcb4 = new_pcb(3);
 	pcb4->tagIndex = "PCB 4\n";
 	list_add(General_Process_List, pcb4);
 
 	list_remove(General_Process_List, 2);
 
 	PCB* pcb5 = malloc(sizeof(PCB));
-	pcb5 = new_pcb();
+	pcb5 = new_pcb(4);
 	pcb5->tagIndex = "PCB 5\n";
 	list_add(General_Process_List, pcb5);
 }
