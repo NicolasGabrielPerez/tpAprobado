@@ -156,14 +156,14 @@ message* receiveMessage(int socket){
 
 	//PAYLOAD
 	response* responsePayload = recibirResponse(socket);
-	memcpy(message->contenido, responsePayload->contenido, responsePayload->contenidoSize);
+	message->contenido = responsePayload->contenido;
+	//memcpy(message->contenido, responsePayload->contenido, responsePayload->contenidoSize);
 	message->contenidoSize = responsePayload->contenidoSize;
 	if(!responsePayload->ok){
 		message->codError = responsePayload->codError;
 		deleteResponse(responsePayload);
 		return message;
 	}
-	deleteResponse(responsePayload);
 
 	return message;
 }
