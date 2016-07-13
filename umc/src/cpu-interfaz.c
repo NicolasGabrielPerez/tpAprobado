@@ -56,7 +56,7 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 	escribirEnFrame(result.frameEntry->direccion_real, offset, tamanio, nroFrame);
 
 	//Actualizar TLB
-	if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+	if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
 
 	enviarOKSinContenido(cpu_socket);
 }
@@ -106,7 +106,7 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 
 	retornar:
 		//Actualizar TLB
-		if(TLBEnable) actualizarTLB(nroPagina, pidActivo);
+		if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
 
 		enviarOKConContenido(cpu_socket, marco_size, result.frameEntry->direccion_real);
 }
