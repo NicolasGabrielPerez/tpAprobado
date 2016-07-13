@@ -6,7 +6,7 @@
 int socket_umc;
 
 //Valida con la UMC si es posible almacenar el nuevo programa y lo almacena
-void almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hacer q envie el pid y verificar la respuesta es el mismo pid
+int almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hacer q envie el pid y verificar la respuesta es el mismo pid
 	int bytes_recibidos;
 	int32_t pid = nuevoPCB->processId;
 	int32_t cantPaginas = paginas;
@@ -27,8 +27,9 @@ void almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hace
 	if ((bytes_recibidos = send(socket_umc, codFuente, codFuente_size, 0)) == -1) {
 		perror("recv");
 		exit(1);
+	;
 	}
-
+	return bytes_recibidos;
 	//TODO: Recibir respuesta de UMC (OK/No hay lugar) y retornarla
 	//TODO: Hay que mandar stack?
 }
@@ -73,8 +74,9 @@ void notificarFinDePrograma(int processID){
 void conectarConUMC(t_config* config){
 	 char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto de UMC
 	 socket_umc = crear_socket_cliente("utnso40", puerto_umc);
-
+}
 	 //TODO: crear función para enviar header
+void handshake_con_UMC(){
 
 	 char* content = string_itoa(HEADER_HANDSHAKE);
 	 int32_t size = sizeof(int32_t);
@@ -96,6 +98,4 @@ void conectarConUMC(t_config* config){
 	 }
 }
 
-void handshake_con_UMC(){
-	//TODO: Implementar
-}
+

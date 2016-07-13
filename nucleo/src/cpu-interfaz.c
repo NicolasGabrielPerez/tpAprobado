@@ -30,9 +30,9 @@ void switchCPU_HEADER(int socket){
 		if(mensaje->header == HEADER_HANDSHAKE){
 			makeHandshakeWithCPU(socket);
 		}
-		if(mensaje->header == HEADER_ENVIAR_PCB){
-			protocoloConPCBllegado(mensaje);
-		}
+		//if(mensaje->header == HEADER_ENVIAR_PCB){
+			//protocoloConPCBllegado(mensaje);
+		//}
 		if(mensaje->header == HEADER_NOTIFICAR_IO){
 			nucleo_notificarIO(mensaje);
 			//TODO: Recibir PCB
@@ -84,6 +84,9 @@ PCB* nucleo_obtener_pcb(message* programBlock){
 
 //TODO: Implementar
 void nucleo_notificarIO(message* mensaje){
+	char* dispositivoIO = mensaje->contenido;
+	//TODO: machaear pcb con cpu ejecutando;
+
 
 }
 
@@ -92,14 +95,32 @@ void nucleo_notificarFinDeQuantum(message* mensaje){
 	//programBlock = receiveMessage(socket); //Se agregó el igual a la asignación
 	//TODO: loguear evento
 }
+
 void nucleo_notificarFinDeRafaga(message* mensaje){}
+
 void nucleo_notificarFinDePrograma(message* mensaje){//FINALIZADA
 	finalizarProgramaenUMC(mensaje);
 }
+
 void nucleo_wait(message* mensaje){}
+
 void nucleo_signal(message* mensaje){}
-void nucleo_imprimir(message* mensaje){}
-void nucleo_imprimir_texto(message* mensaje){}
+
+void nucleo_imprimir_texto(message* mensaje){
+	char* result = malloc(mensaje->contenidoSize);
+	result = mensaje->contenido;
+	int pid_delPrograma;//todo: machear el mensaje de la cpu con el socket de consola(pid)
+	sendResults(pid_delPrograma, result);
+	free(result);
+}
+
+void nucleo_imprimir(message* mensaje){
+	char* result = malloc(sizeof("mensaje harcodeado de nucleo imprimir")+1);
+	result = "mensaje harcodeado de nucleo imprimir";
+	int pid_delPrograma;//todo: machear el mensaje de la cpu con el socket de consola(pid)y harcodear
+	sendResults(pid_delPrograma, result);
+
+}
 
 //duda sobre estas dos
 t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable){
