@@ -49,11 +49,18 @@ void *gestionarNucleo(void* socket){
 
 		message* message = receiveMessage((int) socket);
 
+		if(message->codError == SOCKET_DESCONECTADO){
+			printf("Socket %d desconectado\n", (int) socket);
+			return 0;
+		}
+
 		if(message->header == HEADER_INIT_PROGRAMA){
+			log_trace(logger, "Init program received");
 			recbirInitPrograma((int)socket);
 			continue;
 		}
 		if(message->header == HEADER_FIN_PROGRAMA){
+			log_trace(logger, "End program received");
 			recibirFinalizarPrograma((int)socket);
 			continue;
 		}
@@ -90,7 +97,7 @@ response* recibir(int socket, int size){
 
 void enviarPageSize(int socket){
 	char* pageSizeSerializado;
-	serializarInt(pageSizeSerializado, marco_size);
+	serializarInt(pageSizeSerializado, &marco_size);
 	sendMessage(socket, HEADER_SIZE, sizeof(int32_t), pageSizeSerializado);
 }
 
@@ -130,7 +137,6 @@ int main(void) {
 
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-	crearHiloDeComponente(TIPO_SWAP, swap_socket);
 
 	char* puerto_cpu_nucleo = config_get_string_value(config, "PUERTO_CPU_NUCLEO"); //puerto escucha de Nucleo y CPU
 	listener = crear_puerto_escucha(puerto_cpu_nucleo);
@@ -140,7 +146,7 @@ int main(void) {
 	initUmcConsole();
 
 	while(1){
-		printf("Esperando conexiones...");
+		printf("Esperando conexiones...\n");
 		manejarNuevasConexiones(); //Nucleo o CPU
 	}
 
