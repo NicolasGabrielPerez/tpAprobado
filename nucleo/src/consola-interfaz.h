@@ -13,7 +13,7 @@
 
 	void manejarConexionesConsolas();
 
-	void sendConsoleEndOfProgram(int socket);
+	void console_endProgram(int socket);
 
 	void sendResults(int socket, char* result);
 
@@ -27,6 +27,6 @@
 
 	void finalizarFelizmenteTodo(int processID);
 
-	void initNewProgram(char* ANSiSop, int consoleSocket);
+	void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket);
 
 #endif

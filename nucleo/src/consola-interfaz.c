@@ -20,51 +20,41 @@ void handleConsoleRquests(int consoleSocket){
 	if(message->header == HEADER_FIN_PROGRAMA){
 		finalizarFelizmenteTodo(consoleSocket);		//consoleSocket == PID
 	}
-	else{
-		if(message->header == HEADER_INIT_PROGRAMA){
-			char* programaANSISOP = recibirProgramaANSISOP(message);
-			initNewProgram(programaANSISOP, consoleSocket);
-			free(programaANSISOP);
-			free(message);
-		}
-		else{
-			perror("header invalido");
-			enviarFAIL(consoleSocket, HEADER_INVALIDO);
-		}
+	if(message->header == HEADER_INIT_PROGRAMA){
+		char* programaANSISOP = recibirProgramaANSISOP(message);
+		initNewProgram(message->contenidoSize, programaANSISOP, consoleSocket);
+		free(programaANSISOP);
+		free(message);
 	}
+	/*
+	else{
+		perror("header invalido");
+		enviarFAIL(consoleSocket, HEADER_INVALIDO);
+	}*/
+
 }
 
 void finalizarFelizmenteTodo(int processID){
 	umc_notificarFinDePrograma(processID);		//Notifica fin de programa a UMC
 	end_process(processID);						//Destruye las estructuras del proceso dentro del núcleo
-	sendConsoleEndOfProgram(processID);			//Notifica fin de programa a Consola
+	console_endProgram(processID);			//Notifica fin de programa a Consola
 }
 
-// falta una parte
+
 //TODO: Esta función no debe ser parte de la consola. Debe formar parte del programa principal
-void initNewProgram(char* ANSiSop, int consoleSocket){
+void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket){
 	PCB* nuevoPCB;
 	nuevoPCB = new_pcb(consoleSocket);
-	int cantPage;
-	cantPage = getProgramPagesCount(ANSiSop);
-	create_program_PCB(nuevoPCB, ANSiSop,cantPage);
+	int memoryPagesCount;
+	memoryPagesCount = getProgramPagesCount(programSourceCode);
+	create_program_PCB(nuevoPCB, programSourceCode, memoryPagesCount);
 
-
-	// validar respuesta de UMC y notificar a la consola
-if(almacenamientoPosible(cantPage,nuevoPCB,ANSiSop)){
-	//Si hay espacio en UMC => mover PCB a la cola de ready y lista global
-	//if(sePuedeGuardar){
-	set_pcb_READY(nuevoPCB);
-	add_pcb_to_general_list(nuevoPCB);
-	}
-else {
-	void endOfProgram( consoleSocket);
-
-}
+	//Envío solicitud de páginas a UMC
+	umc_initProgram(memoryPagesCount, nuevoPCB, codeSize, programSourceCode);
 }
 
 //Envía mensaje de finalización de programa
-void sendConsoleEndOfProgram(int socket){
+void console_endProgram(int socket){
 	sendMessage(socket, HEADER_FIN_PROGRAMA, 0, "");
 }
 // SEND
@@ -114,14 +104,14 @@ void makeHandshake(int consola_socket){
 
 void manejarCambiosEnSocket(int socket, fd_set* read_set){
 	if (FD_ISSET(socket, read_set)) {
-	   if (socket == consola_listener) { //nuevo cpu
+		if (socket == consola_listener) { //nuevo cpu
 			int new_fd = aceptarNuevaConexion(consola_listener);
 			actualizarFdMax(new_fd);
-	   } else{
-		   //Cambio en socket consola => interpretar los mensajes de forma apropiada
-		   handleConsoleRquests(socket);
-	   }
-   };
+		} else{
+			//Cambio en socket consola => interpretar los mensajes de forma apropiada
+			handleConsoleRquests(socket);
+		}
+	};
 }
 
 //Select principal de consolas
@@ -129,8 +119,8 @@ void manejarConexionesConsolas(){
 	fd_set read_fds; //set auxiliar
 	read_fds = consola_sockets_set;
 	if (select(fd_consola_max+1, &read_fds, NULL, NULL, NULL) == -1) {
-	   perror("select");
-	   //exit(4);
+		perror("select");
+		//exit(4);
 	}
 
 	int i;

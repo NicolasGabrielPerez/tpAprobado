@@ -99,7 +99,7 @@ void nucleo_notificarFinDeQuantum(message* mensaje){
 void nucleo_notificarFinDeRafaga(message* mensaje){}
 
 void nucleo_notificarFinDePrograma(message* mensaje){//FINALIZADA
-	finalizarProgramaenUMC(mensaje);
+	umc_endProgram(mensaje);
 }
 
 void nucleo_wait(message* mensaje){}
@@ -127,6 +127,7 @@ t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable
 	t_valor_variable v;	//Agrego variable para evitar error de sintaxis
 	return v;
 }
+
 void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_variable valor){}
 
 //No se precisa

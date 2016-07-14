@@ -11,7 +11,7 @@ void conectarConUMC(t_config* config);
 
 void umc_notificarFinDePrograma();
 
-int almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop);
+void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char* program);
 
 void umc_process_active(int processId); //Settea el proceso activo.
 void umc_set(t_puntero page, t_puntero offset, u_int32_t size, char* buffer); 	//Setea el valor a una variable.

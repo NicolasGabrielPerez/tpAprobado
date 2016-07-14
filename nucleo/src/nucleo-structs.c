@@ -127,6 +127,10 @@ void wait(char* id){
 	else{
 		//TODO: GUTI - implementar
 		//Bloquear proceso => desalojar de CPU
+		//Mensaje a CPU desalojar proceso
+		//Recibir PCB y actualizar
+		//Encolar en cola de bloqueados del semáforo
+
 		//Disparar la rutina de cambio de contexto
 	}
 }

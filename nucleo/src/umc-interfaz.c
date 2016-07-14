@@ -6,55 +6,36 @@
 int socket_umc;
 
 //Valida con la UMC si es posible almacenar el nuevo programa y lo almacena
-int almacenamientoPosible(int paginas,PCB* nuevoPCB,char* ANSiSop){//TODO: hacer q envie el pid y verificar la respuesta es el mismo pid
-	int bytes_recibidos;
-	int32_t pid = nuevoPCB->processId;
-	int32_t cantPaginas = paginas;
-	int codFuente_size = sizeof(ANSiSop);
-	char* codFuente = ANSiSop;
+void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char* program){
 
-	//TODO: chequear como implementa UMC el pedido de espacio
+	sendMessage(socket_umc, HEADER_INIT_PROGRAMA, 0, 0);
+	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(int32_t), pcb->processId);
+	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(u_int32_t), pagesCount);
+	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINAS, programSize, program);
 
-	if ((bytes_recibidos = send(socket_umc, pid, sizeof(int32_t), 0)) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	if ((bytes_recibidos = send(socket_umc, cantPaginas, sizeof(int32_t), 0)) == -1) {
-		perror("recv");
-		exit(1);
+	message* message = receiveMessage(socket_umc);
+	if(message->header == HEADER_PAGINAS_DISPONIBLES){
+		//Notificar programa aceptado
+		//TODO: Crear header de programa inicializado correctamente
+		sendMessage(pcb->processId, HEADER_INIT_PROGRAMA, 0, 0);
+		//Agregar PCB a la lista general
+		add_pcb_to_general_list(pcb);
+		//Mover PCB a cola de READY
+		set_pcb_READY(pcb);
 	}
 
-	if ((bytes_recibidos = send(socket_umc, codFuente, codFuente_size, 0)) == -1) {
-		perror("recv");
-		exit(1);
+	if(message->header == HEADER_PAGINAS_NO_DISPONIBLES){
+		printf("Código de error: %d \n", message->codError);
+		//Notificar consola programa rechazado
+		sendMessage(pcb->processId, HEADER_PAGINAS_NO_DISPONIBLES, 0, 0);
+		//Matar PCB
+		free_pcb(pcb);
 	}
-	return bytes_recibidos;
-	//TODO: Recibir respuesta de UMC (OK/No hay lugar) y retornarla
-	//TODO: Hay que mandar stack?
 }
 
-void handleUMCRquests(){
-	message* mensaje = receiveMessage(socket_umc);
-	if(mensaje->header == HEADER_HANDSHAKE){
-		handshake_con_UMC();
-	}
-
-	if(mensaje->header == HEADER_INIT_PROGRAMA){
-		aceptarPrograma(mensaje);
-	}
-
-	//TODO: validar correctamente el header erróneo
-	perror("header invalido");
-	enviarFAIL(socket_umc, HEADER_INVALIDO);
-}
-
-//TODO: Desglosar esta función
-void finalizarProgramaEnUMC(message* mensaje){
-	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
-	sendConsoleEndOfProgram(nuevoPCB->processId);
-	int size = sizeof(nuevoPCB->processId);
-	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, size, nuevoPCB->processId);
-	free_pcb(nuevoPCB);
+//Envía orden de finalización de programa a UMC
+void umc_endProgram(u_int32_t PID){
+	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, sizeof(u_int32_t), PID);
 }
 
 void aceptarPrograma(message* mensaje){
@@ -69,30 +50,30 @@ void umc_notificarFinDePrograma(int processID){
 }
 
 void conectarConUMC(t_config* config){
-	 char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto de UMC
-	 socket_umc = crear_socket_cliente("utnso40", puerto_umc);
+	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto de UMC
+	socket_umc = crear_socket_cliente("utnso40", puerto_umc);
 }
-	 //TODO: crear función para enviar header
+//TODO: crear función para enviar header
 void handshake_con_UMC(){
 
-	 char* content = string_itoa(HEADER_HANDSHAKE);
-	 int32_t size = sizeof(int32_t);
-	 enviarOKConContenido(socket_umc, size, content);
+	char* content = string_itoa(HEADER_HANDSHAKE);
+	int32_t size = sizeof(int32_t);
+	enviarOKConContenido(socket_umc, size, content);
 
-	 //Tipo de handshake
-	 content = string_itoa(TIPO_NUCLEO);
-	 size = sizeof(int32_t);
-	 enviarOKConContenido(socket_umc, size, content);
+	//Tipo de handshake
+	content = string_itoa(TIPO_NUCLEO);
+	size = sizeof(int32_t);
+	enviarOKConContenido(socket_umc, size, content);
 
-	 //Recibir tamaño de página
-	 response* UmcResponse = recibirResponse(socket_umc);
-	 if(UmcResponse->ok){
-		 memoryPageSize = convertToInt32(UmcResponse->contenido);
-	 }
-	 else{
-		 puts("Tamaño de página no recibido");
+	//Recibir tamaño de página
+	response* UmcResponse = recibirResponse(socket_umc);
+	if(UmcResponse->ok){
+		memoryPageSize = convertToInt32(UmcResponse->contenido);
+	}
+	else{
+		puts("Tamaño de página no recibido");
 
-	 }
+	}
 }
 
 

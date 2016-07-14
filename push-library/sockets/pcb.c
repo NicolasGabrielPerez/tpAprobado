@@ -67,6 +67,7 @@ PCB* new_pcb(int processID) {
 	return pcb;
 }
 
+//TODO:Guti-Implementar
 void free_pcb(PCB* pcb) {
 
 	//int i = 0;
