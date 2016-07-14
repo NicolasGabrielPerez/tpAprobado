@@ -73,19 +73,20 @@ void deleteResponse(response* response){
 
 response* recibirResponse(int socket){
 	response* respuesta = malloc(sizeof(response));
-	if (recv(socket, &respuesta->ok, sizeof(int32_t), 0) == -1) {
-		perror("recv");
+
+	if (recv(socket, &respuesta->ok, sizeof(int32_t), 0) <=0 ) {
+		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
-	if (recv(socket, &respuesta->codError, sizeof(int32_t), 0) == -1) {
-		perror("recv");
+	if (recv(socket, &respuesta->codError, sizeof(int32_t), 0) <=0) {
+		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
-	if (recv(socket, &respuesta->contenidoSize, sizeof(int32_t), 0) == -1) {
-		perror("recv");
+	if (recv(socket, &respuesta->contenidoSize, sizeof(int32_t), 0) <=0) {
+		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if(respuesta->contenidoSize >0){
 		respuesta->contenido = malloc(respuesta->contenidoSize);
-		if (recv(socket, respuesta->contenido, respuesta->contenidoSize, 0) == -1) {
-			perror("recv");
+		if (recv(socket, respuesta->contenido, respuesta->contenidoSize, 0) <=0) {
+			return createFAILResponse(SOCKET_DESCONECTADO);
 		}
 	} else{
 		respuesta->contenido = 0;
