@@ -18,6 +18,7 @@ void recbirInitPrograma(int nucleo_socket){
 	response* swapResponse = initProgramaSwap(&pid, &cantPaginas, codFuente);
 
 	if(swapResponse->ok){
+		initProgramaUMC(pid, cantPaginas);
 		sendMessage(nucleo_socket, HEADER_PAGINAS_DISPONIBLES, 0, 0);
 	}
 
