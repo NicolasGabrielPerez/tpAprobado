@@ -19,14 +19,14 @@ pthread_t resultados;
 pthread_t comando;
 pthread_attr_t attr;
 
-int FEOP=0;
+int FEOP=1;
 
 
 
 void espera_resultados(int socketCliente){
 
 	int fin_program = 1;
-	while(fin_program || (FEOP==1)){
+	while(fin_program || FEOP){
 
 
 		message* nucleoResponse;
@@ -37,12 +37,12 @@ void espera_resultados(int socketCliente){
 		if (nucleoResponse->header == HEADER_FIN_PROGRAMA) {
 			printf("FIN DE PROGRAMA");
 			fin_program = 0;
-			FEOP = 1;
+			FEOP = 0;
 		}
 		if (nucleoResponse->header == HEADER_PAGINAS_NO_DISPONIBLES) {
 					printf("NO HAY MEMORIA DISPONIBLE");
 					fin_program = 0;
-					FEOP = 1;
+					FEOP = 0;
 				}
 		if (nucleoResponse->header == HEADER_PAGINAS_DISPONIBLES) {
 					printf("NO INICIADO");
@@ -61,7 +61,7 @@ void espera_resultados(int socketCliente){
 void comandosPorPantalla(int socketCliente){
 	char package[MAXDATASIZE];
 	int enviar = 1;
-	while(enviar || (FEOP == 1)){
+	while(enviar || FEOP ){
 		fgets(package, MAXDATASIZE, stdin);
 
 		if (!strcmp(package,"kill")) {
