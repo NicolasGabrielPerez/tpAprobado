@@ -29,6 +29,7 @@
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.1722186695" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.223525556" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/push-library}&quot;"/>
+									<listOptionValue builtIn="false" value="/push-library"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1220497847" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -49,6 +50,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.985017054" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1194512328" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.include.paths.1570161618" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/push-library}&quot;"/>
 									<listOptionValue builtIn="false" value="/push-library"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.128045991" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
@@ -59,6 +61,7 @@
 						<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1870873614.1988572266" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1870873614">
 							<option id="gnu.c.compiler.option.include.paths.2052078324" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 								<listOptionValue builtIn="false" value="&quot;${workspace_loc:/push-library}&quot;"/>
+								<listOptionValue builtIn="false" value="/push-library"/>
 							</option>
 							<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1296397588" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 						</tool>

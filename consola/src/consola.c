@@ -13,23 +13,24 @@
 #include <sockets/communication.h>
 #include <pthread.h>
 
+#define MAXDATASIZE 100 // max number of bytes we can get at once
 
 pthread_t resultados;
 pthread_t comando;
+pthread_attr_t attr;
 
-#define MAXDATASIZE 100 // max number of bytes we can get at once
 int FEOP=0;
 
 
 
 void espera_resultados(int socketCliente){
 
-int fin_program = 1;
-while(fin_program || (FEOP==1)){
+	int fin_program = 1;
+	while(fin_program || (FEOP==1)){
 
 
-	message nucleoResponse;
-	nucleoResponse receiveMessage(int socket);
+		message* nucleoResponse;
+		nucleoResponse = receiveMessage(socketCliente);
 		// deserialize response
 
 
@@ -40,22 +41,23 @@ while(fin_program || (FEOP==1)){
 		}
 		if (nucleoResponse->header == HEADER_RESULTADOS){
 			char* mensaje = malloc(nucleoResponse->contenidoSize);
-				mensaje = (nucleoResponse->contenido);
+			mensaje = (nucleoResponse->contenido);
 
-		printf("%s", mensaje);
+			printf("%s", mensaje);
 		}
 
 	}
+}
 
 void comandosPorPantalla(int socketCliente){
 	char package[MAXDATASIZE];
 	int enviar = 1;
 	while(enviar || (FEOP == 1)){
-	fgets(package, MAXDATASIZE, stdin);
+		fgets(package, MAXDATASIZE, stdin);
 
-	if (!strcmp(package,"kill")) {
-		enviar = 0;
-		sendMessage(socketCliente, HEADER_FIN_PROGRAMA, 0, "");
+		if (!strcmp(package,"kill")) {
+			enviar = 0;
+			sendMessage(socketCliente, HEADER_FIN_PROGRAMA, 0, "");
 		}
 	}
 
@@ -88,8 +90,8 @@ int main(int argc, char **argv) {
 
 	FILE *fp;
 
-int  length =string_length(argv[1]);
-      file = string_substring (argv[1], 2 , length);
+	int  length =string_length(argv[1]);
+	file = string_substring (argv[1], 2 , length);
 
 
 	fp = fopen ( file , "r" );
@@ -99,18 +101,18 @@ int  length =string_length(argv[1]);
 	double len= ftell(fp);
 	fseek(fp, 0L, SEEK_SET);
 
-char *paquete = malloc(len);
+	char *paquete = malloc(len);
 
-fscanf(fp, "%s" , paquete);
+	fscanf(fp, "%s" , paquete);
 
-int header = HEADER_INIT_PROGRAMA;
-sendMessage(socket_nucleo, header, len, paquete);
-free(paquete);
+	int header = HEADER_INIT_PROGRAMA;
+	sendMessage(socket_nucleo, header, len, paquete);
+	free(paquete);
 
 
-pthread_create(&resultados, &attr, &espera_resultados, (void*) socket_nucleo);
-pthread_create(&comando, &attr, &comandosPorPantalla, (void*) socket_nucleo);
-espera_resultados(socket_nucleo);
+	pthread_create(&resultados, &attr, &espera_resultados, (void*) socket_nucleo);
+	pthread_create(&comando, &attr, &comandosPorPantalla, (void*) socket_nucleo);
+	espera_resultados(socket_nucleo);
 
 
 
