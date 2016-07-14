@@ -69,6 +69,9 @@ int receiveData(char* bufferResult) {
 		continuarEjecucion();//TODO no se q hacer
 	}
 
+	if(mensaje->header == SIGUSR1){
+		desconectarse();
+	}
 
 
 	return 0;
@@ -77,7 +80,9 @@ int receiveData(char* bufferResult) {
 continuarEjecucion(){
 	//TODO DEsarrollar
 }
-
+void desconectarse(){
+	//TODO: desconectarse luego de ejecutar la rafaga
+}
 
 void enviarPCB(){
 	PCB* unPCB;//TODO  AGUS -variable global o algo asi
@@ -171,8 +176,6 @@ void nucleo_notificarFinDePrograma() {//final
 	if (sendMessage(socket_nucleo, HEADER_FIN_PROGRAMA,0,0) == -1) {
 		log_error(logger, "Error enviando Fin de Programa");
 	};
-
-
 }
 
 void nucleo_notificarFinDeRafaga() {//final
@@ -184,34 +187,23 @@ void nucleo_notificarFinDeRafaga() {//final
 	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_FIN_RAFAGA,0,0) == -1) {
 		 log_error(logger, "Error enviando Fin de Rafaga");
 	};
-
-
-
 }
 
-void nucleo_wait(t_nombre_semaforo semaforo) {
+void nucleo_wait(t_nombre_semaforo semaforo) {//final
 
 	log_trace(logger, string_from_format("NUCLEO: wait, %s", semaforo));
 
-	if (send(socket_nucleo, &HEADER_NOTIFICAR_WAIT, sizeof(int32_t), 0) == -1) {
-		 log_error(logger, "Error enviando header Wait");
-	};
-
-	if (send(socket_nucleo, semaforo, sizeof(t_nombre_semaforo), 0) == -1) {
-		 log_error(logger, "Error enviando nombre Wait");
+	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_WAIT,sizeof(t_nombre_semaforo),semaforo) == -1) {
+		 log_error(logger, "Error enviando Wait");
 	};
 }
 
-void nucleo_signal(t_nombre_semaforo semaforo) {
+void nucleo_signal(t_nombre_semaforo semaforo) {//final
 
 	log_trace(logger, string_from_format("NUCLEO: signal, %s", semaforo));
 
-	if (send(socket_nucleo, &HEADER_NOTIFICAR_SIGNAL, sizeof(int32_t), 0) == -1) {
-		 log_error(logger, "Error enviando header Signal");
-	};
-
-	if (send(socket_nucleo, semaforo, sizeof(t_nombre_semaforo), 0) == -1) {
-		 log_error(logger, "Error enviando nomnre Signal");
+	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_WAIT,sizeof(t_nombre_semaforo),semaforo) == -1) {
+		 log_error(logger, "Error enviando Signal");
 	};
 }
 
@@ -231,7 +223,7 @@ void nucleo_imprimir(t_valor_variable valor) {//TODO
 	};
 }
 
-void nucleo_imprimir_texto(char* texto) {
+void nucleo_imprimir_texto(char* texto) {//final
 
 	log_trace(logger, string_from_format("NUCLEO: imprimir texto, %s", texto));
 
