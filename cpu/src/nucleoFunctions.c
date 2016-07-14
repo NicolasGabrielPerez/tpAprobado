@@ -51,27 +51,27 @@ int32_t HEADER_VARIABLE_COMPARTIDA_ASIGNAR = 13;
 int receiveData(char* bufferResult) {
 	//Devuelve la cantidad de bytes recibidos y un buffer
 
-	message* mensaje;
-	mensaje = receiveMessage(socket_nucleo);
-
-	if(mensaje->codError != 0){
-		log_error(logger, "recv");
-	}
-
-	if(mensaje->header == HEADER_ENVIAR_PCB){
-		enviarPCB();
-	}
-	if(mensaje->header == HEADER_WAIT_CONTINUAR){
-		continuarEjecucion();
-	}
-
-	if(mensaje->header == HEADER_OBTENER_VARIABLE){
-		continuarEjecucion();//TODO no se q hacer
-	}
-
-	if(mensaje->header == SIGUSR1){
-		desconectarse();
-	}
+//	message* mensaje;
+//	mensaje = receiveMessage(socket_nucleo);
+//
+//	if(mensaje->codError != 0){
+//		log_error(logger, "recv");
+//	}
+//
+//	if(mensaje->header == HEADER_ENVIAR_PCB){
+//		enviarPCB();
+//	}
+//	if(mensaje->header == HEADER_WAIT_CONTINUAR){
+//		continuarEjecucion();
+//	}
+//
+//	if(mensaje->header == HEADER_OBTENER_VARIABLE){
+//		continuarEjecucion();//TODO no se q hacer
+//	}
+//
+//	if(mensaje->header == SIGUSR1){
+//		desconectarse();
+//	}
 
 
 	return 0;
@@ -87,12 +87,12 @@ void desconectarse(){
 void enviarPCB(){
 	PCB* unPCB;//TODO  AGUS -variable global o algo asi
 
-	Buffer *buffer = malloc(sizeof(Buffer));
-	buffer = new_buffer();
-	char* pcbzerial = serialize_pcb(unPCB ,buffer);
-	int size = sizeof(pcbzerial);
-	buffer_free( buffer);
-	sendMessage(socket_nucleo, HEADER_ENVIAR_PCB,size , pcbzerial);
+//	Buffer *buffer = malloc(sizeof(Buffer));
+//	buffer = new_buffer();
+//	char* pcbzerial = serialize_pcb(unPCB ,buffer);
+//	int size = sizeof(pcbzerial);
+//	buffer_free( buffer);
+//	sendMessage(socket_nucleo, HEADER_ENVIAR_PCB,size , pcbzerial);
 
 }
 
@@ -134,7 +134,7 @@ void nucleo_delete(){//final
 
 PCB* nucleo_recibir_pcb() {
 
-	log_trace(logger, string_from_format("NUCLEO: recibiendo PCB"));
+	log_trace(logger, "NUCLEO: recibiendo PCB");
 
 	int LENGTH = 1024;
 	char* buffer = malloc(sizeof(char*) * LENGTH);
@@ -149,7 +149,7 @@ PCB* nucleo_recibir_pcb() {
 
 void nucleo_notificarIO(t_nombre_dispositivo valor) {//final
 
-	log_trace(logger, string_from_format("NUCLEO: notificar IO"));
+	log_trace(logger, "NUCLEO: notificar IO");
 
 
 
@@ -160,7 +160,7 @@ void nucleo_notificarIO(t_nombre_dispositivo valor) {//final
 
 void nucleo_notificarFinDeQuantum(u_int32_t quantumCount) {//final
 
-	log_trace(logger, string_from_format("NUCLEO: FIN QUANTUM, %d", quantumCount));
+	log_trace(logger, "NUCLEO: FIN QUANTUM, %d", quantumCount);
 
 	if (sendMessageInt(socket_nucleo, HEADER_NOTIFICAR_FIN_QUANTUM, quantumCount) == -1) {
 		log_error(logger, "Error enviando Fin de Quantum");
@@ -170,7 +170,7 @@ void nucleo_notificarFinDeQuantum(u_int32_t quantumCount) {//final
 void nucleo_notificarFinDePrograma() {//final
 
 
-	log_trace(logger, string_from_format("NUCLEO: fin de programa"));
+	log_trace(logger, "NUCLEO: fin de programa");
 
 
 	if (sendMessage(socket_nucleo, HEADER_FIN_PROGRAMA,0,0) == -1) {
@@ -180,7 +180,7 @@ void nucleo_notificarFinDePrograma() {//final
 
 void nucleo_notificarFinDeRafaga() {//final
 
-	log_trace(logger, string_from_format("NUCLEO: fin de rafaga"));
+	log_trace(logger, "NUCLEO: fin de rafaga");
 
 
 	//Enviar PCB
@@ -191,7 +191,7 @@ void nucleo_notificarFinDeRafaga() {//final
 
 void nucleo_wait(t_nombre_semaforo semaforo) {//final
 
-	log_trace(logger, string_from_format("NUCLEO: wait, %s", semaforo));
+	log_trace(logger, "NUCLEO: wait, %s", semaforo);
 
 	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_WAIT,sizeof(t_nombre_semaforo),semaforo) == -1) {
 		 log_error(logger, "Error enviando Wait");
@@ -200,7 +200,7 @@ void nucleo_wait(t_nombre_semaforo semaforo) {//final
 
 void nucleo_signal(t_nombre_semaforo semaforo) {//final
 
-	log_trace(logger, string_from_format("NUCLEO: signal, %s", semaforo));
+	log_trace(logger, "NUCLEO: signal, %s", semaforo);
 
 	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_WAIT,sizeof(t_nombre_semaforo),semaforo) == -1) {
 		 log_error(logger, "Error enviando Signal");
@@ -209,7 +209,7 @@ void nucleo_signal(t_nombre_semaforo semaforo) {//final
 
 void nucleo_imprimir(t_valor_variable valor) {//TODO
 
-	log_trace(logger, string_from_format("NUCLEO: imprimir variable, %d", valor));
+	log_trace(logger, "NUCLEO: imprimir variable, %d", valor);
 
 
 
@@ -225,7 +225,7 @@ void nucleo_imprimir(t_valor_variable valor) {//TODO
 
 void nucleo_imprimir_texto(char* texto) {//final
 
-	log_trace(logger, string_from_format("NUCLEO: imprimir texto, %s", texto));
+	log_trace(logger, "NUCLEO: imprimir texto, %s", texto);
 
 	if (sendMessage(socket_nucleo, HEADER_FIN_PROGRAMA, sizeof(char) * (string_length(texto) + 1),texto) == -1) {
 		 log_error(logger, "Error enviando texto");
@@ -236,12 +236,12 @@ void nucleo_imprimir_texto(char* texto) {//final
 
 t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable) {
 
-	log_trace(logger, string_from_format("NUCLEO: obtener variable compartida, %s", variable));
+	log_trace(logger, "NUCLEO: obtener variable compartida, %s", variable);
 
 	return 0;
 }
 
 void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_variable valor){
-	log_trace(logger, string_from_format("NUCLEO: asignar variable compartida, %s %d", variable, valor));
+	log_trace(logger, "NUCLEO: asignar variable compartida, %s %d", variable, valor);
 }
 

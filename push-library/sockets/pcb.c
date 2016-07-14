@@ -84,6 +84,7 @@ t_stackContent* init_stackContent() {
 
 	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
 	stackContent->arguments = dictionary_create();
+	stackContent->variables = dictionary_create();
 
 	return stackContent;
 }

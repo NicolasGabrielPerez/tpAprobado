@@ -15,7 +15,7 @@
 
 
 
-	PCB* pcb;
+	extern PCB* pcb;
 
 	t_puntero definirVariable(t_nombre_variable variable);
 	t_puntero obtenerPosicionVariable(t_nombre_variable variable);

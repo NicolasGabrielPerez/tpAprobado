@@ -23,22 +23,7 @@
 #include "ansiop.h"
 #include "nucleoFunctions.h"
 #include "umcFunctions.h"
-
-
-/*
- * testing-serialization.c set_pcb_test_list
- * pcb.h (push library) create_program_PCB
- *
- */
-
-
-
-
-
-//static char* DEFINICION_VARIABLES = "variables a, b, c";
-//static char* ASIGNACION = "a = b + 12";
-//static char* IMPRIMIR = "print b";
-//static char* IMPRIMIR_TEXTO = "textPrint foo\n";
+#include "test.h"
 
 t_log* logger;
 
@@ -74,8 +59,7 @@ AnSISOP_kernel kernel_functions = {
 bool doQuantum(PCB* pcb, int quantumCount) {
 	bool hasToExit = false;
 
-	//Incrementar Program Counter
-	pcb->programCounter++;
+
 
 	//Pedir a la UMC la siguiente instruccion a ejecutar
 	char* instruction = "test";//umc_get(codeIndex, offset, size);
@@ -91,7 +75,9 @@ bool doQuantum(PCB* pcb, int quantumCount) {
 
 	if(quantumCount >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
-		char* result = nucleo_notificarFinDeRafaga(pcb);
+		//TODO Ver retorno de notificarFinDeRafaga
+		//char* result = nucleo_notificarFinDeRafaga(pcb);
+		char* result = "Test";
 		int isDifferent = strcmp(result, "SIGUSR1");
 		if(isDifferent == 0) {
 			hasToExit = true;
@@ -99,6 +85,9 @@ bool doQuantum(PCB* pcb, int quantumCount) {
 
 		quantumCount = 0;
 	}
+
+	//Incrementar Program Counter
+	pcb->programCounter++;
 
 	return hasToExit;
 }
@@ -131,30 +120,72 @@ void exitProgram() {
 	exit(EXIT_SUCCESS);
 }
 
+
 int main(int argc, char **argv) {
 
 	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_TRACE);
-//	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_ERROR);
 
-	t_config* config = config_create("cpu.config");
-	if(config == NULL){
-		log_error(logger, "No se pudo leer la configuración");
-		exitProgram();
+	pcb = test_pcb_init(1);
+
+	while(true) {
+		char* instruction = "";
+		switch(pcb->programCounter) {
+			case 0:
+				instruction = "begin";
+				break;
+			case 1:
+				instruction = "variables z, a, b";
+				break;
+			case 2:
+				instruction = "a = 3";
+				break;
+			case 3:
+				instruction = "b = 5";
+				break;
+			case 4:
+				instruction = "a = b + 12";
+				break;
+			case 5:
+				instruction = "end";
+				break;
+			default:
+				free_pcb(pcb);
+				exitProgram();
+		}
+		log_info(logger, "Ejecutando: %s", strdup(instruction));
+
+		analizadorLinea(strdup(instruction), &functions, &kernel_functions);
+		pcb->programCounter++;
 	}
 
-	log_trace(logger, "Iniciada la configuracion");
 
-	nucleo_init(config);
-	umc_init(config);
 
-	bool hasToExit = false;
-	while(hasToExit == false) {
-		pcb = nucleo_recibir_pcb();
-		umc_process_active(pcb->processId);
-		hasToExit = receiveInstructions(pcb, QUANTUM);
-	}
-
-	exitProgram();
-
-	return EXIT_SUCCESS;
 }
+
+//int main(int argc, char **argv) {
+//
+//	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_TRACE);
+////	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_ERROR);
+//
+//	t_config* config = config_create("cpu.config");
+//	if(config == NULL){
+//		log_error(logger, "No se pudo leer la configuración");
+//		exitProgram();
+//	}
+//
+//	log_trace(logger, "Iniciada la configuracion");
+//
+//	nucleo_init(config);
+//	umc_init(config);
+//
+//	bool hasToExit = false;
+//	while(hasToExit == false) {
+//		pcb = nucleo_recibir_pcb();
+//		umc_process_active(pcb->processId);
+//		hasToExit = receiveInstructions(pcb, QUANTUM);
+//	}
+//
+//	exitProgram();
+//
+//	return EXIT_SUCCESS;
+//}
