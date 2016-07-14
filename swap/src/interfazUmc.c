@@ -2,14 +2,18 @@
 
 int umc_socket;
 
-int esperarConexionUMC(int umc_listener){
-	return aceptarNuevaConexion(umc_listener);
-}
-
 int initUmc(t_config* config){
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
 	int umc_listener = crear_puerto_escucha(puerto_umc);
-	umc_socket = esperarConexionUMC(umc_listener);
+	printf("Esperando a UMC...\n");
+	umc_socket = aceptarNuevaConexion(umc_listener);
+
+	int header;
+	recv(socket, &header, HEADER_SIZE, 0);
+	printf("Primera header de Umc:%d\n", header);
+
+	char* umcHandshakeMessaje = "Swap Handshake :thumbup:\n\0";
+	enviarOKConContenido(umc_socket, strlen(umcHandshakeMessaje), umcHandshakeMessaje);
 
 	log_trace(logger, "Conexion iniciada con UMC. Socket: %d", umc_socket);
 
