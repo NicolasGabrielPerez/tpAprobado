@@ -47,29 +47,49 @@ int32_t HEADER_VARIABLE_COMPARTIDA_OBTENER = 12;
 int32_t HEADER_VARIABLE_COMPARTIDA_ASIGNAR = 13;
 
 
+
 int receiveData(char* bufferResult) {
 	//Devuelve la cantidad de bytes recibidos y un buffer
 
-	int nbytes = 0;
-	if ((nbytes = recv(socket_nucleo, bufferResult, BUFFER_SIZE_NUCLEO, 0)) <= 0) {
-	   // got error or connection closed by client
-	   if (nbytes == 0) {
-		   // connection closed
-		   printf("socket %d hung up\n", socket_nucleo);
-	   } else {
-		   log_error(logger, "recv");
-	   }
-	   close(socket_nucleo); // bye!
-	} else {
-	   //se recibió mensaje
-	   printf("Se recibieron %d bytes\n", nbytes);
-	   printf("Se recibió: %s\n", bufferResult);
+	message* mensaje;
+	mensaje = receiveMessage(socket_nucleo);
 
-	   return nbytes;
+	if(mensaje->codError != 0){
+		log_error(logger, "recv");
 	}
+
+	if(mensaje->header == HEADER_ENVIAR_PCB){
+		enviarPCB();
+	}
+	if(mensaje->header == HEADER_WAIT_CONTINUAR){
+		continuarEjecucion();
+	}
+
+	if(mensaje->header == HEADER_OBTENER_VARIABLE){
+		continuarEjecucion();//TODO no se q hacer
+	}
+
+
+
 	return 0;
 }
 
+continuarEjecucion(){
+	//TODO DEsarrollar
+}
+
+
+void enviarPCB(){
+	PCB* unPCB;//TODO  AGUS -variable global o algo asi
+
+	Buffer *buffer = malloc(sizeof(Buffer));
+	buffer = new_buffer();
+	char* pcbzerial = serialize_pcb(unPCB ,buffer);
+	int size = sizeof(pcbzerial);
+	buffer_free( buffer);
+	sendMessage(socket_nucleo, HEADER_ENVIAR_PCB,size , pcbzerial);
+
+}
 
 void nucleo_init(t_config* config) {
 
@@ -83,14 +103,12 @@ void nucleo_init(t_config* config) {
 	socket_nucleo = crear_socket_cliente(ip_nucleo, puerto_nucleo); //socket usado para conectarse al nucleo
 
 	//Hago handshake con umc
-	char* bufferHandshake = string_itoa(HEADER_SIZE_NUCLEO);
-	int bytesHandshake = sizeof(char) * (string_length(bufferHandshake) + 1);
-	if (send(socket_nucleo, bufferHandshake, bytesHandshake, 0) == -1) {
+	if (sendMessage(socket_nucleo, HEADER_HANDSHAKE, 0, 0) == -1) {
 			log_error(logger, "Error enviando handshake nucleo");
 			exitProgram();
 	};
-	free(bufferHandshake);
 
+//TODO: ver como mandar el tipo cpu
 	// Envio mi tipo: CPUs
 	char* bufferType = string_itoa(HEADER_SIZE_NUCLEO);
 	int bytesType = sizeof(char) * (string_length(bufferType) + 1);
@@ -103,7 +121,7 @@ void nucleo_init(t_config* config) {
 	log_trace(logger, "Iniciado socket: Nucleo");
 }
 
-void nucleo_delete(){
+void nucleo_delete(){//final
 	close(socket_nucleo);
 }
 
@@ -124,67 +142,51 @@ PCB* nucleo_recibir_pcb() {
 	return pcb;
 }
 
-void nucleo_notificarIO(t_nombre_dispositivo valor, u_int32_t tiempo) {
+void nucleo_notificarIO(t_nombre_dispositivo valor) {//final
 
 	log_trace(logger, string_from_format("NUCLEO: notificar IO"));
 
-	if (send(socket_nucleo, &HEADER_NOTIFICAR_IO, sizeof(int32_t), 0) == -1) {
-		log_error(logger, "Error enviando header IO");
-	};
 
-	if (send(socket_nucleo, &tiempo, sizeof(u_int32_t), 0) == -1) {
-		log_error(logger, "Error enviando tiempo IO");
-	};
+
+	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_IO, sizeof(valor), valor) == -1) {
+		log_error(logger, "Error enviando  IO");
+	}
 }
 
-void nucleo_notificarFinDeQuantum(u_int32_t quantumCount) {
+void nucleo_notificarFinDeQuantum(u_int32_t quantumCount) {//final
 
 	log_trace(logger, string_from_format("NUCLEO: FIN QUANTUM, %d", quantumCount));
 
-	if (send(socket_nucleo, &HEADER_NOTIFICAR_FIN_QUANTUM, sizeof(int32_t), 0) == -1) {
-		log_error(logger, "Error enviando header Fin de Quantum");
-	};
-
-	if (send(socket_nucleo, &quantumCount, sizeof(u_int32_t), 0) == -1) {
-		log_error(logger, "Error enviando count Fin de Quantum");
+	if (sendMessageInt(socket_nucleo, HEADER_NOTIFICAR_FIN_QUANTUM, quantumCount) == -1) {
+		log_error(logger, "Error enviando Fin de Quantum");
 	};
 }
 
-void nucleo_notificarFinDePrograma(PCB* pcb) {
+void nucleo_notificarFinDePrograma() {//final
 
 
 	log_trace(logger, string_from_format("NUCLEO: fin de programa"));
 
-	if (send(socket_nucleo, &HEADER_NOTIFICAR_FIN_PROGRAMA, sizeof(int32_t), 0) == -1) {
-		log_error(logger, "Error enviando header Fin de Programa");
+
+	if (sendMessage(socket_nucleo, HEADER_FIN_PROGRAMA,0,0) == -1) {
+		log_error(logger, "Error enviando Fin de Programa");
 	};
 
-	//Enviar PCB
-//	if (send(socket_nucleo, quantumCount, sizeof(u_int32_t), 0) == -1) {
-//		 log_error(logger, "Error enviando count Fin de Quantum");
-//	};
+
 }
 
-char* nucleo_notificarFinDeRafaga(PCB* pcb) {
+void nucleo_notificarFinDeRafaga() {//final
 
 	log_trace(logger, string_from_format("NUCLEO: fin de rafaga"));
 
-	if (send(socket_nucleo, &HEADER_NOTIFICAR_FIN_RAFAGA, sizeof(int32_t), 0) == -1) {
-		 log_error(logger, "Error enviando header Fin de Rafaga");
-	};
-
-
-	Buffer* buffer = new_buffer();
-	serialize_pcb(pcb, buffer);
 
 	//Enviar PCB
-	if (send(socket_nucleo, buffer->data, buffer->size, 0) == -1) {
-		 log_error(logger, "Error enviando count Fin de Rafaga");
+	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_FIN_RAFAGA,0,0) == -1) {
+		 log_error(logger, "Error enviando Fin de Rafaga");
 	};
 
-	buffer_free(buffer);
 
-	return "Que tengo que devolver?";
+
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {
@@ -213,9 +215,12 @@ void nucleo_signal(t_nombre_semaforo semaforo) {
 	};
 }
 
-void nucleo_imprimir(t_valor_variable valor) {
+void nucleo_imprimir(t_valor_variable valor) {//TODO
 
 	log_trace(logger, string_from_format("NUCLEO: imprimir variable, %d", valor));
+
+
+
 
 	if (send(socket_nucleo, &HEADER_IMPRIMIR, sizeof(int32_t), 0) == -1) {
 		 log_error(logger, "Error enviando header Signal");
@@ -230,14 +235,12 @@ void nucleo_imprimir_texto(char* texto) {
 
 	log_trace(logger, string_from_format("NUCLEO: imprimir texto, %s", texto));
 
-	if (send(socket_nucleo, &HEADER_IMPRIMIR_TEXTO, sizeof(int32_t), 0) == -1) {
-		 log_error(logger, "Error enviando header Signal");
-	};
-
-	if (send(socket_nucleo, texto, sizeof(char) * (string_length(texto) + 1), 0) == -1) {
-		 log_error(logger, "Error enviando nomnre Signal");
+	if (sendMessage(socket_nucleo, HEADER_FIN_PROGRAMA, sizeof(char) * (string_length(texto) + 1),texto) == -1) {
+		 log_error(logger, "Error enviando texto");
 	};
 }
+
+//TODO estas dos
 
 t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable) {
 
