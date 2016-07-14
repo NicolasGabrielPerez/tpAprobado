@@ -2,29 +2,28 @@
 #include "swap-interfaz.h"
 
 void recbirInitPrograma(int nucleo_socket){
-	int bytes_recibidos;
 	int32_t pid;
 	int32_t cantPaginas;
-	int codFuente_size;
 	char* codFuente;
 
-	if ((bytes_recibidos = recv(nucleo_socket, &pid, sizeof(int32_t), 0)) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	if ((bytes_recibidos = recv(nucleo_socket, &cantPaginas, sizeof(int32_t), 0)) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	codFuente_size = cantPaginas*marco_size;
-	codFuente = malloc(codFuente_size);
-	if ((bytes_recibidos = recv(nucleo_socket, codFuente, codFuente_size, 0)) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* pidMessage = receiveMessage(nucleo_socket);
+	pid = convertToInt32(pidMessage->contenido);
+
+	message* cantPaginasMessage = receiveMessage(nucleo_socket);
+	cantPaginas = convertToInt32(cantPaginasMessage->contenido);
+
+	message* codFuenteMessage = receiveMessage(nucleo_socket);
+	codFuente = codFuenteMessage->contenido;
 
 	response* swapResponse = initProgramaSwap(&pid, &cantPaginas, codFuente);
-	enviarResponse(nucleo_socket, swapResponse);
+
+	if(swapResponse->ok){
+		sendMessage(nucleo_socket, HEADER_PAGINAS_DISPONIBLES, 0, 0);
+	}
+
+	if(!swapResponse->ok){
+		sendErrorMessage(nucleo_socket, HEADER_PAGINAS_NO_DISPONIBLES, swapResponse->codError);
+	}
 
 	free(codFuente);
 }
