@@ -16,7 +16,7 @@ void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char
 	message* message = receiveMessage(socket_umc);
 	if(message->header == HEADER_PAGINAS_DISPONIBLES){
 		//Notificar programa aceptado
-		//TODO: Crear header de programa inicializado correctamente
+
 		sendMessage(pcb->processId, HEADER_PAGINAS_DISPONIBLES, 0, 0);
 		//Agregar PCB a la lista general
 		add_pcb_to_general_list(pcb);
@@ -53,7 +53,7 @@ void conectarConUMC(t_config* config){
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC"); //puerto de UMC
 	socket_umc = crear_socket_cliente("utnso40", puerto_umc);
 }
-//TODO: crear función para enviar header
+
 void handshake_con_UMC(){
 
 	char* content = string_itoa(HEADER_HANDSHAKE);
