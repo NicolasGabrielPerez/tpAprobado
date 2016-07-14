@@ -39,11 +39,20 @@ void espera_resultados(int socketCliente){
 			fin_program = 0;
 			FEOP = 1;
 		}
+		if (nucleoResponse->header == HEADER_PAGINAS_NO_DISPONIBLES) {
+					printf("NO HAY MEMORIA DISPONIBLE");
+					fin_program = 0;
+					FEOP = 1;
+				}
+		if (nucleoResponse->header == HEADER_PAGINAS_DISPONIBLES) {
+					printf("NO INICIADO");
+
+				}
 		if (nucleoResponse->header == HEADER_RESULTADOS){
 			char* mensaje = malloc(nucleoResponse->contenidoSize);
 			mensaje = (nucleoResponse->contenido);
-
 			printf("%s", mensaje);
+			free(mensaje);
 		}
 
 	}
@@ -81,7 +90,7 @@ int main(int argc, char **argv) {
 	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo);
 
 	//Hago handskae con umc
-	if(handshake(socket_nucleo, "PRUEBA") != 0){
+	if(sendMessage(socket_nucleo, HEADER_HANDSHAKE,0 , "") != 0){
 		puts("Error en handshake con el Núcleo");
 	}
 
