@@ -59,10 +59,9 @@ int initMemoriaPrincipal(t_config* config){
 		entrada->ocupado = 0;
 		entrada->direccion_real = &memoria_bloque[i*marco_size];
 		list_add(tablaDeFrames->entradas, entrada);
-		free(entrada);
 	}
 
-	log_trace(logger, "Creada tabla de frames! Cantidad de entradas:%d", list_size(tablaDeFrames));
+	log_trace(logger, "Creada tabla de frames! Cantidad de entradas:%d", list_size(tablaDeFrames->entradas));
 
 	tablasDePaginas = list_create();
 
@@ -96,20 +95,30 @@ tabla_de_paginas_entry* buscarPorNroPaginaYPID(int nroPagina, int pid){
 	return buscarEntradaPorPagina(tablaDePaginas, nroPagina);
 }
 
+tabla_de_paginas* crearTablaDePaginas(int pid, int cantPaginas){
+	tabla_de_paginas* tablaDePaginas = malloc(sizeof(tabla_de_paginas));
+	tablaDePaginas->entradas = list_create();
+	tablaDePaginas->pid = pid;
+
+	int i;
+	for(i=0; i<cantPaginas; i++){
+		tabla_de_paginas_entry* pageEntry = malloc(sizeof(tabla_de_paginas_entry));
+		pageEntry->nroPagina = i;
+		pageEntry->pid = pid;
+		pageEntry->presente = 0;
+		list_add(tablaDePaginas->entradas, pageEntry);
+	}
+	return tablaDePaginas;
+}
+
 char* initProgramaUMC(int pid, int cantPaginas){
 	// verificar que no exista pid
 	if(buscarPorPID(pid)!=NULL){
 		return string_itoa(RESPUESTA_FAIL);
 	}
-	// verificar que cantPaginas + stackSize < MAX
-	if(cantPaginas > marcos_x_proc){
-		return string_itoa(RESPUESTA_FAIL);
-	}
-	// crear tabla de paginas
-	tabla_de_paginas* tablaDePaginas = malloc(sizeof(tabla_de_paginas));
-	tablaDePaginas->entradas = list_create();
-	tablaDePaginas->pid = pid;
 
+	// crear tabla de paginas
+	tabla_de_paginas* tablaDePaginas = crearTablaDePaginas(pid, cantPaginas);
 	t_list* presentes = list_create();
 
 	int i;

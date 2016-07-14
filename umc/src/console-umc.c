@@ -30,7 +30,8 @@ static int getLine (char *prmpt, char *buff, size_t sz) {
 }
 
 void parsearRetardo(char* command){
-	int offset = sizeof("retardo") - 1;
+
+	int offset = 7; //"retardo"
 	char* sRetardo = string_substring_from(command, offset);
 	int retardo = strtol(sRetardo, NULL, 10);
 
@@ -113,10 +114,10 @@ void ejecutarComando(char* command){
 
 void* consolaDeComandos(){
 	int rc;
-	char buff[30];
+	char* buff = malloc(30);
 
 	while(1){
-		rc = getLine ("Enter string> ", buff, sizeof(buff));
+		rc = getLine ("Enter string> ", buff, 30);
 		if (rc == NO_INPUT) {
 			// Extra NL since my system doesn't output that on EOF.
 			printf ("\nNo input\n");
@@ -129,6 +130,7 @@ void* consolaDeComandos(){
 		}
 
 		ejecutarComando(buff);
+		buff = malloc(30);
 	}
 }
 

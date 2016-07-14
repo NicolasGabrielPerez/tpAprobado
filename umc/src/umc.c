@@ -19,9 +19,9 @@ void *gestionarCPU(void* socket){
 	int32_t headerInt;
 	char* header = malloc(HEADER_SIZE);
 	while(1){
-		if (recv((int)socket, header, HEADER_SIZE, 0) == -1) {
-			perror("recv");
-			exit(1);
+		if (recv((int)socket, header, HEADER_SIZE, 0) <=0) {
+			printf("Socket de CPU %d desconectado\n", (int) socket);
+			return 0;
 		}
 		memcpy(&headerInt, header, sizeof(int32_t));
 		if(headerInt==HEADER_ALMACENAR_PAGINAS){
@@ -50,7 +50,7 @@ void *gestionarNucleo(void* socket){
 		message* message = receiveMessage((int) socket);
 
 		if(message->codError == SOCKET_DESCONECTADO){
-			printf("Socket %d desconectado\n", (int) socket);
+			printf("Socket de NUCLEO %d desconectado\n", (int) socket);
 			return 0;
 		}
 
@@ -114,6 +114,8 @@ void manejarNuevasConexiones(){
 		return;
 	}
 	if(tipo == TIPO_NUCLEO || tipo == TIPO_CPU){
+		if(tipo == TIPO_NUCLEO) printf("Nuevo conexion de tipo NUCLEO\n");
+		if(tipo == TIPO_CPU) printf("Nuevo conexion de tipo CPU\n");
 		enviarPageSize(new_socket);
 	}
 

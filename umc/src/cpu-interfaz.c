@@ -117,7 +117,7 @@ void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){
 		perror("recv");
 		exit(1);
 	}
-	tabla_de_paginas* tablaDePaginas = buscarPorPID(*pidActivo);
+	tabla_de_paginas* tablaDePaginas = buscarPorPID(pid);
 	if(tablaDePaginas==NULL){
 		enviarFAIL(cpu_socket, PID_NO_EXISTE);
 		return;
@@ -127,4 +127,5 @@ void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){
 	}
 	*pidActivo = pid;
 
+	enviarOKSinContenido(cpu_socket);
 }

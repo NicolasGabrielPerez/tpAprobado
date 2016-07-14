@@ -47,6 +47,7 @@ void printData(tabla_de_paginas* tabla){
 
 void setRetardo(int newRetardo){
 	retardo = newRetardo;
+	log_info(logger, "Seteado nuevo retardo:%d", retardo);
 }
 
 void dumpAllTables(){
@@ -90,6 +91,7 @@ void flushTlb(){
 	}
 
 	list_clean(TLB->entradas);
+	log_info(logger, "[TLB] Flush done. Cantidad de entradas actual: %d", sizeof(TLB->entradas));
 }
 
 void flushMemory(int pid){
@@ -104,5 +106,6 @@ void flushMemory(int pid){
 		entry = list_get(tabla, i);
 		entry->modificado = 0;
 	}
+	log_info(logger, "Flush memory done");
 }
 
