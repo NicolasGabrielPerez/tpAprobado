@@ -60,8 +60,8 @@ int existePid(int pid){
 	return 0;
 }
 
-void setearFramesEntriesNuevoPid(int espacioContiguoStart, int pid){
-	int espacioContiguoEnd = espacioContiguoStart + cantPaginasSwap;
+void setearFramesEntriesNuevoPid(int espacioContiguoStart, int pid, int cantPaginas){
+	int espacioContiguoEnd = espacioContiguoStart + cantPaginas;
 	int indiceFrame; //coincide con el nroFrame
 	int indicePagina = 0;
 	for(indiceFrame=espacioContiguoStart;
@@ -79,7 +79,7 @@ void escribirEnParticion(int offset, char* buffer, int size){
 }
 
 void escribirPaginas(int pid, int cantPaginas, char* codFuente, int espacioContiguoStart){
-	setearFramesEntriesNuevoPid(espacioContiguoStart, pid);
+	setearFramesEntriesNuevoPid(espacioContiguoStart, pid, cantPaginas);
 	escribirEnParticion(espacioContiguoStart, codFuente, cantPaginas*paginaSize);
 }
 

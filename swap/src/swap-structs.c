@@ -59,8 +59,12 @@ int crearParticion(){
 }
 
 void crearBitMap(){
-	char* bitMap = malloc(swapSize);
-	swapAdmin->bitMap = bitarray_create(bitMap, swapSize);
+	char* bitMap = malloc(cantPaginasSwap);
+	swapAdmin->bitMap = bitarray_create(bitMap, cantPaginasSwap);
+	int i;
+	for(i=0; i<cantPaginasSwap; i++){
+		bitarray_clean_bit(swapAdmin->bitMap, i);
+	}
 }
 
 void crearFrames(){
@@ -69,6 +73,8 @@ void crearFrames(){
 	for(i=0; i<cantPaginasSwap; i++){
 		frame_entry* frameEntry = malloc(sizeof(frame_entry));
 		frameEntry->nroFrame = i;
+		frameEntry->pid = -1;
+		frameEntry->nroPagina = -1;
 		list_add(framesEntries, frameEntry);
 	}
 	swapAdmin->framesEntries = framesEntries;
