@@ -90,7 +90,11 @@ void execute_all_processes_IO(){
 	}
 }
 
-
+void process_call_io(char* deviceName, int32_t PID){
+	t_IO_Device* device = get_device_by_id(deviceName);
+	PCB* pcb = get_pcb_by_ID(General_Process_List, PID);	//Obtengo PCB en ejecución (desactualizado)
+	set_pcb_BLOCKED_by_device(pcb, device);
+}
 
 
 

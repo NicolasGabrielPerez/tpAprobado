@@ -41,6 +41,10 @@
 	extern int32_t HEADER_CAMBIO_PROCESO_ACTIVO;
 	extern int32_t SIGUSR1;
 
+	extern int32_t HEADER_WAIT_CONTINUAR;
+	extern int32_t HEADER_SETEAR_VARIABLE;
+	extern int32_t HEADER_OBTENER_VARIABLE;
+
 
 	extern int32_t TIPO_CONSOLA;
 	extern int32_t TIPO_NUCLEO;

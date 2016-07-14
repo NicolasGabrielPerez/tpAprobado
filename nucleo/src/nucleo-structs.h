@@ -17,6 +17,7 @@
 #include <sockets/config.h>
 #include <sockets/pcb.h>
 #include "io-device.h"
+#include "cpu.h"
 
 extern int32_t memoryPageSize;
 extern t_queue* READY_Process_Queue;			//Cola de procesos listos para ejecución
@@ -48,6 +49,8 @@ void end_process(int PID);
 
 void add_pcb_to_general_list(PCB* pcb);
 
+void nucleo_updatePCB(PCB* pcb);
 
+void change_status_RUNNING_to_READY(t_CPU* cpu);
 
 #endif

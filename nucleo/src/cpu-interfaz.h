@@ -13,4 +13,5 @@
 	void sendPCB(int socket ,PCB* unPCB);
 
 	PCB* nucleo_obtener_pcb(message* programBlock);
+	void nucleo_notificarIO(char* deviceName, PCB* pcb);
 #endif

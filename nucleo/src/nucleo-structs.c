@@ -119,19 +119,14 @@ void signal(char* id){
 }
 
 //Instrucción privilegiada
-void wait(char* id){
+int wait(char* id){
 	t_semaforo* semaforo = get_semaforo_by_ID(semaforo_control_list, id);
 	if(semaforo->sem_value > 0){
 		semaforo->sem_value --;
+		return true;
 	}
 	else{
-		//TODO: GUTI - implementar
-		//Bloquear proceso => desalojar de CPU
-		//Mensaje a CPU desalojar proceso
-		//Recibir PCB y actualizar
-		//Encolar en cola de bloqueados del semáforo
-
-		//Disparar la rutina de cambio de contexto
+		return false;
 	}
 }
 //---------------------------------------------- </SEMÁFOROS>
@@ -168,14 +163,15 @@ void set_pcb_BLOCKED(PCB* pcb){
 	queue_push(BLOCKED_Process_Queue, pcb);
 }
 
-void change_status_RUNNING_to_READY(int PID){
+void change_status_RUNNING_to_READY(t_CPU* cpu){
 	//traer PCB de RUNNING
-	PCB* pcb = get_pcb_by_ID(RUNNING_Process_List,  PID);
+	PCB* pcb = get_pcb_by_ID(RUNNING_Process_List, cpu->PID);
 	//encolar en ready
 	set_pcb_READY(pcb);
 	//sacar de lista de running
-	pcb = remove_pcb_by_ID(RUNNING_Process_List, PID);
+	pcb = remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
 
+	liberarCpu(cpu->cpuSocket);
 	if(pcb != NULL){
 		//PCB removido
 	}
@@ -190,6 +186,11 @@ void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
 //Finalizar un proceso
 void end_process(int PID){
 
+}
+
+void nucleo_updatePCB(PCB* pcb){
+	//TODO: Implementar
+	//Actualizar con datos que provienen del CPU
 }
 //---------------------------------------------- </PCBs>
 

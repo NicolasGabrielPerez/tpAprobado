@@ -3,7 +3,7 @@
 #include <sockets/pcb.h>
 #include "cpu-interfaz.h"
 
-typedef struct CPU{
+typedef struct{
 	int socket;
 	int disponible;
 } CPU;

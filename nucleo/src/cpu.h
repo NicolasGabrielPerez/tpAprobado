@@ -14,5 +14,6 @@ typedef struct CPU{
 int CPU_is_free(t_CPU* cpu);
 
 t_CPU* get_next_free_CPU();
+t_CPU* get_CPU_by_socket(int socket);
 
 #endif /* CPU_H_ */
