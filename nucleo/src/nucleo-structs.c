@@ -250,9 +250,9 @@ int get_var_value(char* var_name){
 	return 0;
 }
 void hiloDeLectura(t_config* config,u_int32_t quantum){
-
-	quantum = config_get_int_value(config, "QUANTUM");
-
+	while(1){
+		quantum = config_get_int_value(config, "QUANTUM");
+	}
 }
 //---------------------------------------------- </VARIABLES>
 
