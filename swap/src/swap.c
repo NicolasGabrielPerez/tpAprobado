@@ -3,24 +3,25 @@
 #include "pages_admin.h"
 
 void operarSegunHeader(int32_t header){
-	if(header == HEADER_HANDSHAKE){
-		makeHandshake();
-		return;
-	}
+
 	if(header == HEADER_INIT_PROGRAMA){
+		log_info(logger, "Recibido Header Init Programa");
 		recibirInitPrograma();
 		return;
 	}
 	if(header == HEADER_SOLICITAR_PAGINAS){
+		log_info(logger, "Recibido Header Solicitar Paginas");
 		recibirPedidoPagina();
 		return;
 	}
 	if(header == HEADER_ALMACENAR_PAGINAS){
+		log_info(logger, "Recibido Header Almacenar Paginas");
 		recibirEscrituraPagina();
 		return;
 	}
 	if(header == HEADER_FIN_PROGRAMA){
-		recibirFinPrograma();
+		log_info(logger, "Recibido Header Fin Programa");
+		recibirFinPrograma(); //TODO revisar
 		return;
 	}
 }
@@ -53,7 +54,8 @@ int main(void) {
 
 		 if (bytes_recibidos == 0) {
 		   // connection closed
-		   printf("umc hung up\n");
+		   printf("UMC hung up\n");
+		   break;
 	   }
 
 	   memcpy(&headerInt, header, sizeof(int32_t));
@@ -62,6 +64,6 @@ int main(void) {
 
 	close(umc_socket); // bye!
 
-	puts("Terminé felizmente\n");
+	printf("Swap finalizada.\n");
 	return EXIT_SUCCESS;
 }

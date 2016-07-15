@@ -22,4 +22,6 @@
 
 	response* getPagina(int nroPagina, int pid);
 
+	void initLogger();
+
 #endif /* PAGES_ADMIN_H_ */

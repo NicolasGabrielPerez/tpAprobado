@@ -34,7 +34,7 @@ void setConfig(t_config* config){
 	swapSize = cantPaginasSwap * paginaSize;
 }
 
-char* generarComandoDD(){
+char* generarComandoDDSwap(){
 	char* command = string_new();
 	string_append(&command, "dd if=/dev/zero of=");
 	string_append(&command, particionFileName);
@@ -45,15 +45,80 @@ char* generarComandoDD(){
 	return command;
 }
 
-int crearParticion(){
-	int result = system(generarComandoDD());
+char* generarComandoDD(char* particionFileName, int paginaSize, int cantPaginas){
+	char* command = string_new();
+	string_append(&command, "dd if=/dev/zero of=");
+	string_append(&command, particionFileName);
+	string_append(&command, " bs=");
+	string_append(&command, string_itoa(paginaSize));
+	string_append(&command, " count=");
+	string_append(&command, string_itoa(cantPaginas));
+	return command;
+}
+
+int pruebaCrearArchivo(){
+	//Set de datos
+	char* nombreDeArchivo = "archivo";
+	int cantPaginas = 2;
+	int pageSize = 4;
+	char* writeData = malloc(512);
+	char* data = "ABCDED";
+	memcpy(writeData, data, 5);
+	char* readData = malloc(5);
+	int size = strlen(writeData);
+
+	//Crear archivo
+	int result = system(generarComandoDD(nombreDeArchivo, pageSize, cantPaginas)); //2 paginas de 4 bytes cada una
 	if(result == -1){
-		log_error(logger, "Fallo al crear particion");
+		printf("Fallo al crear particion\n");
 		return EXIT_FAILURE;
 	}
 
-	log_trace(logger, "Particion <%s> creada! Marcos disponibles:%d, tamanio de marco: %d. Total de bytes:%d",
-											particionFileName, cantPaginasSwap, paginaSize, cantPaginasSwap*paginaSize);
+	//Abrir archivo
+	FILE* file = fopen(nombreDeArchivo, "r+");
+	if(file == NULL) return EXIT_FAILURE;
+	int seekResult = fseek(file, 0, SEEK_SET);
+
+	//Escribir caracteres
+	int writeResult;
+	writeResult = fwrite(writeData, sizeof(char), 512, file);
+	fflush(file);
+	printf("Write result: %d\n", writeResult);
+
+	//Mostrar posicion actual
+	int currentPos = ftell(file);
+	printf("Current file position: %d\n", currentPos);
+
+	//Leer caracteres
+	printf("Reading...\n");
+	currentPos = fseek(file, 0, SEEK_SET);
+	printf("Current file position: %d\n", currentPos);
+	int readResult = fread(readData, sizeof(char), 5, file);
+	printf("Read result: %d\n", readResult);
+	printf("Read data: %s\n", readData);
+
+	fclose(size);
+	return EXIT_SUCCESS;
+}
+
+int crearParticion(){
+	//Crear archivo
+	int result = system(generarComandoDD(particionFileName, paginaSize, cantPaginasSwap));
+	if(result == -1){
+		printf("Fallo al crear particion\n");
+		return EXIT_FAILURE;
+	}
+	log_trace(logger, "Particion <%s> creada! Marcos disponibles:%d, tamanio de marco: %d. Total de bytes:%d", particionFileName, cantPaginasSwap, paginaSize, cantPaginasSwap*paginaSize);
+
+	//Abrir archivo
+	FILE* file = fopen(particionFileName, "r+");
+	if(file == NULL){
+		log_error(logger, "Error al intentar abrir archivo de particion");
+		exit(1);
+		return EXIT_FAILURE;
+	}
+	fseek(file, 0, SEEK_SET);
+	swapAdmin->particion = file;
 
 	return EXIT_SUCCESS;
 }
@@ -67,7 +132,7 @@ void crearBitMap(){
 	}
 }
 
-void crearFrames(){
+void crearFramesTable(){
 	t_list* framesEntries = list_create();
 	int i;
 	for(i=0; i<cantPaginasSwap; i++){
@@ -83,7 +148,7 @@ void crearFrames(){
 int crearAdminStructs(){
 	swapAdmin = malloc(sizeof(swap_admin));
 	crearBitMap(swapAdmin);
-	crearFrames(swapAdmin);
+	crearFramesTable(swapAdmin);
 
 	return EXIT_SUCCESS;
 }
@@ -91,8 +156,8 @@ int crearAdminStructs(){
 int initSwap(t_config* config){
 	setConfig(config);
 
-	if(crearParticion() == EXIT_FAILURE) return EXIT_FAILURE;
 	if(crearAdminStructs() == EXIT_FAILURE) return EXIT_FAILURE;
+	if(crearParticion() == EXIT_FAILURE) return EXIT_FAILURE;
 
 	return EXIT_SUCCESS;
 }

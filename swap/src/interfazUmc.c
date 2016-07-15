@@ -8,14 +8,18 @@ int initUmc(t_config* config){
 	printf("Esperando a UMC...\n");
 	umc_socket = aceptarNuevaConexion(umc_listener);
 
+	log_trace(logger, "Conexion requerida por UMC aceptada. Socket: %d", umc_socket);
+
 	int header;
-	recv(socket, &header, HEADER_SIZE, 0);
-	printf("Primera header de Umc:%d\n", header);
+	recv(umc_socket, &header, HEADER_SIZE, 0);
+	if(header == HEADER_HANDSHAKE){
+		log_info(logger, "Recibido header handshake de UMC");
+	}
 
 	char* umcHandshakeMessaje = "Swap Handshake :thumbup:\n\0";
 	enviarOKConContenido(umc_socket, strlen(umcHandshakeMessaje), umcHandshakeMessaje);
 
-	log_trace(logger, "Conexion iniciada con UMC. Socket: %d", umc_socket);
+	log_info(logger, "Enviado mensaje inicial a UMC");
 
 	return EXIT_SUCCESS;
 }
@@ -42,6 +46,8 @@ void recibirInitPrograma(){
 		exit(1);
 	}
 
+	log_info(logger, "Pedido init> Pid: %d, CantPaginas: %d", pid, cantPaginas);
+
 	if(!hayEspacioDisponible(cantPaginas)){
 		enviarFAIL(umc_socket, ESPACIO_NO_DISPONIBLE);
 		return;
@@ -54,6 +60,8 @@ void recibirInitPrograma(){
 	initPaginas(pid, cantPaginas, codFuente);
 
 	enviarOKSinContenido(umc_socket);
+
+	log_info(logger, "Pid %d iniciado", pid);
 }
 
 void recibirPedidoPagina(){
