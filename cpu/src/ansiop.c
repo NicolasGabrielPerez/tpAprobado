@@ -35,8 +35,8 @@ t_puntero definirVariable(t_nombre_variable variable) {
 	t_puntero* value = malloc(sizeof(t_puntero));
 	memcpy(value, &memoryAddr, sizeof(t_puntero));
 
-	u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
-	t_stackContent* stackContent = list_get(pcb->stackIndex, stackPosition);
+	u_int32_t stackPosition = list_size(pcb->stack) - 1;
+	t_stackContent* stackContent = list_get(pcb->stack, stackPosition);
 	dictionary_put(stackContent->variables, key, value);
 
 	free(key);
@@ -52,8 +52,8 @@ t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
 	char* key = string_from_format("%c", variable);
 
-	u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
-	t_list* stack = pcb->stackIndex;
+	u_int32_t stackPosition = list_size(pcb->stack) - 1;
+	t_list* stack = pcb->stack;
 	t_stackContent* stackContent = list_get(stack, stackPosition);
 	t_puntero* memoryAddr = (t_puntero*) dictionary_get(stackContent->variables, key);
 
@@ -129,7 +129,7 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
 	//pcb->programCounter = pointer;
 
-	t_list* stack = pcb->stackIndex;
+	t_list* stack = pcb->stack;
 
 	//Get current stack content
 	//u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
@@ -175,8 +175,8 @@ void retornar(t_valor_variable valor) {
 	log_trace(logger, "ANSISOP: retornar %d", valor);
 
 	//Obtener contentido
-	t_list* stack = pcb->stackIndex;
-	u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
+	t_list* stack = pcb->stack;
+	u_int32_t stackPosition = list_size(pcb->stack) - 1;
 	t_stackContent* content = list_get(stack, stackPosition);
 
 	pcb->programCounter = content->returnAddress;

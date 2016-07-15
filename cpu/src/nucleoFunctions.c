@@ -29,42 +29,6 @@
 
 int socket_nucleo;
 
-//int receiveData(char* bufferResult) {
-//	//Devuelve la cantidad de bytes recibidos y un buffer
-//
-//	message* mensaje;
-//	mensaje = receiveMessage(socket_nucleo);
-//
-//	if(mensaje->codError != 0){
-//		log_error(logger, "recv");
-//	}
-//
-//	if(mensaje->header == HEADER_ENVIAR_PCB){
-//		enviarPCB();
-//	}
-//	if(mensaje->header == HEADER_WAIT_CONTINUAR){
-//		continuarEjecucion();
-//	}
-//
-//	if(mensaje->header == HEADER_OBTENER_VARIABLE){
-//		continuarEjecucion();//TODO no se q hacer
-//	}
-//
-//	if(mensaje->header == SIGUSR1){
-//		desconectarse();
-//	}
-//
-//	return 0;
-//}
-
-//continuarEjecucion(){
-//	//DEsarrollar
-//}
-//
-//void desconectarse(){
-//	//desconectarse luego de ejecutar la rafaga
-//}
-
 void enviarPCB(){
 
 	Buffer *buffer = new_buffer();
@@ -155,7 +119,7 @@ void nucleo_notificarFinDePrograma() {
 	//No enviar PCB
 }
 
-void nucleo_notificarFinDeRafaga() {//final
+char* nucleo_notificarFinDeRafaga() {//final
 
 	log_trace(logger, "NUCLEO: fin de rafaga");
 
@@ -167,7 +131,10 @@ void nucleo_notificarFinDeRafaga() {//final
 	enviarPCB(pcb);
 	pcb = 0;
 
+	//TODO Ver retorno de notificarFinDeRafaga
 	//Recibir respuesta de sisgur o no.
+
+	return "test";
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {//final

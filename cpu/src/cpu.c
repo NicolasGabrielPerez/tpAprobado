@@ -73,9 +73,7 @@ bool doQuantum(int quantumCount) {
 
 	if(quantumCount >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
-		//TODO Ver retorno de notificarFinDeRafaga
 		char* result = nucleo_notificarFinDeRafaga(pcb);
-		char* result = "Test";
 		int isDifferent = strcmp(result, "SIGUSR1");
 		if(isDifferent == 0) {
 			hasToExit = true;
