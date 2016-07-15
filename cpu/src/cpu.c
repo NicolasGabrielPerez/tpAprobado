@@ -151,10 +151,13 @@ int main(int argc, char **argv) {
 				free_pcb(pcb);
 				exitProgram();
 		}
-		log_info(logger, "Ejecutando: %s", strdup(instruction));
+		char* instructionChar = strdup(instruction);
+		log_info(logger, "Ejecutando: %s", instructionChar);
 
-		analizadorLinea(strdup(instruction), &functions, &kernel_functions);
+		analizadorLinea(instructionChar, &functions, &kernel_functions);
 		pcb->programCounter++;
+
+		free(instructionChar);
 	}
 
 }

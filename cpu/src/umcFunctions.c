@@ -89,6 +89,8 @@ void umc_process_active(int32_t processId) {
 	if(respuesta->ok != RESPUESTA_OK) {
 		log_error(logger, "Error recibiendo respuesta proceso activo");
 	}
+
+	free(respuesta);
 }
 
 void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
@@ -124,6 +126,7 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 		log_error(logger, "Error insertando memoria: RESPONSE");
 	}
 
+	free(respuesta);
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 }
 
@@ -160,6 +163,8 @@ t_valor_variable umc_get(t_puntero page, t_puntero offset, t_size size) {
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
 	t_valor_variable result = (u_int32_t) respuesta->contenido;
+
+	free(respuesta);
 
 	return result;
 }

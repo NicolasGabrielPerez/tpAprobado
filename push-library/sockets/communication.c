@@ -78,17 +78,21 @@ response* recibirResponse(int socket){
 	response* respuesta = malloc(sizeof(response));
 
 	if (recv(socket, &respuesta->ok, sizeof(int32_t), 0) <=0 ) {
+		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if (recv(socket, &respuesta->codError, sizeof(int32_t), 0) <=0) {
+		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if (recv(socket, &respuesta->contenidoSize, sizeof(int32_t), 0) <=0) {
+		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if(respuesta->contenidoSize >0){
 		respuesta->contenido = malloc(respuesta->contenidoSize);
 		if (recv(socket, respuesta->contenido, respuesta->contenidoSize, 0) <=0) {
+			free(respuesta);
 			return createFAILResponse(SOCKET_DESCONECTADO);
 		}
 	} else{
@@ -119,7 +123,11 @@ response* createFAILResponse(int codError){
 int enviarResponse(int socket, response* respuesta){
 	int respuestaSize;
 	char* respuestaSerializada = serializarResponse(respuesta, &respuestaSize);
-	return send(socket, respuestaSerializada, respuestaSize, 0);
+	ssize_t result = send(socket, respuestaSerializada, respuestaSize, 0);
+
+	free(respuesta);
+	free(respuestaSerializada);
+	return result;
 }
 
 int enviarOKSinContenido(int socket){
@@ -182,7 +190,9 @@ int32_t sendMessage(int socket, int header, int contenidoSize, char* contenidoSe
 	memcpy(headerSerializado, &headerSelf, sizeof(int32_t));
 	int headerResult = enviarOKConContenido(socket, sizeof(int32_t), headerSerializado);
 
-	if(headerResult == -1){
+	free(headerSerializado);
+
+	if(headerResult == -1) {
 		return headerResult;
 	}
 
