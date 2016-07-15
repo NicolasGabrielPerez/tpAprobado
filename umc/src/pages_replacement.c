@@ -11,7 +11,7 @@ void init(enum AlgoritmoReemplazo algoritmoReemplzao){
 }
 
 void prepararPresenteParaSerCargado(presente* presente, tabla_de_paginas* tablaDePaginas, int nroPagina){
-	if(presente->nroPagina != -1 && presente->modificado){ //REEMPLAZO DE PAGINA
+	if((presente->nroPagina != -1) && presente->modificado){ //REEMPLAZO DE PAGINA
 		//Escribir en swap lo que va a ser reemplazado
 		tabla_de_frame_entry* victimaFrame = obtenerEntradaDeFrame(presente->nroFrame);
 		escribirPaginaEnSwap(presente->nroPagina, tablaDePaginas->pid, victimaFrame->direccion_real);
@@ -169,6 +169,7 @@ umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina){
 	prepararPresenteParaSerCargado(presenteACargar, tablaDePaginas, nroPagina);
 
 	cargarEnPresentes(tablaDePaginas->pid, presenteACargar); //cargar nuevo presente en memoria real
+	pageEntry->presente = 1;
 	tabla_de_frame_entry* frameCargado = obtenerEntradaDeFrame(presenteACargar->nroFrame);
 
 	return createUmcResult(1, 0, pageEntry, frameCargado);

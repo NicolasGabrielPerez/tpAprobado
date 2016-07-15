@@ -111,6 +111,72 @@ tabla_de_paginas* crearTablaDePaginas(int pid, int cantPaginas){
 	return tablaDePaginas;
 }
 
+void* destroyPageEntry(void* element){
+	tabla_de_paginas_entry* pageEntry = element;
+	free(pageEntry);
+	return 0;
+}
+
+void* destroyPresente(void* element){
+	presente* presente = element;
+	free(presente);
+	return 0;
+}
+
+void* destroyPagesTable(void* element){
+	tabla_de_paginas* tabla = element;
+	list_destroy_and_destroy_elements(tabla->entradas, destroyPageEntry);
+	tabla->entradas = NULL;
+	list_destroy_and_destroy_elements(tabla->presentes, destroyPresente);
+	tabla->presentes = NULL;
+	free(tabla);
+	tabla = NULL;
+	return 0;
+}
+
+int getPagesTableIndex(t_list* list, int pid){
+	int i;
+	tabla_de_paginas* table;
+	for(i=0; i<list_size(list); i++){
+		table = list_get(list, i);
+		if(table->pid == pid) return i;
+	}
+
+	return -1;
+}
+
+void borrarTablaDePaginas(tabla_de_paginas* tablaDePaginas){
+	int pagesTableIndex = getPagesTableIndex(tablasDePaginas, tablaDePaginas->pid);
+
+	if(pagesTableIndex==-1){
+		log_error(logger, "Error al borrar tabla de paginas. Tabla no encontrada");
+		printf("Tabla no encontrada\n");
+		return;
+	}
+
+	list_remove_and_destroy_element(tablasDePaginas, pagesTableIndex, destroyPagesTable);
+}
+
+void* destroyPagesTable(void* element){
+	tabla_de_paginas* tabla = element;
+	free(tabla);
+	return 0;
+}
+
+response* finalizarPidDeUMC(int pid){
+
+	tabla_de_paginas* tablaDePaginas = buscarPorPID(pid);
+
+	// verificar que exista pid
+	if(tablaDePaginas==NULL){
+		return createFAILResponse(PID_NO_EXISTE);
+	}
+
+	borrarTablaDePaginas(tablaDePaginas);
+
+	return createOKResponse();
+}
+
 char* initProgramaUMC(int pid, int cantPaginas){
 	// verificar que no exista pid
 	if(buscarPorPID(pid)!=NULL){

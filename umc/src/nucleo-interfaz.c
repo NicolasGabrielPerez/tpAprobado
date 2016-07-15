@@ -30,15 +30,16 @@ void recbirInitPrograma(int nucleo_socket){
 }
 
 void recibirFinalizarPrograma(int nucleo_socket){
+	message* message = receiveMessage(nucleo_socket);
 	int32_t pid;
-	char* respuesta;
+	memcpy(&pid, message->contenido, sizeof(int32_t));
 
-	if (recv(nucleo_socket, &pid, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
+	response* result = finalizarPidDeUMC(pid);
+
+	if(!result->ok){
+		enviarFAIL(nucleo_socket, result->codError);
+		return;
 	}
-
-	//TODO borrar de Memoria Principal
 
 	response* swapResponse = finalizarProgramaSwap(&pid);
 	enviarResponse(nucleo_socket, swapResponse);

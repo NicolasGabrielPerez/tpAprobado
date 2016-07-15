@@ -120,4 +120,6 @@
 
 	void initLogger();
 
+	response* finalizarPidDeUMC(int pid);
+
 	#endif /* UMC_STRUCTS_H_ */
