@@ -27,7 +27,5 @@ PCB* test_pcb_init() {
 
 	PCB* pcb = new_pcb(1);
 
-	PAGE_SIZE = 5;
-
 	return pcb;
 }

@@ -127,19 +127,18 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 	//TODO: Testing
 
 	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
-	//pcb->programCounter = pointer;
+	pcb->programCounter = pointer;
 
 	t_list* stack = pcb->stack;
 
-	//Get current stack content
-	//u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
+	//u_int32_t stackPosition = list_size(pcb->stack) - 1;
 	//t_stackContent* currentStackContent = list_get(stack, stackPosition);
+
+	//TODO: Hacer los argumentos de funcion al ser llamado.
 
 	//Push
 	t_stackContent* newStackContent = init_stackContent();
-	if(donde_retornar != 0) {
-		newStackContent->returnAddress = donde_retornar;
-	}
+	newStackContent->returnAddress = donde_retornar;
 
 	list_add(stack, newStackContent);
 }
@@ -181,22 +180,20 @@ void retornar(t_valor_variable valor) {
 
 	pcb->programCounter = content->returnAddress;
 
-	//TODO: Revisar la resta de memoryIndex
 	//Liberar del stack de variables en UMC, ver la manera de restar el index
-	pcb->memoryIndex--;
+	int size = dictionary_size(content->variables) * sizeof(t_valor_variable);
+	pcb->memoryIndex -= size;
+
+	t_puntero returnAddr = content->returnAddress;
+	t_variable* returnVar = content->returnVariable;
 
 	//Pop
-	free_stackContent(content);
 	list_remove(stack, stackPosition);
+	free_stackContent(content);
 
-	//Settear el valor en la siguiente posicion de UMC
-	pcb->memoryIndex++;
-	t_variable* addr = getMemoryAddr(pcb->memoryIndex);
-	content->returnVariable = addr;
+	pcb->programCounter = returnAddr;
 
-	char* param = string_itoa(valor);
-	umc_set(addr->pageNumber, addr->offset, addr->size, param);
-	free(param);
+	//TODO Revisar el retorno de la variable.
 }
 
 void imprimir(t_valor_variable valor) {

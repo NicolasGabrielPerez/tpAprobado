@@ -53,12 +53,6 @@ void nucleo_init(t_config* config) {
 
 	socket_nucleo = crear_socket_cliente(ip_nucleo, puerto_nucleo); //socket usado para conectarse al nucleo
 
-	//Hago handshake con nucleo
-//	if (sendMessageInt(socket_nucleo, HEADER_HANDSHAKE, TIPO_CPU) == -1) {
-//		log_error(logger, "Error enviando handshake nucleo");
-//		exitProgram();
-//	}
-
 	//Recibir el header
 	message* message = receiveMessage(socket_nucleo);
 	if(message->header == HEADER_HANDSHAKE) {

@@ -120,47 +120,45 @@ void exitProgram() {
 }
 
 
-//int main(int argc, char **argv) {
-//
-//	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_TRACE);
-//
-//	pcb = test_pcb_init(1);
-//
-//	while(true) {
-//		char* instruction = "";
-//		switch(pcb->programCounter) {
-//			case 0:
-//				instruction = "begin";
-//				break;
-//			case 1:
-//				instruction = "variables z, a, b";
-//				break;
-//			case 2:
-//				instruction = "a = 3";
-//				break;
-//			case 3:
-//				instruction = "b = 5";
-//				break;
-//			case 4:
-//				instruction = "a = b + 12";
-//				break;
-//			case 5:
-//				instruction = "end";
-//				break;
-//			default:
-//				free_pcb(pcb);
-//				exitProgram();
-//		}
-//		char* instructionChar = strdup(instruction);
-//		log_info(logger, "Ejecutando: %s", instructionChar);
-//
-//		analizadorLinea(instructionChar, &functions, &kernel_functions);
-//		pcb->programCounter++;
-//
-//		free(instructionChar);
-//	}
-//
-//}
+void test() {
+
+	pcb = test_pcb_init(1);
+
+	while(true) {
+		char* instruction = "";
+		switch(pcb->programCounter) {
+			case 0:
+				instruction = "begin";
+				break;
+			case 1:
+				instruction = "variables a, b";
+				break;
+			case 2:
+				instruction = "a = 3";
+				break;
+			case 3:
+				instruction = "b = 5";
+				break;
+			case 4:
+				instruction = "a = b + 12";
+				break;
+			case 5:
+				instruction = "end";
+				break;
+			default:
+				free_pcb(pcb);
+				exitProgram();
+		}
+		char* instructionChar = strdup(instruction);
+		log_info(logger, "Ejecutando: %s", instructionChar);
+
+		analizadorLinea(instructionChar, &functions, &kernel_functions);
+		pcb->programCounter++;
+
+		free(instructionChar);
+	}
+
+}
 
 int main(int argc, char **argv) {
 
@@ -178,12 +176,14 @@ int main(int argc, char **argv) {
 	nucleo_init(config);
 	umc_init(config);
 
-	bool hasToExit = false;
-	while(hasToExit == false) {
-		pcb = nucleo_recibir_pcb();
-		umc_process_active(pcb->processId);
-		hasToExit = receiveInstructions(pcb, QUANTUM);
-	}
+	test();
+
+//	bool hasToExit = false;
+//	while(hasToExit == false) {
+//		pcb = nucleo_recibir_pcb();
+//		umc_process_active(pcb->processId);
+//		hasToExit = receiveInstructions(pcb, QUANTUM);
+//	}
 
 	exitProgram();
 
