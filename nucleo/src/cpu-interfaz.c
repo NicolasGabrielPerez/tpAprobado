@@ -46,7 +46,8 @@ void handleCpuRequests(int socket){
 	}
 
 	if(mensaje->header == HEADER_NOTIFICAR_FIN_QUANTUM){
-		nucleo_notificarFinDeQuantum(mensaje);
+		t_CPU* cpu = get_CPU_by_socket(socket);
+		nucleo_notificarFinDeQuantum(mensaje, cpu);
 	}
 	if(mensaje->header == HEADER_FIN_PROGRAMA){
 		t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
@@ -96,8 +97,8 @@ PCB* nucleo_obtener_pcb(message* programBlock){
 	return Deserializado;
 }
 
-void nucleo_notificarFinDeQuantum(message* mensaje){
-	//TODO: loguear evento
+void nucleo_notificarFinDeQuantum(message* mensaje, t_CPU* cpu){
+	log_trace(nucleo_logger, "PROGRAMA %s: Ejecución de quantum %d ", cpu->PID, mensaje->contenido);
 }
 
 void nucleo_notificarFinDeRafaga(message* mensaje){}

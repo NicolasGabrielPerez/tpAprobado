@@ -65,7 +65,7 @@ typedef struct PCB {
 	u_int32_t stackCount; //Esto lo agregue yo (Agus), si me quitan el numero de elementos del stack no tengo forma de saber cual es el ultimo elemento!
 
 	//Agregado Agus, creo que es necesario para la memoria, dsp lo vemos
-	u_int32_t pageStart;		//TODO:Serializar
+	u_int32_t pageStart;		//TODO:Serializar TODO:Inicializar
 	u_int32_t pagesCount;
 	t_puntero memoryIndex;
 	//t_list* stackIndex;
