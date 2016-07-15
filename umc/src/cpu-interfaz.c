@@ -53,7 +53,7 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 		enviarFAIL(cpu_socket, result.codError);
 	}
 
-	escribirEnFrame(result.frameEntry->direccion_real, offset, tamanio, nroFrame);
+	escribirEnFrame(buffer, offset, tamanio, nroFrame);
 
 	//Actualizar TLB
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);

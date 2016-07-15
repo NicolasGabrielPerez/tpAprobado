@@ -1,6 +1,7 @@
 #include "comandos.h"
 
 void printPagesTable(tabla_de_paginas* tabla){
+	printf("----------------- Comienzo de tabla -----------------\n");
 	printf("Tabla de paginas de PID %d\n", tabla->pid);
 	int i;
 	tabla_de_paginas_entry* entry;
@@ -8,26 +9,17 @@ void printPagesTable(tabla_de_paginas* tabla){
 		entry = list_get(tabla->entradas, i);
 		printf("Pagina: %d | P=%d | Frame= %d | U=%d | M=%d\n",
 				entry->nroPagina, entry->presente, entry->nroFrame, entry->uso, entry->modificado);
+		printf("------- Fin entrada de tabla -------\n");
 	}
 	printf("----------------- Fin de tabla -----------------\n");
 }
 
 void printFrame(char* contenido){
-	char* stringFrame = malloc(marco_size);
-	memcpy(stringFrame, contenido, marco_size);
-	stringFrame[marco_size] = '\0';
-
-	printf("Contenido de frame:\n");
-
-	int caracteresPorLinea = 50;
-	int contadorCaracteres = 0;
-	while(contadorCaracteres <= marco_size){
-		printf("%s\n", string_substring(stringFrame, contadorCaracteres, caracteresPorLinea));
-		contadorCaracteres += caracteresPorLinea;
-	}
+	printf("%s\n", contenido);
 }
 
 void printData(tabla_de_paginas* tabla){
+	printf("----------------- Comienzo de contenido de pid %d -----------------\n", tabla->pid);
 	printf("Datos almacenados de PID %d\n", tabla->pid);
 	int i;
 	tabla_de_paginas_entry* entry;
@@ -37,9 +29,11 @@ void printData(tabla_de_paginas* tabla){
 			printf("Pagina: %d | Frame= %d | U=%d | M=%d\n",
 							entry->nroPagina, entry->nroFrame, entry->uso, entry->modificado);
 
-			tabla_de_frame_entry* frameEntry = obtenerEntradaDeFrame(entry->nroFrame);
-			char* frame = leerFrame(frameEntry->nroFrame);
-			printFrame(frame);
+			if(entry->presente){
+				char* frame = leerFrame(entry->nroFrame);
+				printFrame(frame);
+			}
+
 		}
 	}
 	printf("----------------- Fin de contenido -----------------\n");
@@ -51,6 +45,7 @@ void setRetardo(int newRetardo){
 }
 
 void dumpAllTables(){
+	printf("Dump all tables\n");
 	int i;
 	tabla_de_paginas* tablaActual;
 	for(i = 0; i<list_size(tablasDePaginas); i++){

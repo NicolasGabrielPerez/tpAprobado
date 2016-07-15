@@ -157,12 +157,6 @@ void borrarTablaDePaginas(tabla_de_paginas* tablaDePaginas){
 	list_remove_and_destroy_element(tablasDePaginas, pagesTableIndex, destroyPagesTable);
 }
 
-void* destroyPagesTable(void* element){
-	tabla_de_paginas* tabla = element;
-	free(tabla);
-	return 0;
-}
-
 response* finalizarPidDeUMC(int pid){
 
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(pid);
@@ -267,7 +261,7 @@ void cargarPagina(int nroPagina, int pid, char* pagina){
 	tabla_de_paginas_entry* entrada = obtenerEntradaDePagina(pid, nroPagina);
 	int nroFrameACargar = obtenerFrameDisponible();
 	if(nroFrameACargar == -1){
-		puts("Error: memoria llena");
+		printf("Error: memoria llena\n");
 		return;
 	}
 	cargarEnMemoriaPrincipal(pagina, nroFrameACargar);
