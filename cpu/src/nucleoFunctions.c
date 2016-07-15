@@ -21,6 +21,7 @@
 #include <commons/string.h>
 
 #include "nucleoFunctions.h"
+#include "ansiop.h"
 #include "cpu.h"
 
 #include <sockets/sockets.h>
@@ -67,11 +68,13 @@ int socket_nucleo;
 void enviarPCB(){
 
 	Buffer *buffer = new_buffer();
-
 	char* pcbzerial = serialize_pcb(pcb, buffer);
+
 	int size = sizeof(pcbzerial);
 	buffer_free( buffer);
 	sendMessage(socket_nucleo, HEADER_ENVIAR_PCB, size , pcbzerial);
+
+	buffer_free(buffer);
 
 	free_pcb(pcb);
 	pcb = 0;
@@ -94,9 +97,11 @@ void nucleo_init(t_config* config) {
 
 	//Recibir el header
 	message* message = receiveMessage(socket_nucleo);
-
-
-	log_trace(logger, "Iniciado socket: Nucleo");
+	if(message->header == HEADER_HANDSHAKE) {
+		log_trace(logger, "Iniciado socket: Nucleo");
+	} else {
+		log_error(logger, "Error al iniciar socket: Nucleo");
+	}
 }
 
 void nucleo_delete(){//final
@@ -109,13 +114,8 @@ PCB* nucleo_recibir_pcb() {
 
 	log_trace(logger, "NUCLEO: recibiendo PCB");
 
-
-	Buffer* buffer = new_buffer();
-	message* message = receiveData(buffer);
-
+	message* message = receiveMessage(socket_nucleo);
 	PCB* pcb = deserialize_pcb(message->contenido);
-
-	free(buffer);
 
 	return pcb;
 }
@@ -166,6 +166,8 @@ void nucleo_notificarFinDeRafaga() {//final
 	//Enviar PCB
 	enviarPCB(pcb);
 	pcb = 0;
+
+	//Recibir respuesta de sisgur o no.
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {//final
@@ -224,7 +226,7 @@ t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable
 	//Enviar el nombre de la variable.
 	//Recibir el valor.
 
-	if (sendMessageInt(socket_nucleo, HEADER_OBTENER_VARIABLE, variable) == -1) {
+	if (sendMessage(socket_nucleo, HEADER_OBTENER_VARIABLE, sizeof(t_nombre_compartida), variable) == -1) {
 		log_error(logger, "Error obteniendo variable compartida");
 	};
 
@@ -247,10 +249,11 @@ void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_va
 
 	char* data = serialize_globalVar(var, buffer);
 
-	if (sendMessage(socket_nucleo, HEADER_ASIGNAR_VARIABLE, sizeof(char) * string_length(data), data) == -1) {
+	if (sendMessage(socket_nucleo, HEADER_SETEAR_VARIABLE, sizeof(char) * string_length(data), data) == -1) {
 		 log_error(logger, "Error enviando variable compartida");
 	};
 
+	buffer_free(buffer);
 	free(var);
 }
 

@@ -56,12 +56,10 @@ AnSISOP_kernel kernel_functions = {
 };
 
 //Devuelve un booleano si tiene que salir del programa.
-bool doQuantum(PCB* pcb, int quantumCount) {
+bool doQuantum(int quantumCount) {
 	bool hasToExit = false;
 
-
-
-	//Pedir a la UMC la siguiente instruccion a ejecutar
+	//TODO: Pedir a la UMC la siguiente instruccion a ejecutar
 	char* instruction = "test";//umc_get(codeIndex, offset, size);
 
 	log_trace(logger, string_from_format("Ejecutando quantum: %d", quantumCount));
@@ -76,7 +74,7 @@ bool doQuantum(PCB* pcb, int quantumCount) {
 	if(quantumCount >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
 		//TODO Ver retorno de notificarFinDeRafaga
-		//char* result = nucleo_notificarFinDeRafaga(pcb);
+		char* result = nucleo_notificarFinDeRafaga(pcb);
 		char* result = "Test";
 		int isDifferent = strcmp(result, "SIGUSR1");
 		if(isDifferent == 0) {
@@ -101,7 +99,10 @@ bool receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
 	int hasToExit = false;
 
 	while(quantumCounter <= QUANTUM_COUNT) {
-		bool tmp = doQuantum(pcb, quantumCounter);
+		//TODO: A revisar
+		if(pcb == 0) return hasToExit;
+
+		bool tmp = doQuantum(quantumCounter);
 
 		if(hasToExit == false) hasToExit = tmp;
 		quantumCounter++;

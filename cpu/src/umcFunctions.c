@@ -100,7 +100,7 @@ void umc_process_active(int32_t processId) {
 
 void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 
-	log_trace(logger, "UMC: set (%d, %d, %d, %s)", page, offset, size, buffer);
+	log_trace(logger, "UMC: set (Page: %d, Offset: %d, Size: %d, Buffer: %s)", page, offset, size, buffer);
 
 	//Envio header: HEADER_ALMACENAR_PAGINAS
 	char* param = string_itoa(HEADER_ALMACENAR_PAGINAS);
@@ -136,7 +136,7 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 
 t_valor_variable umc_get(t_puntero page, t_puntero offset, t_size size) {
 
-	log_trace(logger, "UMC: get (%d, %d, %d)", page, offset, size);
+	log_trace(logger, "UMC: get (Page: %d, Offset: %d, Size: %d)", page, offset, size);
 
 
 	//Envio header: HEADER_SOLICITAR_PAGINAS

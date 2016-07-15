@@ -35,7 +35,8 @@ t_puntero definirVariable(t_nombre_variable variable) {
 	t_puntero* value = malloc(sizeof(t_puntero));
 	memcpy(value, &memoryAddr, sizeof(t_puntero));
 
-	t_stackContent* stackContent = list_get(pcb->stackIndex, pcb->stackPosition);
+	u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
+	t_stackContent* stackContent = list_get(pcb->stackIndex, stackPosition);
 	dictionary_put(stackContent->variables, key, value);
 
 	free(key);
@@ -51,8 +52,9 @@ t_puntero obtenerPosicionVariable(t_nombre_variable variable) {
 
 	char* key = string_from_format("%c", variable);
 
+	u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
 	t_list* stack = pcb->stackIndex;
-	t_stackContent* stackContent = list_get(stack, pcb->stackPosition);
+	t_stackContent* stackContent = list_get(stack, stackPosition);
 	t_puntero* memoryAddr = (t_puntero*) dictionary_get(stackContent->variables, key);
 
 	free(key);
@@ -90,6 +92,8 @@ t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
 
 	log_trace(logger, "ANSISOP: obtenerValorCompartida, %c", name);
 
+	//TODO: Testing
+
 	t_valor_variable value = nucleo_variable_compartida_obtener(name);
 	return value;
 }
@@ -98,6 +102,8 @@ t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
 t_valor_variable asignarValorCompartida(t_nombre_compartida name, t_valor_variable value) {
 
 	log_trace(logger, "ANSISOP: asignarValorCompartida, %c, %d", name, value);
+
+	//TODO: Testing
 
 	nucleo_variable_compartida_asignar(name, value);
 	return value;
@@ -108,6 +114,8 @@ void irAlLabel(t_nombre_etiqueta etiqueta) {
 
 	log_trace(logger, "ANSISOP: irAlLabel, %c", etiqueta);
 
+	//TODO: Testing
+
 	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
 	pcb->programCounter = pointer;
 }
@@ -116,13 +124,16 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
 	log_trace(logger, "ANSISOP: callFunction, Etiqueta: %s Donde Retornar: %d", etiqueta, donde_retornar);
 
+	//TODO: Testing
+
 	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
 	//pcb->programCounter = pointer;
 
 	t_list* stack = pcb->stackIndex;
 
 	//Get current stack content
-	//t_stackContent* currentStackContent = list_get(stack, pcb->stackPosition);
+	//u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
+	//t_stackContent* currentStackContent = list_get(stack, stackPosition);
 
 	//Push
 	t_stackContent* newStackContent = init_stackContent();
@@ -130,7 +141,6 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 		newStackContent->returnAddress = donde_retornar;
 	}
 
-	pcb->stackPosition++;
 	list_add(stack, newStackContent);
 }
 
@@ -138,6 +148,7 @@ void llamarConRetorno(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
 	log_trace(logger, "ANSISOP: llamarConRetorno, %c %d", etiqueta, donde_retornar);
 
+	//TODO: Testing
 
 	callFunction(etiqueta, donde_retornar);
 }
@@ -146,11 +157,15 @@ void llamarSinRetorno(t_nombre_etiqueta etiqueta) {
 
 	log_trace(logger, "ANSISOP: llamarSinRetorno, %s", etiqueta);
 
+	//TODO: Testing
+
 	callFunction(etiqueta, 0);
 }
 
 void finalizar() {
 	log_trace(logger, "ANSISOP: finalizar");
+
+	//TODO: Testing
 
 	nucleo_notificarFinDePrograma(pcb);
 }
@@ -161,17 +176,18 @@ void retornar(t_valor_variable valor) {
 
 	//Obtener contentido
 	t_list* stack = pcb->stackIndex;
-	t_stackContent* content = list_get(stack, pcb->stackPosition);
+	u_int32_t stackPosition = list_size(pcb->stackIndex) - 1;
+	t_stackContent* content = list_get(stack, stackPosition);
 
 	pcb->programCounter = content->returnAddress;
 
+	//TODO: Revisar la resta de memoryIndex
 	//Liberar del stack de variables en UMC, ver la manera de restar el index
 	pcb->memoryIndex--;
 
 	//Pop
 	free_stackContent(content);
-	list_remove(stack, pcb->stackPosition);
-	pcb->stackIndex--;
+	list_remove(stack, stackPosition);
 
 	//Settear el valor en la siguiente posicion de UMC
 	pcb->memoryIndex++;
@@ -187,6 +203,8 @@ void imprimir(t_valor_variable valor) {
 
 	log_trace(logger, "ANSISOP: imprimir %d", valor);
 
+	//TODO: Testing
+
 	nucleo_imprimir(valor);
 }
 
@@ -194,12 +212,16 @@ void imprimirTexto(char* texto) {
 
 	log_trace(logger, "ANSISOP: imprimirTexto, %c", texto);
 
+	//TODO: Testing
+
 	nucleo_imprimir_texto(texto);
 }
 
 void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {
 
 	log_trace(logger, "ANSISOP: entradaSalida %c, %d", valor, tiempo);
+
+	//TODO: Testing
 
 	nucleo_notificarIO(valor);
 }
@@ -209,6 +231,8 @@ void wait(t_nombre_semaforo id) {
 
 	log_trace(logger, "ANSISOP: wait %c", id);
 
+	//TODO: Testing
+
 	nucleo_wait(id);
 }
 
@@ -216,6 +240,8 @@ void wait(t_nombre_semaforo id) {
 void signal(t_nombre_semaforo id) {
 
 	log_trace(logger, "ANSISOP: signal %c", id);
+
+	//TODO: Testing
 
 	nucleo_signal(id);
 }

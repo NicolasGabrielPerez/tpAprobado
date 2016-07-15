@@ -30,10 +30,6 @@ PCB* test_pcb_init() {
 	pcb->memoryIndex = 0;
 	pcb->stackIndex = list_create();
 
-	t_stackContent* stackContent = init_stackContent();
-
-	list_add(pcb->stackIndex, stackContent);
-
 	PAGE_SIZE = 5;
 
 	return pcb;
