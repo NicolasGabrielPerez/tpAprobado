@@ -132,7 +132,6 @@ void serialize_codeIndex(t_intructions* codeIndex, t_size instructionsCount, Buf
 	}
 }
 
-
 void serialize_dictionary_element(char* key, void* value, Buffer* buffer){
 	serialize_string(key, buffer);
 	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
@@ -166,31 +165,49 @@ void serialize_dictionary(t_dictionary* dictionary, Buffer* buffer){
 //Concatena una estructura de tipo variable
 void serialize_variable(t_variable* variable, Buffer* buffer){
 	serialize_string(variable->id, buffer);
-	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
 
 	serialize_int(variable->pageNumber, buffer);
-	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
 
 	serialize_int(variable->offset, buffer);
-	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
 
 	serialize_int(variable->size, buffer);
-	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
-
 	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
 }
 
+t_variable* deserialize_variable(char* serializedVariable){
+	t_variable* variable = malloc(sizeof(t_variable));
+	char** deserializedVariable = string_split(serializedVariable, VARIABLE_SEPARATOR);
+
+	variable->id = atoi(deserializedVariable[0]);
+	variable->pageNumber = atoi(deserializedVariable[1]);
+	variable->offset = atoi(deserializedVariable[2]);
+	variable->size = atoi(deserializedVariable[3]);
+
+	return variable;
+}
 //Serializa un elemento del Stack
 void serialize_stackContent(t_stackContent* content, Buffer* buffer){
+	//Serializar cantidad de elementos en el diccionario
+	serialize_int(dictionary_size(content->arguments), buffer);
+	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 	//serializar diccionario => arguments
 	serialize_dictionary(content->arguments, buffer);
+	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
+
+	//Serializar cantidad de elementos en el diccionario
+	serialize_int(dictionary_size(content->variables), buffer);
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 	//serializar diccionario => variables
 	serialize_dictionary(content->variables, buffer);
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
+
 	//serializar t_puntero => returnAdress
 	serialize_int(content->returnAddress, buffer);
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
+
 	//serializar t_variable => returnVariable
 	serialize_variable(content->returnVariable, buffer);
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
@@ -220,20 +237,39 @@ t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructi
 
 		codeIndex[i].start = atoi(deserializedInstruction[0]);
 		codeIndex[i].offset = atoi(deserializedInstruction[1]);
-
-		printf("--- Índice de código n° %d: %s \n", i, deserializedList[i]);
+		//printf("--- Índice de código n° %d: %s \n", i, deserializedList[i]);
 	}
-
 	return codeIndex;
 }
 
-t_list* deserialize_stack(char* seralizedStack, int stackCount){
+t_list* deserialize_stack(char* serializedStack, int stackCount){
 	t_list* stack = list_create();
+	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
 
-	//TODO: Implementar deserialización del stack
+	char** deserializedList = string_split(serializedStack, STACK_SEPARATOR);
+	char** deserializedElement;
+
+	int auxCounter;
+	int i;
+	for( i = 0 ; i < stackCount ; i++ ){
+		deserializedElement = string_split(deserializedList[i], STACKCONTENT_SEPARATOR);
+
+		auxCounter = atoi(deserializedElement[0]);
+		stackContent->arguments = deserialize_dictionary(deserializedElement[1], auxCounter);
+
+		auxCounter = atoi(deserializedElement[2]);
+		stackContent->variables = deserialize_dictionary(deserializedElement[3], auxCounter);
+
+		stackContent->returnAddress = atoi(deserializedElement[4]);
+
+		stackContent->returnVariable = deserialize_variable(deserializedElement[5]);
+
+		list_add(stack, stackContent);
+	}
 
 	return stack;
 }
+
 int convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
@@ -284,8 +320,8 @@ PCB* deserialize_pcb(char* serializedPCB){
 	pcb->tagIndexSize = atoi(serializedComponents[5]);					//tagIndexSize
 	pcb->tagIndex = serializedComponents[6];							//tagIndex
 	pcb->stackCount = atoi(serializedComponents[7]);					//stackCount
-	//stack
-	//pcb->stack = deserialize_stack(serializedComponents[8], pcb->stackCount);		TODO:implementar
+
+	pcb->stack = deserialize_stack(serializedComponents[8], pcb->stackCount);
 
 	return pcb;
 }

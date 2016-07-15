@@ -53,4 +53,6 @@ void nucleo_updatePCB(PCB* pcb);
 
 void change_status_RUNNING_to_READY(t_CPU* cpu);
 
+void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket);
+
 #endif

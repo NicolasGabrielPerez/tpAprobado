@@ -40,19 +40,6 @@ void finalizarFelizmenteTodo(int processID){
 	console_endProgram(processID);			//Notifica fin de programa a Consola
 }
 
-
-//TODO: Esta función no debe ser parte de la consola. Debe formar parte del programa principal
-void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket){
-	PCB* nuevoPCB;
-	nuevoPCB = new_pcb(consoleSocket);
-	int memoryPagesCount;
-	memoryPagesCount = getProgramPagesCount(programSourceCode);
-	create_program_PCB(nuevoPCB, programSourceCode, memoryPagesCount);
-
-	//Envío solicitud de páginas a UMC
-	umc_initProgram(memoryPagesCount, nuevoPCB, codeSize, programSourceCode);
-}
-
 //Envía mensaje de finalización de programa
 void console_endProgram(int socket){
 	sendMessage(socket, HEADER_FIN_PROGRAMA, 0, "");

@@ -8,6 +8,24 @@
 t_list* General_Process_List;
 
 int auxCounter;
+char *programa1 = "function triple\n"
+			"variables f\n"
+			"f = $0 + $0 + $0\n"
+			"return f\n"
+			"end\n"
+
+			"begin \n"
+			"variables a,g \n"
+			"a = 1\n"
+			"g <- doble a\n"
+			"print g\n"
+			"end\n"
+
+			"function doble\n"
+			"variables f\n"
+			"f = $0 + $0\n"
+			"return f\n"
+			"end";
 
 void print_program_metadata(t_metadata_program *programMetadata) {
 	puts("++++++++++++Program Metadada++++++++++++ \n");
@@ -71,9 +89,6 @@ void print_dictionary(t_dictionary* dictionary){
 	dictionary_iterator(dictionary, print_dictionary_element);
 }
 
-//TODO: Serializar estructura de stack
-
-
 void initialize_pcb_test(PCB *pcb){
 	pcb->processId = 493;
 	pcb->programCounter = 0;
@@ -126,7 +141,7 @@ void set_pcb_test_list(){
 	pcb4->tagIndex = "PCB 4\n";
 	list_add(General_Process_List, pcb4);
 
-	list_remove(General_Process_List, 2);
+	//list_remove(General_Process_List, 2);
 
 	PCB* pcb5 = malloc(sizeof(PCB));
 	pcb5 = new_pcb(4);
@@ -135,26 +150,6 @@ void set_pcb_test_list(){
 }
 
 void test_serialization(){
-
-	char *programa1 = "function triple\n"
-			"variables f\n"
-			"f = $0 + $0 + $0\n"
-			"return f\n"
-			"end\n"
-
-			"begin \n"
-			"variables a,g \n"
-			"a = 1\n"
-			"g <- doble a\n"
-			"print g\n"
-			"end\n"
-
-			"function doble\n"
-			"variables f\n"
-			"f = $0 + $0\n"
-			"return f\n"
-			"end";
-
 
 	t_metadata_program *programMetadata = malloc(sizeof(t_metadata_program));
 	programMetadata = metadata_desde_literal(programa1);
@@ -224,6 +219,17 @@ void test_planification(){
 	set_pcb_test_list();
 
 	PCB* pcb = malloc(sizeof(PCB));
+	PCB* newPcb = malloc(sizeof(PCB));
+
+	newPcb = new_pcb(3);
+	create_program_PCB(newPcb, programa1, 30);
+	print_program_instruction_index(newPcb->codeIndex, newPcb->instructionsCount);
+
+	nucleo_updatePCB(newPcb);
+	pcb = get_pcb_by_ID(General_Process_List, 3);
+	print_program_instruction_index(pcb->codeIndex, pcb->instructionsCount);
+
+	/*
 	int i;
 	for(i = 0 ; i < list_size(General_Process_List) ; i++){
 		pcb = get_pcb_by_ID(General_Process_List, i);
@@ -231,5 +237,5 @@ void test_planification(){
 			printf("Process ID: %d\n", pcb->processId);
 			printf("--%s\n", pcb->tagIndex);
 		}
-	}
+	}*/
 }

@@ -9,8 +9,8 @@ int socket_umc;
 void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char* program){
 
 	sendMessage(socket_umc, HEADER_INIT_PROGRAMA, 0, 0);
-	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(int32_t), pcb->processId);
-	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINAS, sizeof(u_int32_t), pagesCount);
+	sendMessageInt(socket_umc, HEADER_SOLICITAR_PAGINAS, pcb->processId);
+	sendMessageInt(socket_umc, HEADER_SOLICITAR_PAGINAS, pagesCount);
 	sendMessage(socket_umc, HEADER_SOLICITAR_PAGINAS, programSize, program);
 
 	message* message = receiveMessage(socket_umc);
@@ -35,7 +35,7 @@ void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char
 
 //Envía orden de finalización de programa a UMC
 void umc_endProgram(u_int32_t PID){
-	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, sizeof(u_int32_t), PID);
+	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, PID);
 }
 
 void aceptarPrograma(message* mensaje){
@@ -72,8 +72,9 @@ void handshake_con_UMC(){
 	}
 	else{
 		puts("Tamaño de página no recibido");
-
 	}
+
+	//TODO: verificar como realiza handshake la UMC
 }
 
 

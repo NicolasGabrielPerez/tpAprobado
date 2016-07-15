@@ -188,9 +188,31 @@ void end_process(int PID){
 
 }
 
-void nucleo_updatePCB(PCB* pcb){
-	//TODO: Implementar
+void nucleo_updatePCB(PCB* newPCB){
+	//TODO: Testear esto
+	PCB* actualPCB = get_pcb_by_ID(General_Process_List, newPCB->processId);
+	actualPCB->codePagesCount = newPCB->codePagesCount;
+	actualPCB->programCounter = newPCB->programCounter;
+	actualPCB->memoryIndex = newPCB->memoryIndex;
+	actualPCB->stack = newPCB->stack;
+	actualPCB->stackCount = newPCB->stackCount;
+	actualPCB->stackIndex = newPCB->stackIndex;
+	actualPCB->stackPosition = newPCB->stackPosition;
+	actualPCB->codeIndex = newPCB->codeIndex;
+	actualPCB->instructionsCount = newPCB->instructionsCount;
+
 	//Actualizar con datos que provienen del CPU
+}
+
+void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket){
+	PCB* nuevoPCB;
+	nuevoPCB = new_pcb(consoleSocket);
+	int memoryPagesCount;
+	memoryPagesCount = getProgramPagesCount(programSourceCode);
+	create_program_PCB(nuevoPCB, programSourceCode, memoryPagesCount);
+
+	//Envío solicitud de páginas a UMC
+	umc_initProgram(memoryPagesCount, nuevoPCB, codeSize, programSourceCode);
 }
 //---------------------------------------------- </PCBs>
 

@@ -29,9 +29,7 @@ void handleCpuRequests(int socket){
 	if(mensaje->header == HEADER_HANDSHAKE){
 		handShakeWithCPU(socket);
 	}
-	//if(mensaje->header == HEADER_ENVIAR_PCB){
-	//protocoloConPCBllegado(mensaje);
-	//}
+
 	if(mensaje->header == HEADER_NOTIFICAR_IO){
 		t_CPU* cpu = get_CPU_by_socket(socket);						//Obtengo estructura CPU
 		process_call_io(mensaje->contenido, cpu->PID);
@@ -63,7 +61,6 @@ void handleCpuRequests(int socket){
 	if(mensaje->header == HEADER_NOTIFICAR_WAIT){
 		t_CPU* cpu = get_CPU_by_socket(socket);
 		nucleo_wait(mensaje, cpu);
-		//TODO: Enviar señal de bloqueo si el semaforo está en cero
 	}
 	if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
 		nucleo_signal(mensaje);
@@ -90,11 +87,6 @@ void handleCpuRequests(int socket){
 		t_CPU* cpu = get_CPU_by_socket(socket);
 		nucleo_obtener_variable(mensaje, cpu);
 	}
-}
-
-//TODO terminar protocolo
-void protocoloConPCBllegado(message* mensaje){
-	PCB* unpcb = nucleo_obtener_pcb(mensaje);
 }
 
 PCB* nucleo_obtener_pcb(message* programBlock){
