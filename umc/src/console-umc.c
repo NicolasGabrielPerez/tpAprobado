@@ -117,15 +117,15 @@ void* consolaDeComandos(){
 	char* buff = malloc(30);
 
 	while(1){
-		rc = getLine ("Enter string> ", buff, 30);
+		rc = getLine ("Ingrese comando> ", buff, 30);
 		if (rc == NO_INPUT) {
 			// Extra NL since my system doesn't output that on EOF.
-			printf ("\nNo input\n");
+			printf ("\nSin input de comando\n");
 			continue;
 		}
 
 		if (rc == TOO_LONG) {
-			printf ("Input too long [%s]\n", buff);
+			printf ("Comando demasiado largo [%s]\n", buff);
 			continue;
 		}
 
