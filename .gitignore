@@ -33,5 +33,14 @@
 
 .metadata
 
-Debug/
+*.d
+*.xml
+*.mk
+*.settings
 
+cpu
+push-library
+swap
+umc
+nucleo
+consola
