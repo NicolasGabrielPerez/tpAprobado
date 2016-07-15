@@ -93,7 +93,7 @@ void initialize_pcb_test(PCB *pcb){
 	pcb->processId = 493;
 	pcb->programCounter = 0;
 	pcb->codePagesCount = 25;
-	pcb->stackIndex = 10;
+	//pcb->stackIndex = 10;
 }
 
 t_dictionary* create_testing_dictionary(int dictionarySize){
