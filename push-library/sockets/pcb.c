@@ -55,14 +55,14 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	pcb->instructionsCount = programMetadata->instrucciones_size;
 	pcb->codeIndex = programMetadata->instrucciones_serializado;
 	pcb->codePagesCount = codePagesCount;
-	pcb->stackPosition = 0;
+	pcb->stackCount = 0;
 }
 
 PCB* new_pcb(int processID) {
 
 	PCB* pcb = malloc(sizeof(PCB));
 	pcb->processId = processID;
-	pcb->stackIndex = list_create();
+	pcb->stack = list_create();
 
 	return pcb;
 }
@@ -76,7 +76,7 @@ void free_pcb(PCB* pcb) {
 	//	free_stackContent(stackContent);
 	//}
 
-	list_destroy(pcb->stackIndex);
+	list_destroy(pcb->stack);
 	free(pcb);
 }
 

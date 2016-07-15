@@ -1,6 +1,6 @@
 #include "nucleo-structs.h"
 
-int quantum;
+u_int32_t quantum;
 int quantum_sleep;
 char** io_ids;
 char** io_sleep_times;
@@ -108,7 +108,7 @@ void queue_blocked_process_to_semaforo(char* id, PCB* pcb){
 	t_semaforo* semaforo = get_semaforo_by_ID(semaforo_control_list, id);
 	queue_push(semaforo->blocked_process_queue, pcb);
 
-	log_trace(nucleo_logger, string_from_format("PLANIFICACION: Proceso %d bloqueado por semáforo %s", pcb->processId, semaforo->sem_id));
+	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d bloqueado por semáforo %s", pcb->processId, semaforo->sem_id);
 }
 
 //Instrucción privilegiada
@@ -151,19 +151,19 @@ int getProgramPagesCount(char* program){
 void add_pcb_to_general_list(PCB* pcb){
 	list_add(General_Process_List, pcb);
 
-	log_trace(nucleo_logger, string_from_format("PLANIFICACION: Proceso %d agregado a la lista general de procesos", pcb->processId));
+	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d agregado a la lista general de procesos", pcb->processId);
 }
 
 //Encola pcb en la cola general de listos
 void set_pcb_READY(PCB* pcb){
 	queue_push(READY_Process_Queue, pcb);
-	log_trace(nucleo_logger, string_from_format("PLANIFICACION: Proceso %d READY", pcb->processId));
+	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d READY", pcb->processId);
 }
 
 //Encola pcb en la cola general de Running
 void set_pcb_RUNNING(PCB* pcb){
 	list_add(RUNNING_Process_List, pcb);
-	log_trace(nucleo_logger, string_from_format("PLANIFICACION: Proceso %d RUNNING", pcb->processId));
+	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d RUNNING", pcb->processId);
 }
 
 //Encola pcb en la cola general de bloqueados
@@ -174,12 +174,12 @@ void set_pcb_BLOCKED(PCB* pcb){
 void change_status_RUNNING_to_READY(t_CPU* cpu){
 	//sacar PCB de RUNNING
 	PCB* pcb = remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
-	log_trace(nucleo_logger, string_from_format("PLANIFICACION: Proceso %d removido de RUNNING", pcb->processId));
+	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d removido de RUNNING", pcb->processId);
 	//encolar en ready
 	set_pcb_READY(pcb);
 
 	liberarCpu(cpu->cpuSocket);
-	log_trace(nucleo_logger, string_from_format("CONTROL CPU: CPU %d libre", cpu->cpuSocket));
+	log_trace(nucleo_logger, "CONTROL CPU: CPU %d libre", cpu->cpuSocket);
 }
 
 void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
@@ -189,7 +189,7 @@ void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
 	t_IO_Device* device = get_device_by_id(deviceID);
 	//Encolar en cola de bloqueados de dispositivo
 	queue_push(BLOCKED_Process_Queue, device);
-	log_trace(nucleo_logger, string_from_format("ENTRADA/SALIDA: Programa %d esperando dispositivo %s", pcb->processId, device->ioId));
+	log_trace(nucleo_logger, "ENTRADA/SALIDA: Programa %d esperando dispositivo %s", pcb->processId, device->ioId);
 }
 
 //Finalizar un proceso
@@ -205,8 +205,6 @@ void nucleo_updatePCB(PCB* newPCB){
 	actualPCB->memoryIndex = newPCB->memoryIndex;
 	actualPCB->stack = newPCB->stack;
 	actualPCB->stackCount = newPCB->stackCount;
-	actualPCB->stackIndex = newPCB->stackIndex;
-	actualPCB->stackPosition = newPCB->stackPosition;
 	actualPCB->codeIndex = newPCB->codeIndex;
 	actualPCB->instructionsCount = newPCB->instructionsCount;
 

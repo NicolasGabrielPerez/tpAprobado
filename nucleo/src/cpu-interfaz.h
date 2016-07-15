@@ -16,4 +16,5 @@
 	void nucleo_notificarIO(char* deviceName, PCB* pcb);
 
 	void cpu_comunication_program();
+	void nucleo_setear_variable(t_globalVar* var);
 #endif

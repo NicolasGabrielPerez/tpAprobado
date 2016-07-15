@@ -5,6 +5,7 @@
 #include <commons/config.h>
 #include <commons/collections/list.h>
 #include <commons/collections/queue.h>
+#include <commons/log.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -20,6 +21,7 @@
 #include "cpu.h"
 
 extern int32_t memoryPageSize;
+extern u_int32_t quantum;
 extern t_queue* READY_Process_Queue;			//Cola de procesos listos para ejecución
 extern t_list* RUNNING_Process_List;			//Lista general de procesos en ejecución
 extern t_queue* BLOCKED_Process_Queue;			//Cola general de procesos bloqueados
@@ -57,4 +59,5 @@ void change_status_RUNNING_to_READY(t_CPU* cpu);
 
 void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket);
 
+void set_var_value(char* var_name, int value);
 #endif

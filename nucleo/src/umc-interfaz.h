@@ -7,6 +7,8 @@ extern int socket_umc;
 
 void swichRecivirPorHEADER();
 
+void handshake_con_UMC();
+
 void conectarConUMC(t_config* config);
 
 void umc_notificarFinDePrograma();

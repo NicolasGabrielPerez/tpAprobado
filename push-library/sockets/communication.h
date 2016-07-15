@@ -45,6 +45,8 @@
 	extern int32_t HEADER_SETEAR_VARIABLE;
 	extern int32_t HEADER_OBTENER_VARIABLE;
 
+	extern int32_t HEADER_ENVIAR_QUANTUM;
+
 
 	extern int32_t TIPO_CONSOLA;
 	extern int32_t TIPO_NUCLEO;

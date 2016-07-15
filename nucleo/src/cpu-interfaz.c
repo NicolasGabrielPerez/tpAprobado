@@ -1,7 +1,7 @@
 #include "cpu-interfaz.h"
 #include "umc-interfaz.h"
 
-
+u_int32_t quantum;
 int cpu_listener;
 fd_set cpu_sockets_set;
 int fd_cpu_max;
@@ -35,7 +35,7 @@ void handleCpuRequests(int socket){
 		process_call_io(mensaje->contenido, cpu->PID);
 
 		//Pedir PCB
-		sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);
+		//sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);
 		//Al pedir PCB, CPU debe enviarlo
 	}
 
@@ -56,7 +56,7 @@ void handleCpuRequests(int socket){
 		//nucleo_notificarFinDeRafaga(mensaje);
 		t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
 		change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
-		sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);	//Pedir PCB
+		//sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);	//Pedir PCB
 	}
 	if(mensaje->header == HEADER_NOTIFICAR_WAIT){
 		t_CPU* cpu = get_CPU_by_socket(socket);
@@ -65,10 +65,10 @@ void handleCpuRequests(int socket){
 	if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
 		nucleo_signal(mensaje);
 	}
-	if(mensaje->header == HEADER_IMPRIMIR){
+	/*if(mensaje->header == HEADER_IMPRIMIR){
 		t_CPU* cpu = get_CPU_by_socket(socket);
 		nucleo_imprimir(mensaje, cpu);
-	}
+	}*/
 	if(mensaje->header == HEADER_IMPRIMIR_TEXTO){
 		t_CPU* cpu = get_CPU_by_socket(socket);
 		nucleo_imprimir_texto(mensaje, cpu);
@@ -113,7 +113,7 @@ void nucleo_wait(message* mensaje, t_CPU* cpu){
 		sendMessage(cpu->cpuSocket, HEADER_WAIT_CONTINUAR, 0, 0);
 	}
 	else{
-		sendMessage(cpu->cpuSocket, HEADER_ENVIAR_PCB, 0, 0);
+		//sendMessage(cpu->cpuSocket, HEADER_ENVIAR_PCB, 0, 0);
 		//Bloquear proceso por semáforo
 		PCB* pcb = get_pcb_by_ID(General_Process_List, cpu->PID);
 		queue_blocked_process_to_semaforo(semaforo->sem_id, pcb);
@@ -171,6 +171,20 @@ void actualizarFdCPUMax(int socket){
 
 void handShakeWithCPU(int cpu_socket){
 	sendMessage(cpu_socket, HEADER_HANDSHAKE, 0, 0);
+}
+
+//TODO:Invocar esta función
+void cpu_sendPCB(PCB* pcb, int cpu_socket){
+	Buffer* buffer = new_buffer();
+	char* serialized_pcb = serialize_pcb(pcb, buffer);
+	int size = strlen(serialized_pcb);
+
+	sendMessage(cpu_socket, HEADER_ENVIAR_PCB, size, serialized_pcb);
+}
+
+//TODO: NICO - Invocar esta función
+void cpu_sendQuantum(int cpu_socket){
+	sendMessageInt(cpu_socket, HEADER_ENVIAR_QUANTUM, quantum);
 }
 
 void finPrograma(int cpu_socket){
