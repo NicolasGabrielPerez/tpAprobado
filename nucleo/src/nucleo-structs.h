@@ -31,6 +31,8 @@ extern t_dictionary* vars_control_dictionary;	//Diccionario general de variables
 extern char** io_ids;
 extern char** io_sleep_times;
 
+extern t_log* nucleo_logger;
+
 typedef struct semaforo{
 	char* sem_id;					//Nombre del semáforo
 	u_int32_t sem_value;			//Valor

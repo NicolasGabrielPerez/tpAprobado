@@ -5,7 +5,7 @@ t_queue* READY_Process_Queue;
 char** io_ids;
 char** io_sleep_times;
 
-pthread_attr_t attr;
+pthread_attr_t nucleo_attr;
 
 //Función que se cargará en el hilo de dispositivo
 void ioDeviceProgram(t_IO_Device* device){
@@ -20,8 +20,8 @@ void ioDeviceProgram(t_IO_Device* device){
 void set_IO_devices_list(){
 	int i = 0;
 
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	pthread_attr_init(&nucleo_attr);
+	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
 
 	while(io_ids[i] != NULL){
 		t_IO_Device* device = malloc(sizeof(t_IO_Device));
@@ -31,7 +31,7 @@ void set_IO_devices_list(){
 		list_add(IO_Device_List, device);
 
 		pthread_t deviceThread;
-		pthread_create(&deviceThread, &attr, &ioDeviceProgram, (void*) device);
+		pthread_create(&deviceThread, &nucleo_attr, &ioDeviceProgram, (void*) device);
 
 		i++;
 	}

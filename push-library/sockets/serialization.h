@@ -31,6 +31,11 @@
 		char* contenido;
 	} response;
 
+	typedef struct globalVar{
+		char* varName;
+		int32_t value;
+	} t_globalVar;
+
 	char* serializarResponse(response* response, int* responseSize);
 
 	struct Buffer *new_buffer();
@@ -72,5 +77,8 @@
 
 	char* serialize_pcb(PCB *pcb, Buffer *buffer);
 	PCB* deserialize_pcb(char* serializedPCB);
+
+	char* serialize_globalVar(t_globalVar* var, Buffer* buffer);
+	t_globalVar* deserialize_globalVar(char* serializedVar);
 
 #endif

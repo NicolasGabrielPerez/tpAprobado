@@ -17,7 +17,7 @@
 
 pthread_t resultados;
 pthread_t comando;
-pthread_attr_t attr;
+pthread_attr_t nucleo_attr;
 
 int FEOP=1;
 
@@ -74,8 +74,8 @@ void comandosPorPantalla(int socketCliente){
 
 
 int main(int argc, char **argv) {
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	pthread_attr_init(&nucleo_attr);
+	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
 
 	t_config* config = config_create("consola.config");
 	if(config==NULL){
@@ -119,8 +119,8 @@ int main(int argc, char **argv) {
 	free(paquete);
 
 
-	pthread_create(&resultados, &attr, &espera_resultados, (void*) socket_nucleo);
-	pthread_create(&comando, &attr, &comandosPorPantalla, (void*) socket_nucleo);
+	pthread_create(&resultados, &nucleo_attr, &espera_resultados, (void*) socket_nucleo);
+	pthread_create(&comando, &nucleo_attr, &comandosPorPantalla, (void*) socket_nucleo);
 	espera_resultados(socket_nucleo);
 
 

@@ -14,4 +14,6 @@
 
 	PCB* nucleo_obtener_pcb(message* programBlock);
 	void nucleo_notificarIO(char* deviceName, PCB* pcb);
+
+	void cpu_comunication_program();
 #endif

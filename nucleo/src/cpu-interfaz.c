@@ -77,10 +77,8 @@ void handleCpuRequests(int socket){
 	//enviarFAIL(socket, HEADER_INVALIDO);
 
 	if(mensaje->header == HEADER_SETEAR_VARIABLE){
-		//t_CPU* cpu = get_CPU_by_socket(socket);
-		//TODO: Guti - Probar que funcione esto
-		char* varName = string_n_split(mensaje->contenido, 0, PRIMITIVE_SEPARATOR);
-		int value = atoi(string_n_split(mensaje->contenido, 1, PRIMITIVE_SEPARATOR));
+		t_globalVar* var = deserialize_globalVar(mensaje->contenido);
+		nucleo_setear_variable(var);
 	}
 
 	if(mensaje->header == HEADER_OBTENER_VARIABLE){
@@ -144,8 +142,8 @@ void nucleo_obtener_variable(message* mensaje, t_CPU* cpu){
 	sendMessageInt(cpu->cpuSocket, HEADER_OBTENER_VARIABLE, value);
 }
 
-void nucleo_setear_variable(char* varName, int value){
-	set_var_value(varName, value);
+void nucleo_setear_variable(t_globalVar* var){
+	set_var_value(var->varName, var->value);
 }
 
 //No se precisa
@@ -221,4 +219,10 @@ void manejarConexionesCPUs(){
 	for(i = 0; i <= fd_cpu_max; i++) {
 		manejarSocketChanges(i, &read_fds);
 	};
+}
+
+void cpu_comunication_program(){
+	while(1){
+		manejarConexionesCPUs();
+	}
 }

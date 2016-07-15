@@ -325,3 +325,23 @@ PCB* deserialize_pcb(char* serializedPCB){
 
 	return pcb;
 }
+
+char* serialize_globalVar(t_globalVar* var, Buffer* buffer){
+	serialize_string(var->varName, buffer);
+	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+	serialize_int(var->value, buffer);
+	serialize_ending_special_character(PRIMITIVE_SEPARATOR, buffer);
+
+	return buffer->data;
+}
+
+t_globalVar* deserialize_globalVar(char* serializedVar){
+	t_globalVar* var = malloc(sizeof(t_globalVar));
+	char** deserializedElement = string_split(serializedVar, PRIMITIVE_SEPARATOR);
+
+	var->varName = deserializedElement[0];
+	var->value = atoi(deserializedElement[1]);
+
+	return var;
+}

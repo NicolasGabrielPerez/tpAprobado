@@ -80,7 +80,7 @@
 
 	t_list* tablasDePaginas;
 
-	pthread_attr_t attr;
+	pthread_attr_t nucleo_attr;
 
 	umcResult createUmcResult(int ok, int codError, tabla_de_paginas_entry* paginaEntry, tabla_de_frame_entry* frameEntry);
 

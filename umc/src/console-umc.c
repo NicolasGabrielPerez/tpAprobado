@@ -138,7 +138,7 @@ void initUmcConsole(){
 	printf("----------------------------------------------------------------------------\n");
 	printf("Iniciando consola de comandos...\n");
 	pthread_t newThread;
-	pthread_create(&newThread, &attr, &consolaDeComandos, NULL);
+	pthread_create(&newThread, &nucleo_attr, &consolaDeComandos, NULL);
 	printf("Consola de comandos lista. Comandos:\n");
 	printf("retardo <milisegundos> *Retardo a esperar ante una solicitud\n");
 	printf("dump <info> <pid> *info: 'table' o 'data'. Pid vacio => todos los procesos.\n");

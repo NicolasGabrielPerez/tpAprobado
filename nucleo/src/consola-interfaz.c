@@ -115,3 +115,9 @@ void manejarConexionesConsolas(){
 		manejarCambiosEnSocket(i, &read_fds);
 	}
 }
+
+void console_comunication_program(){
+	while(1){
+		manejarConexionesConsolas();
+	}
+}

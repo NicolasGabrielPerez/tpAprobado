@@ -5,7 +5,7 @@
 #include "tlb.h"
 #include "console-umc.h"
 
-pthread_attr_t attr;
+pthread_attr_t nucleo_attr;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -75,10 +75,10 @@ int crearHiloDeComponente(int tipo, int new_socket){
 	pthread_t newThread;
 	int creacion;
 	if(tipo==TIPO_NUCLEO){
-		creacion = pthread_create(&newThread, &attr, &gestionarNucleo, (void*) new_socket);
+		creacion = pthread_create(&newThread, &nucleo_attr, &gestionarNucleo, (void*) new_socket);
 	}
 	if(tipo==TIPO_CPU){
-		creacion = pthread_create(&newThread, &attr, &gestionarCPU, (void*) new_socket);
+		creacion = pthread_create(&newThread, &nucleo_attr, &gestionarCPU, (void*) new_socket);
 	}
 	return creacion;
 }
@@ -137,8 +137,8 @@ int main(void) {
 
 	initSwap(config);
 
-	pthread_attr_init(&attr);
-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+	pthread_attr_init(&nucleo_attr);
+	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
 
 	char* puerto_cpu_nucleo = config_get_string_value(config, "PUERTO_CPU_NUCLEO"); //puerto escucha de Nucleo y CPU
 	listener = crear_puerto_escucha(puerto_cpu_nucleo);
