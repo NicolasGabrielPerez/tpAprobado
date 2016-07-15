@@ -31,7 +31,6 @@ int socket_umc;
 const u_int32_t BUFFER_SIZE_UMC = 1024;
 const u_int32_t HEADER_SIZE_UMC = sizeof(int32_t);
 
-//const u_int32_t PAGE_SIZE;
 
 void umc_init(t_config* config){
 

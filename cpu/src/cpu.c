@@ -158,8 +158,6 @@ int main(int argc, char **argv) {
 		pcb->programCounter++;
 	}
 
-
-
 }
 
 //int main(int argc, char **argv) {

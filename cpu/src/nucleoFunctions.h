@@ -21,21 +21,6 @@
 
 #include <sockets/pcb.h>
 
-
-extern int32_t HEADER_NUCLEO_HANDSHAKE;
-extern int32_t HEADER_NUCLEO_INIT_PROGRAMA;
-extern int32_t HEADER_RECIBIR_PCB;
-extern int32_t HEADER_NOTIFICAR_IO;
-extern int32_t HEADER_NOTIFICAR_FIN_QUANTUM;
-extern int32_t HEADER_NOTIFICAR_FIN_PROGRAMA;
-extern int32_t HEADER_NOTIFICAR_FIN_RAFAGA;
-extern int32_t HEADER_NOTIFICAR_WAIT;
-extern int32_t HEADER_NOTIFICAR_SIGNAL;
-extern int32_t HEADER_IMPRIMIR;
-extern int32_t HEADER_IMPRIMIR_TEXTO;
-extern int32_t HEADER_VARIABLE_COMPARTIDA_OBTENER;
-extern int32_t HEADER_VARIABLE_COMPARTIDA_ASIGNAR;
-
 void nucleo_init(t_config* config);
 void nucleo_delete();
 
