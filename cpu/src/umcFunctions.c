@@ -43,23 +43,16 @@ void umc_init(t_config* config){
 
 	socket_umc = crear_socket_cliente(ip_umc, puerto_umc); //socket usado para conectarse a la umc
 
-	//Hago handshake con umc
-	char* param = string_itoa(HEADER_HANDSHAKE);
-	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
-	free(param);
-
-	// Envio mi tipo: CPUs
-	param = string_itoa(TIPO_CPU);
-	enviarOKConContenido(socket_umc, sizeof(char) * (string_length(param) + 1), param);
-	free(param);
-
-	response* respuesta = recibirResponse(socket_umc);
-	if(respuesta->ok != RESPUESTA_OK) {
-		log_error(logger, "Error recibiendo respuesta proceso activo");
-		exitProgram();
+	int32_t response = sendMessageInt(socket_umc, HEADER_HANDSHAKE, TIPO_CPU);
+	if(response <= 0) {
+		log_error(logger, "Se cerró la conexion");
 	}
 
-	PAGE_SIZE = (u_int32_t) respuesta->contenido;
+	message* message = receiveMessage(socket_umc);
+
+	PAGE_SIZE = convertToInt32(message->contenido);
+
+	log_trace(logger, "Tamaño de Página: %d", PAGE_SIZE);
 }
 
 void umc_delete() {

@@ -67,16 +67,17 @@ PCB* new_pcb(int processID) {
 	return pcb;
 }
 
-//TODO:Guti-Implementar
+
+void free_stackContent(t_stackContent* stackContent) {
+
+	dictionary_destroy_and_destroy_elements(stackContent->arguments, free);
+	dictionary_destroy_and_destroy_elements(stackContent->variables, free);
+	free(stackContent);
+}
+
 void free_pcb(PCB* pcb) {
 
-	//int i = 0;
-	//for(i = 0; i < pcb->indexStack; i++) {
-	//	StackContent* stackContent = list_get(pcb->stack, i);
-	//	free_stackContent(stackContent);
-	//}
-
-	list_destroy(pcb->stack);
+	list_destroy_and_destroy_elements(pcb->stack, free_stackContent);
 	free(pcb);
 }
 
@@ -87,12 +88,6 @@ t_stackContent* init_stackContent() {
 	stackContent->variables = dictionary_create();
 
 	return stackContent;
-}
-
-void free_stackContent(t_stackContent* stackContent) {
-
-	dictionary_destroy(stackContent->arguments);
-	free(stackContent);
 }
 
 //Redefinición de método para buscar dentro de una lista

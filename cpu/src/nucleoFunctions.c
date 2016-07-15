@@ -53,11 +53,11 @@ void nucleo_init(t_config* config) {
 
 	socket_nucleo = crear_socket_cliente(ip_nucleo, puerto_nucleo); //socket usado para conectarse al nucleo
 
-	//Hago handshake con umc
-	if (sendMessage(socket_nucleo, HEADER_HANDSHAKE, 0, 0) == -1) {
-			log_error(logger, "Error enviando handshake nucleo");
-			exitProgram();
-	};
+	//Hago handshake con nucleo
+//	if (sendMessageInt(socket_nucleo, HEADER_HANDSHAKE, TIPO_CPU) == -1) {
+//		log_error(logger, "Error enviando handshake nucleo");
+//		exitProgram();
+//	}
 
 	//Recibir el header
 	message* message = receiveMessage(socket_nucleo);
@@ -105,7 +105,7 @@ void nucleo_notificarFinDeQuantum(u_int32_t quantumCount) {
 
 	if (sendMessageInt(socket_nucleo, HEADER_NOTIFICAR_FIN_QUANTUM, quantumCount) == -1) {
 		log_error(logger, "Error enviando Fin de Quantum");
-	};
+	}
 }
 
 void nucleo_notificarFinDePrograma() {
@@ -114,7 +114,7 @@ void nucleo_notificarFinDePrograma() {
 
 	if (sendMessage(socket_nucleo, HEADER_FIN_PROGRAMA,0,0) == -1) {
 		log_error(logger, "Error enviando Fin de Programa");
-	};
+	}
 
 	//No enviar PCB
 }
@@ -125,7 +125,7 @@ char* nucleo_notificarFinDeRafaga() {//final
 
 	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_FIN_RAFAGA,0,0) == -1) {
 		 log_error(logger, "Error enviando Fin de Rafaga");
-	};
+	}
 
 	//Enviar PCB
 	enviarPCB(pcb);
@@ -143,7 +143,7 @@ void nucleo_wait(t_nombre_semaforo semaforo) {//final
 
 	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_WAIT,sizeof(t_nombre_semaforo),semaforo) == -1) {
 		 log_error(logger, "Error enviando Wait");
-	};
+	}
 
 
 	//Recibir mensaje: Si es WAIT_CONTINUAR sigo la ejecucion.
@@ -163,7 +163,7 @@ void nucleo_signal(t_nombre_semaforo semaforo) {
 
 	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_SIGNAL, sizeof(t_nombre_semaforo),semaforo) == -1) {
 		 log_error(logger, "Error enviando Signal");
-	};
+	}
 }
 
 void nucleo_imprimir(t_valor_variable valor) {
@@ -183,7 +183,7 @@ void nucleo_imprimir_texto(char* texto) {
 
 	if (sendMessage(socket_nucleo, HEADER_IMPRIMIR_TEXTO, sizeof(char) * (string_length(texto) + 1),texto) == -1) {
 		 log_error(logger, "Error enviando texto");
-	};
+	}
 }
 
 t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable) {
@@ -195,7 +195,7 @@ t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable
 
 	if (sendMessage(socket_nucleo, HEADER_OBTENER_VARIABLE, sizeof(t_nombre_compartida), variable) == -1) {
 		log_error(logger, "Error obteniendo variable compartida");
-	};
+	}
 
 	message* message = receiveMessage(socket_nucleo);
 	t_valor_variable valor = atoi(message->contenido);
@@ -218,7 +218,7 @@ void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_va
 
 	if (sendMessage(socket_nucleo, HEADER_SETEAR_VARIABLE, sizeof(char) * string_length(data), data) == -1) {
 		 log_error(logger, "Error enviando variable compartida");
-	};
+	}
 
 	buffer_free(buffer);
 	free(var);
