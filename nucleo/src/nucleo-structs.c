@@ -21,6 +21,8 @@ t_list* CPU_control_list;
 t_list* semaforo_control_list;
 t_dictionary* vars_control_dictionary;
 
+u_int32_t quantum;
+
 t_log* nucleo_logger;
 
 void initNucleo(t_config* config){
@@ -107,7 +109,6 @@ void set_semaforo_list(){
 void queue_blocked_process_to_semaforo(char* id, PCB* pcb){
 	t_semaforo* semaforo = get_semaforo_by_ID(semaforo_control_list, id);
 	queue_push(semaforo->blocked_process_queue, pcb);
-
 	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d bloqueado por semáforo %s", pcb->processId, semaforo->sem_id);
 }
 
@@ -223,6 +224,15 @@ void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSock
 	//Envío solicitud de páginas a UMC
 	umc_initProgram(memoryPagesCount, nuevoPCB, codeSize, programSourceCode);
 }
+
+//Toma el primer programa de la cola de READY y lo envía a cpu para su ejecución
+void set_next_pcb_RUNNING(int cpu_id){
+	t_CPU* cpu = get_CPU_by_socket(cpu_id);
+	PCB* pcb = queue_pop(READY_Process_Queue);
+	cpu->PID = pcb->processId;					//Asigno a la estructura CPU el id del proceso que va a ejecutar
+	list_add(RUNNING_Process_List, pcb);
+	cpu_sendPCB(pcb, cpu->cpuSocket);
+}
 //---------------------------------------------- </PCBs>
 
 //---------------------------------------------- <VARIABLES>
@@ -249,11 +259,12 @@ int get_var_value(char* var_name){
 	}
 	return 0;
 }
-void hiloDeLectura(t_config* config,u_int32_t quantum){
+
+void hiloDeLectura(t_config* config){
 	while(1){
 		quantum = config_get_int_value(config, "QUANTUM");
 	}
 }
 //---------------------------------------------- </VARIABLES>
 
-//TODO: Guti - Crear función que asigne programas a las CPUs si hay alguna conectada
+

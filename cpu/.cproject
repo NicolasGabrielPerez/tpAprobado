@@ -34,9 +34,9 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1960455203" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base">
 								<option id="gnu.c.link.option.libs.1842697420" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="push-library"/>
 									<listOptionValue builtIn="false" value="commons"/>
 									<listOptionValue builtIn="false" value="parser-ansisop"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="push-library"/>
 								</option>
 								<option id="gnu.c.link.option.paths.222151106" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/push-library/Debug}&quot;"/>

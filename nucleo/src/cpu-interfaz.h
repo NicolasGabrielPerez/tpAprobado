@@ -17,4 +17,8 @@
 
 	void cpu_comunication_program();
 	void nucleo_setear_variable(t_globalVar* var);
+	void nucleo_nuevo_cpu(int cpu_socket);
+	void cpu_sendPCB(PCB* pcb, int cpu_socket);
+	void handShakeWithCPU(int cpu_socket);
+	void cpu_sendQuantum(int cpu_socket);
 #endif

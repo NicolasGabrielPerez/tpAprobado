@@ -59,26 +59,15 @@ void conectarConUMC(t_config* config){
 }
 
 void handshake_con_UMC(){
-
-	char* content = string_itoa(HEADER_HANDSHAKE);
-	int32_t size = sizeof(int32_t);
-	enviarOKConContenido(socket_umc, size, content);
-
-	//Tipo de handshake
-	content = string_itoa(TIPO_NUCLEO);
-	size = sizeof(int32_t);
-	enviarOKConContenido(socket_umc, size, content);
+	sendMessageInt(socket_umc,HEADER_HANDSHAKE, TIPO_NUCLEO);
 
 	//Recibir tamaño de página
-	response* UmcResponse = recibirResponse(socket_umc);
-	if(UmcResponse->ok){
-		memoryPageSize = convertToInt32(UmcResponse->contenido);
-	}
-	else{
-		puts("Tamaño de página no recibido");
-	}
+	message* pageSizeMessage = receiveMessage(socket_umc);
 
-	//TODO: verificar como realiza handshake la UMC
+	memoryPageSize = convertToInt32(pageSizeMessage->contenido);
+
+	free(pageSizeMessage->contenido);
+	free(pageSizeMessage);
 }
 
 

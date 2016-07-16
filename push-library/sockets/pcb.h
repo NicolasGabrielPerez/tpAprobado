@@ -60,16 +60,9 @@ typedef struct PCB {
 	t_size instructionsCount;		//Cantidad de instrucciones del programa
 	char* tagIndex;					//Índice de etiquetas, concatenado en una única cadena
 	u_int32_t tagIndexSize;			// Tamaño del mapa serializado de etiquetas
-	//StackContent** stackIndex;	//Agus: Chicos, a que le llaman index? No se olviden que INDEX es un NUMERO
 	t_list* stack;
-	u_int32_t stackCount; //Esto lo agregue yo (Agus), si me quitan el numero de elementos del stack no tengo forma de saber cual es el ultimo elemento!
-
-	//Agregado Agus, creo que es necesario para la memoria, dsp lo vemos
-	u_int32_t pageStart;		//TODO:Serializar TODO:Inicializar
-	u_int32_t pagesCount;
+	u_int32_t stackCount;
 	t_puntero memoryIndex;
-	//t_list* stackIndex;
-	//u_int32_t stackPosition;
 
 
 } PCB;

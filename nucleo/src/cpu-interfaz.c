@@ -114,10 +114,11 @@ void nucleo_wait(message* mensaje, t_CPU* cpu){
 		sendMessage(cpu->cpuSocket, HEADER_WAIT_CONTINUAR, 0, 0);
 	}
 	else{
-		//sendMessage(cpu->cpuSocket, HEADER_ENVIAR_PCB, 0, 0);
 		//Bloquear proceso por semáforo
 		PCB* pcb = get_pcb_by_ID(General_Process_List, cpu->PID);
 		queue_blocked_process_to_semaforo(semaforo->sem_id, pcb);
+		//Setear cpu libre
+		cpu->PID = -1;
 	}
 }
 
@@ -174,16 +175,17 @@ void handShakeWithCPU(int cpu_socket){
 	sendMessage(cpu_socket, HEADER_HANDSHAKE, 0, 0);
 }
 
-//TODO:Invocar esta función
+
 void cpu_sendPCB(PCB* pcb, int cpu_socket){
 	Buffer* buffer = new_buffer();
 	char* serialized_pcb = serialize_pcb(pcb, buffer);
 	int size = strlen(serialized_pcb);
 
 	sendMessage(cpu_socket, HEADER_ENVIAR_PCB, size, serialized_pcb);
+	cpu_sendQuantum(cpu_socket);
 }
 
-//TODO: NICO - Invocar esta función
+
 void cpu_sendQuantum(int cpu_socket){
 	sendMessageInt(cpu_socket, HEADER_ENVIAR_QUANTUM, quantum);
 }
@@ -216,12 +218,17 @@ void manejarSocketChanges(int socket, fd_set* read_set){
 		if (socket == cpu_listener) { //nuevo cpu
 			int new_fd = aceptarNuevaConexion(cpu_listener);
 			actualizarFdCPUMax(new_fd);
-		} else{
-			//handleCPURequest(socket);
-			handleCpuRequests(socket);
+
+			//Agrego un nuevo cpu a la lista de control
+			nucleo_nuevo_cpu(new_fd);
 		}
-	};
+
+	} else{
+		//handleCPURequest(socket);
+		handleCpuRequests(socket);
+	}
 }
+
 
 void manejarConexionesCPUs(){
 	fd_set read_fds; //set auxiliar
@@ -240,4 +247,11 @@ void cpu_comunication_program(){
 	while(1){
 		manejarConexionesCPUs();
 	}
+}
+
+//Agrega un nuevo cpu a la lista general de control
+void nucleo_nuevo_cpu(int cpu_socket){
+	t_CPU* cpu = new_cpu(cpu_socket);
+	add_new_cpu(cpu);
+	log_trace(nucleo_logger, "COMUNICACION: nuevo cpu conectado  %d", cpu_socket);
 }

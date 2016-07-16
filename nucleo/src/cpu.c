@@ -2,6 +2,17 @@
 
 t_list* CPU_control_list;
 
+t_CPU* new_cpu(int cpu_id){
+	t_CPU* cpu = malloc(sizeof(t_CPU));
+	cpu->cpuSocket = cpu_id;
+	cpu->PID = -1;
+
+	return cpu;
+}
+
+void add_new_cpu(t_CPU* cpu){
+	list_add(CPU_control_list, cpu);
+}
 //Valida que una CPU esté libre
 int CPU_is_free(t_CPU* cpu){
 	return cpu->PID == -1;
@@ -22,7 +33,7 @@ t_CPU* cpu_list_find_element(t_list *self, int PID, bool(*condition)(void*, int)
 	return element != NULL ? element->data : NULL;
 }
 
-//Devuelve el próximo CPU libre de la lista general
+//Devuelve el próximo CPU libre de la lista general, si no NULL
 t_CPU* get_next_free_CPU(){
 	return list_find(CPU_control_list, CPU_is_free);
 }

@@ -2,6 +2,7 @@
 #include <commons/collections/list.h>
 #include <sockets/pcb.h>
 #include "cpu-interfaz.h"
+#include "planificador.h"
 
 typedef struct{
 	int socket;
@@ -69,4 +70,14 @@ void planificar(){
 	}
 }
 
-
+//Al encontrar un cpu libre envía el proximo PCB READY a ejecución
+void plannificationProgram(){
+	while(1){
+		t_CPU* freeCPU = get_next_free_CPU();
+		if(freeCPU != NULL){
+			if(!queue_is_empty(READY_Process_Queue)){
+				set_next_pcb_RUNNING(freeCPU->cpuSocket);
+			}
+		}
+	}
+}

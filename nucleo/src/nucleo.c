@@ -2,6 +2,7 @@
 #include "consola-interfaz.h"
 #include "cpu-interfaz.h"
 #include "umc-interfaz.h"
+#include "planificador.h"
 #include "testing-serialization.h"
 #include <pthread.h>
 #include <commons/log.h>
@@ -33,6 +34,11 @@ int main(void) {
 	pthread_t consoleCommunicationThread;
 	pthread_create(&consoleCommunicationThread, &nucleo_attr, &console_comunication_program, NULL);
 
+	pthread_t fileObserverThread;
+	pthread_create(&fileObserverThread, &nucleo_attr, &hiloDeLectura, config);
+
+	pthread_t plannificationThread;		//Hilo de planificación
+	pthread_create(&plannificationThread, &nucleo_attr, &plannificationProgram, config);
 //*/
 
 	return EXIT_SUCCESS;

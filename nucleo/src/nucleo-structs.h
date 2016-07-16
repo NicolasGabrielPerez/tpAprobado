@@ -60,4 +60,9 @@ void change_status_RUNNING_to_READY(t_CPU* cpu);
 void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket);
 
 void set_var_value(char* var_name, int value);
+void hiloDeLectura(t_config* config);
+void set_next_pcb_RUNNING(int cpu_id);
+int wait(char* id);
+void signal(char* id);
+void set_pcb_READY(PCB* pcb);
 #endif

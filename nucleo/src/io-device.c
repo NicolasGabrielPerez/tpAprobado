@@ -1,6 +1,7 @@
 #include "io-device.h"
 
 t_list* IO_Device_List;
+t_list* RUNNING_Process_List;
 t_queue* READY_Process_Queue;
 char** io_ids;
 char** io_sleep_times;
@@ -80,7 +81,6 @@ void execute_all_processes_IO(){
 	if(exists_any_blocked_process()){
 		int i;
 		t_IO_Device* device;
-		PCB* pcb;
 		for(i = 0 ; i < list_size(IO_Device_List) ; i++){
 			device = list_get(IO_Device_List, i);
 			if (queue_size(device->BlockedProcessesQueue) > 0){
@@ -92,8 +92,8 @@ void execute_all_processes_IO(){
 
 void process_call_io(char* deviceName, int32_t PID){
 	t_IO_Device* device = get_device_by_id(deviceName);
-	PCB* pcb = get_pcb_by_ID(General_Process_List, PID);	//Obtengo PCB en ejecución (desactualizado)
-	set_pcb_BLOCKED_by_device(pcb, device);
+	PCB* pcb = remove_pcb_by_ID(RUNNING_Process_List, PID); //Saco PCB de lista de READY (desactualizado)
+	set_pcb_BLOCKED_by_device(pcb, device);					//Encolar en la cola de bloqueados de device
 }
 
 
