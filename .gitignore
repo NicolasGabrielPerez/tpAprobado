@@ -35,12 +35,5 @@
 
 *.d
 *.xml
-*.mk
+#*.mk
 *.settings
-
-cpu
-push-library
-swap
-umc
-nucleo
-consola
