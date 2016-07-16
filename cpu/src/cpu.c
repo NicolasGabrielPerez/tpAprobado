@@ -123,6 +123,9 @@ void exitProgram() {
 void test() {
 
 	pcb = test_pcb_init(1);
+	umc_process_active(pcb->processId);
+
+	umc_get(0, 0, 4);
 
 	while(true) {
 		char* instruction = "";

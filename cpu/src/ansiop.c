@@ -12,7 +12,7 @@ t_variable* getMemoryAddr(t_puntero position) {
 
 	log_trace(logger, "ANSISOP: getMemoryAddr, %d", position);
 	t_variable* memoryAddr = malloc(sizeof(t_variable));
-	memoryAddr->pageNumber = (position / PAGE_SIZE) + pcb->pageStart;
+	memoryAddr->pageNumber = (position / PAGE_SIZE);
 	memoryAddr->offset = position % PAGE_SIZE;
 	memoryAddr->size = sizeof(t_valor_variable);
 
@@ -126,8 +126,8 @@ void callFunction(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
 	//TODO: Testing
 
-	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
-	pcb->programCounter = pointer;
+	//t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
+	//pcb->programCounter = pointer;
 
 	t_list* stack = pcb->stack;
 

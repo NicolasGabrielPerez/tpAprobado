@@ -63,6 +63,7 @@ PCB* new_pcb(int processID) {
 	PCB* pcb = malloc(sizeof(PCB));
 	pcb->processId = processID;
 	pcb->stack = list_create();
+	pcb->programCounter = 0;
 
 	return pcb;
 }
