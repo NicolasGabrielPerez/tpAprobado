@@ -73,7 +73,7 @@
 
 	t_dictionary* deserialize_dictionary(char* serializedDictionary, int elementsCount);
 
-	int convertToInt32(char* buffer);
+	int32_t convertToInt32(char* buffer);
 
 	char* serialize_pcb(PCB *pcb, Buffer *buffer);
 	PCB* deserialize_pcb(char* serializedPCB);

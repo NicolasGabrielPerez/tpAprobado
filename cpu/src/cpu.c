@@ -125,7 +125,7 @@ void test() {
 	pcb = test_pcb_init(1);
 	umc_process_active(pcb->processId);
 
-	umc_get(0, 0, 4);
+	//char* instruction = umc_get(0, 0, 4);
 
 	while(true) {
 		char* instruction = "";
@@ -179,14 +179,14 @@ int main(int argc, char **argv) {
 	nucleo_init(config);
 	umc_init(config);
 
-	test();
+//	test();
 
-//	bool hasToExit = false;
-//	while(hasToExit == false) {
-//		pcb = nucleo_recibir_pcb();
-//		umc_process_active(pcb->processId);
-//		hasToExit = receiveInstructions(pcb, QUANTUM);
-//	}
+	bool hasToExit = false;
+	while(hasToExit == false) {
+		pcb = nucleo_recibir_pcb();
+		umc_process_active(pcb->processId);
+		hasToExit = receiveInstructions(pcb, QUANTUM);
+	}
 
 	exitProgram();
 

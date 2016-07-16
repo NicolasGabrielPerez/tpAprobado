@@ -26,6 +26,7 @@
 PCB* test_pcb_init() {
 
 	PCB* pcb = new_pcb(1);
+	pcb->memoryIndex = 0;
 
 	return pcb;
 }

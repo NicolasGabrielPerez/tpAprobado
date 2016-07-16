@@ -28,7 +28,7 @@ t_puntero definirVariable(t_nombre_variable variable) {
 
 	//TODO
 	t_puntero memoryAddr = pcb->memoryIndex;
-	pcb->memoryIndex++;
+	pcb->memoryIndex += sizeof(t_valor_variable);
 
 	char* key = string_from_format("%c", variable);
 
@@ -68,7 +68,9 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 	log_trace(logger, "ANSISOP: dereferenciar, %d", puntero);
 
 	t_variable* memoryAddr = getMemoryAddr(puntero);
-	t_valor_variable value = umc_get(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size);
+	char* buffer = umc_get(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size);
+
+	int32_t value = atoi(buffer);
 
 	free(memoryAddr);
 

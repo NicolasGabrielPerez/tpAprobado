@@ -66,14 +66,16 @@ void nucleo_delete(){//final
 	close(socket_nucleo);
 }
 
-
-
 PCB* nucleo_recibir_pcb() {
 
 	log_trace(logger, "NUCLEO: recibiendo PCB");
 
 	message* message = receiveMessage(socket_nucleo);
 	PCB* pcb = deserialize_pcb(message->contenido);
+
+	//Recibir quantum count
+	message = receiveMessage(socket_nucleo);
+	char* content = message->contenido;
 
 	return pcb;
 }
@@ -125,10 +127,9 @@ char* nucleo_notificarFinDeRafaga() {//final
 	enviarPCB(pcb);
 	pcb = 0;
 
-	//TODO Ver retorno de notificarFinDeRafaga
-	//Recibir respuesta de sisgur o no.
+	message* message = receiveMessage(socket_nucleo);
 
-	return "test";
+	return message->contenido;
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {//final

@@ -93,7 +93,7 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);
-	if(respuesta->ok != RESPUESTA_OK) {
+	if(respuesta->ok == 0) {
 		log_error(logger, "Error insertando memoria: RESPONSE");
 	}
 
@@ -101,10 +101,9 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 }
 
-t_valor_variable umc_get(t_puntero page, t_puntero offset, t_size size) {
+char* umc_get(t_puntero page, t_puntero offset, t_size size) {
 
 	log_trace(logger, "UMC: get (Page: %d, Offset: %d, Size: %d)", page, offset, size);
-
 
 	int32_t resp = sendMessageInt(socket_umc, HEADER_SOLICITAR_PAGINAS, 0);
 
@@ -116,12 +115,12 @@ t_valor_variable umc_get(t_puntero page, t_puntero offset, t_size size) {
 
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);
-	if(respuesta->ok != RESPUESTA_OK) {
+	if(respuesta->ok == 0) {
 		log_error(logger, "Error obteniendo memoria: RESPONSE");
 	}
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
-	t_valor_variable result = (u_int32_t) respuesta->contenido;
+	char* result = respuesta->contenido;
 
 	free(respuesta);
 
