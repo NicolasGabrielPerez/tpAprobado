@@ -1,0 +1,731 @@
+[INFO] 13:43:27:35 CPU/(4249:4249): Ejecutando: begin
+[TRACE] 13:43:27:35 CPU/(4249:4249): ANSISOP: llamarSinRetorno, begin
+[TRACE] 13:43:27:35 CPU/(4249:4249): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 13:43:27:35 CPU/(4249:4249): Ejecutando: variables z, a, b
+[TRACE] 13:43:27:35 CPU/(4249:4249): ANSISOP: definirVariable, z
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: definirVariable, a
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: definirVariable, b
+[INFO] 13:43:27:36 CPU/(4249:4249): Ejecutando: a = 3
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:43:27:36 CPU/(4249:4249): UMC: set (0, 1, 4, 3)
+[ERROR] 13:43:27:36 CPU/(4249:4249): Error insertando memoria: RESPONSE
+[INFO] 13:43:27:36 CPU/(4249:4249): Ejecutando: b = 5
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:43:27:36 CPU/(4249:4249): UMC: set (0, 2, 4, 5)
+[ERROR] 13:43:27:36 CPU/(4249:4249): Error insertando memoria: RESPONSE
+[INFO] 13:43:27:36 CPU/(4249:4249): Ejecutando: a = b + 12
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: dereferenciar, 2
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:43:27:36 CPU/(4249:4249): UMC: get (0, 2, 4)
+[ERROR] 13:43:27:36 CPU/(4249:4249): Error obteniendo memoria: RESPONSE
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:43:27:36 CPU/(4249:4249): UMC: set (0, 1, 4, 12)
+[ERROR] 13:43:27:36 CPU/(4249:4249): Error insertando memoria: RESPONSE
+[INFO] 13:43:27:36 CPU/(4249:4249): Ejecutando: end
+[TRACE] 13:43:27:36 CPU/(4249:4249): ANSISOP: finalizar
+[TRACE] 13:43:27:36 CPU/(4249:4249): NUCLEO: fin de programa
+[ERROR] 13:43:27:36 CPU/(4249:4249): Error enviando Fin de Programa
+[INFO] 13:44:27:614 CPU/(4283:4283): Ejecutando: begin
+[TRACE] 13:44:27:666 CPU/(4283:4283): ANSISOP: llamarSinRetorno, begin
+[TRACE] 13:44:27:668 CPU/(4283:4283): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 13:44:27:672 CPU/(4283:4283): Ejecutando: variables z, a, b
+[TRACE] 13:44:27:686 CPU/(4283:4283): ANSISOP: definirVariable, z
+[TRACE] 13:44:27:694 CPU/(4283:4283): ANSISOP: definirVariable, a
+[TRACE] 13:44:27:695 CPU/(4283:4283): ANSISOP: definirVariable, b
+[INFO] 13:44:27:696 CPU/(4283:4283): Ejecutando: a = 3
+[TRACE] 13:44:27:702 CPU/(4283:4283): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:44:27:707 CPU/(4283:4283): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 13:44:27:708 CPU/(4283:4283): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:44:27:712 CPU/(4283:4283): UMC: set (0, 1, 4, 3)
+[ERROR] 13:44:27:731 CPU/(4283:4283): Error insertando memoria: RESPONSE
+[INFO] 13:44:27:732 CPU/(4283:4283): Ejecutando: b = 5
+[TRACE] 13:44:27:733 CPU/(4283:4283): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:44:27:733 CPU/(4283:4283): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 13:44:27:733 CPU/(4283:4283): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:44:27:733 CPU/(4283:4283): UMC: set (0, 2, 4, 5)
+[ERROR] 13:44:27:734 CPU/(4283:4283): Error insertando memoria: RESPONSE
+[INFO] 13:44:27:734 CPU/(4283:4283): Ejecutando: a = b + 12
+[TRACE] 13:44:27:735 CPU/(4283:4283): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:44:27:736 CPU/(4283:4283): ANSISOP: dereferenciar, 2
+[TRACE] 13:44:27:736 CPU/(4283:4283): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:44:27:737 CPU/(4283:4283): UMC: get (0, 2, 4)
+[ERROR] 13:44:27:739 CPU/(4283:4283): Error obteniendo memoria: RESPONSE
+[TRACE] 13:44:27:740 CPU/(4283:4283): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:44:27:741 CPU/(4283:4283): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 13:44:27:741 CPU/(4283:4283): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:44:27:741 CPU/(4283:4283): UMC: set (0, 1, 4, 12)
+[ERROR] 13:44:27:742 CPU/(4283:4283): Error insertando memoria: RESPONSE
+[INFO] 13:44:27:742 CPU/(4283:4283): Ejecutando: end
+[TRACE] 13:44:27:742 CPU/(4283:4283): ANSISOP: finalizar
+[TRACE] 13:44:27:743 CPU/(4283:4283): NUCLEO: fin de programa
+[ERROR] 13:44:27:751 CPU/(4283:4283): Error enviando Fin de Programa
+[INFO] 13:45:24:985 CPU/(4284:4284): Ejecutando: begin
+[TRACE] 13:45:25:31 CPU/(4284:4284): ANSISOP: llamarSinRetorno, begin
+[TRACE] 13:45:25:33 CPU/(4284:4284): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 13:45:25:36 CPU/(4284:4284): Ejecutando: variables z, a, b
+[TRACE] 13:45:25:43 CPU/(4284:4284): ANSISOP: definirVariable, z
+[TRACE] 13:45:25:61 CPU/(4284:4284): ANSISOP: definirVariable, a
+[TRACE] 13:45:25:61 CPU/(4284:4284): ANSISOP: definirVariable, b
+[INFO] 13:45:25:62 CPU/(4284:4284): Ejecutando: a = 3
+[TRACE] 13:45:25:71 CPU/(4284:4284): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:45:25:80 CPU/(4284:4284): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 13:45:25:81 CPU/(4284:4284): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:45:25:87 CPU/(4284:4284): UMC: set (0, 1, 4, 3)
+[ERROR] 13:45:25:98 CPU/(4284:4284): Error insertando memoria: RESPONSE
+[INFO] 13:45:25:100 CPU/(4284:4284): Ejecutando: b = 5
+[TRACE] 13:45:25:101 CPU/(4284:4284): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:45:25:101 CPU/(4284:4284): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 13:45:25:102 CPU/(4284:4284): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:45:25:102 CPU/(4284:4284): UMC: set (0, 2, 4, 5)
+[ERROR] 13:45:25:103 CPU/(4284:4284): Error insertando memoria: RESPONSE
+[INFO] 13:45:25:103 CPU/(4284:4284): Ejecutando: a = b + 12
+[TRACE] 13:45:25:104 CPU/(4284:4284): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:45:25:104 CPU/(4284:4284): ANSISOP: dereferenciar, 2
+[TRACE] 13:45:25:105 CPU/(4284:4284): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:45:25:106 CPU/(4284:4284): UMC: get (0, 2, 4)
+[ERROR] 13:45:25:108 CPU/(4284:4284): Error obteniendo memoria: RESPONSE
+[TRACE] 13:45:25:114 CPU/(4284:4284): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:45:25:115 CPU/(4284:4284): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 13:45:25:115 CPU/(4284:4284): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:45:25:115 CPU/(4284:4284): UMC: set (0, 1, 4, 12)
+[ERROR] 13:45:25:116 CPU/(4284:4284): Error insertando memoria: RESPONSE
+[INFO] 13:45:25:116 CPU/(4284:4284): Ejecutando: end
+[TRACE] 13:45:25:117 CPU/(4284:4284): ANSISOP: finalizar
+[TRACE] 13:45:25:117 CPU/(4284:4284): NUCLEO: fin de programa
+[ERROR] 13:45:25:120 CPU/(4284:4284): Error enviando Fin de Programa
+[INFO] 13:45:31:466 CPU/(4285:4285): Ejecutando: begin
+[TRACE] 13:45:31:511 CPU/(4285:4285): ANSISOP: llamarSinRetorno, begin
+[TRACE] 13:45:31:513 CPU/(4285:4285): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 13:45:31:527 CPU/(4285:4285): Ejecutando: variables z, a, b
+[TRACE] 13:45:31:534 CPU/(4285:4285): ANSISOP: definirVariable, z
+[TRACE] 13:45:31:543 CPU/(4285:4285): ANSISOP: definirVariable, a
+[TRACE] 13:45:31:544 CPU/(4285:4285): ANSISOP: definirVariable, b
+[INFO] 13:45:31:545 CPU/(4285:4285): Ejecutando: a = 3
+[TRACE] 13:45:31:550 CPU/(4285:4285): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:45:31:554 CPU/(4285:4285): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 13:45:31:555 CPU/(4285:4285): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:45:31:566 CPU/(4285:4285): UMC: set (0, 1, 4, 3)
+[ERROR] 13:45:31:577 CPU/(4285:4285): Error insertando memoria: RESPONSE
+[INFO] 13:45:31:578 CPU/(4285:4285): Ejecutando: b = 5
+[TRACE] 13:45:31:578 CPU/(4285:4285): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:45:31:578 CPU/(4285:4285): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 13:45:31:579 CPU/(4285:4285): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:45:31:579 CPU/(4285:4285): UMC: set (0, 2, 4, 5)
+[ERROR] 13:45:31:580 CPU/(4285:4285): Error insertando memoria: RESPONSE
+[INFO] 13:45:31:580 CPU/(4285:4285): Ejecutando: a = b + 12
+[TRACE] 13:45:31:581 CPU/(4285:4285): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:45:31:582 CPU/(4285:4285): ANSISOP: dereferenciar, 2
+[TRACE] 13:45:31:582 CPU/(4285:4285): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:45:31:583 CPU/(4285:4285): UMC: get (0, 2, 4)
+[ERROR] 13:45:31:586 CPU/(4285:4285): Error obteniendo memoria: RESPONSE
+[TRACE] 13:45:31:593 CPU/(4285:4285): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:45:31:594 CPU/(4285:4285): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 13:45:31:594 CPU/(4285:4285): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:45:31:594 CPU/(4285:4285): UMC: set (0, 1, 4, 12)
+[ERROR] 13:45:31:595 CPU/(4285:4285): Error insertando memoria: RESPONSE
+[INFO] 13:45:31:595 CPU/(4285:4285): Ejecutando: end
+[TRACE] 13:45:31:596 CPU/(4285:4285): ANSISOP: finalizar
+[TRACE] 13:45:31:597 CPU/(4285:4285): NUCLEO: fin de programa
+[ERROR] 13:45:31:599 CPU/(4285:4285): Error enviando Fin de Programa
+[INFO] 13:47:52:563 CPU/(4389:4389): Ejecutando: begin
+[TRACE] 13:47:52:613 CPU/(4389:4389): ANSISOP: llamarSinRetorno, begin
+[TRACE] 13:47:52:617 CPU/(4389:4389): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 13:47:52:630 CPU/(4389:4389): Ejecutando: variables z, a, b
+[TRACE] 13:47:52:638 CPU/(4389:4389): ANSISOP: definirVariable, z
+[TRACE] 13:47:52:648 CPU/(4389:4389): ANSISOP: definirVariable, a
+[TRACE] 13:47:52:648 CPU/(4389:4389): ANSISOP: definirVariable, b
+[INFO] 13:47:52:649 CPU/(4389:4389): Ejecutando: a = 3
+[TRACE] 13:47:52:656 CPU/(4389:4389): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:47:52:667 CPU/(4389:4389): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 13:47:52:667 CPU/(4389:4389): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:47:52:673 CPU/(4389:4389): UMC: set (0, 1, 4, 3)
+[ERROR] 13:47:52:685 CPU/(4389:4389): Error insertando memoria: RESPONSE
+[INFO] 13:47:52:686 CPU/(4389:4389): Ejecutando: b = 5
+[TRACE] 13:47:52:686 CPU/(4389:4389): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:47:52:687 CPU/(4389:4389): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 13:47:52:687 CPU/(4389:4389): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:47:52:687 CPU/(4389:4389): UMC: set (0, 2, 4, 5)
+[ERROR] 13:47:52:688 CPU/(4389:4389): Error insertando memoria: RESPONSE
+[INFO] 13:47:52:688 CPU/(4389:4389): Ejecutando: a = b + 12
+[TRACE] 13:47:52:689 CPU/(4389:4389): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:47:52:696 CPU/(4389:4389): ANSISOP: dereferenciar, 2
+[TRACE] 13:47:52:697 CPU/(4389:4389): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:47:52:698 CPU/(4389:4389): UMC: get (0, 2, 4)
+[ERROR] 13:47:52:700 CPU/(4389:4389): Error obteniendo memoria: RESPONSE
+[TRACE] 13:47:52:702 CPU/(4389:4389): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:47:52:702 CPU/(4389:4389): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 13:47:52:703 CPU/(4389:4389): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:47:52:703 CPU/(4389:4389): UMC: set (0, 1, 4, 12)
+[ERROR] 13:47:52:703 CPU/(4389:4389): Error insertando memoria: RESPONSE
+[INFO] 13:47:52:704 CPU/(4389:4389): Ejecutando: end
+[TRACE] 13:47:52:704 CPU/(4389:4389): ANSISOP: finalizar
+[TRACE] 13:47:52:705 CPU/(4389:4389): NUCLEO: fin de programa
+[ERROR] 13:47:52:707 CPU/(4389:4389): Error enviando Fin de Programa
+[TRACE] 13:47:52:710 CPU/(4389:4389): Cerrando programa
+[INFO] 13:48:17:645 CPU/(4390:4390): Ejecutando: begin
+[TRACE] 13:48:17:713 CPU/(4390:4390): ANSISOP: llamarSinRetorno, begin
+[TRACE] 13:48:17:717 CPU/(4390:4390): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 13:48:17:725 CPU/(4390:4390): Ejecutando: variables z, a, b
+[TRACE] 13:48:17:735 CPU/(4390:4390): ANSISOP: definirVariable, z
+[TRACE] 13:48:17:745 CPU/(4390:4390): ANSISOP: definirVariable, a
+[TRACE] 13:48:17:752 CPU/(4390:4390): ANSISOP: definirVariable, b
+[INFO] 13:48:17:753 CPU/(4390:4390): Ejecutando: a = 3
+[TRACE] 13:48:17:762 CPU/(4390:4390): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:48:17:767 CPU/(4390:4390): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 13:48:17:768 CPU/(4390:4390): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:48:17:774 CPU/(4390:4390): UMC: set (0, 1, 4, 3)
+[ERROR] 13:48:17:794 CPU/(4390:4390): Error insertando memoria: RESPONSE
+[INFO] 13:48:17:795 CPU/(4390:4390): Ejecutando: b = 5
+[TRACE] 13:48:17:796 CPU/(4390:4390): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:48:17:796 CPU/(4390:4390): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 13:48:17:796 CPU/(4390:4390): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:48:17:797 CPU/(4390:4390): UMC: set (0, 2, 4, 5)
+[ERROR] 13:48:17:798 CPU/(4390:4390): Error insertando memoria: RESPONSE
+[INFO] 13:48:17:798 CPU/(4390:4390): Ejecutando: a = b + 12
+[TRACE] 13:48:17:800 CPU/(4390:4390): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:48:17:802 CPU/(4390:4390): ANSISOP: dereferenciar, 2
+[TRACE] 13:48:17:804 CPU/(4390:4390): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:48:17:806 CPU/(4390:4390): UMC: get (0, 2, 4)
+[ERROR] 13:48:17:817 CPU/(4390:4390): Error obteniendo memoria: RESPONSE
+[TRACE] 13:48:17:819 CPU/(4390:4390): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:48:17:820 CPU/(4390:4390): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 13:48:17:820 CPU/(4390:4390): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:48:17:821 CPU/(4390:4390): UMC: set (0, 1, 4, 12)
+[ERROR] 13:48:17:822 CPU/(4390:4390): Error insertando memoria: RESPONSE
+[INFO] 13:48:17:823 CPU/(4390:4390): Ejecutando: end
+[TRACE] 13:48:17:824 CPU/(4390:4390): ANSISOP: finalizar
+[TRACE] 13:48:17:825 CPU/(4390:4390): NUCLEO: fin de programa
+[ERROR] 13:48:17:828 CPU/(4390:4390): Error enviando Fin de Programa
+[TRACE] 13:48:17:831 CPU/(4390:4390): Cerrando programa
+[INFO] 13:48:35:522 CPU/(4391:4391): Ejecutando: begin
+[TRACE] 13:48:35:582 CPU/(4391:4391): ANSISOP: llamarSinRetorno, begin
+[TRACE] 13:48:35:586 CPU/(4391:4391): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 13:48:35:595 CPU/(4391:4391): Ejecutando: variables z, a, b
+[TRACE] 13:48:35:609 CPU/(4391:4391): ANSISOP: definirVariable, z
+[TRACE] 13:48:35:626 CPU/(4391:4391): ANSISOP: definirVariable, a
+[TRACE] 13:48:35:626 CPU/(4391:4391): ANSISOP: definirVariable, b
+[INFO] 13:48:35:628 CPU/(4391:4391): Ejecutando: a = 3
+[TRACE] 13:48:35:638 CPU/(4391:4391): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:48:35:653 CPU/(4391:4391): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 13:48:35:654 CPU/(4391:4391): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:48:35:661 CPU/(4391:4391): UMC: set (0, 1, 4, 3)
+[ERROR] 13:48:35:675 CPU/(4391:4391): Error insertando memoria: RESPONSE
+[INFO] 13:48:35:676 CPU/(4391:4391): Ejecutando: b = 5
+[TRACE] 13:48:35:677 CPU/(4391:4391): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:48:35:685 CPU/(4391:4391): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 13:48:35:685 CPU/(4391:4391): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:48:35:686 CPU/(4391:4391): UMC: set (0, 2, 4, 5)
+[ERROR] 13:48:35:686 CPU/(4391:4391): Error insertando memoria: RESPONSE
+[INFO] 13:48:35:687 CPU/(4391:4391): Ejecutando: a = b + 12
+[TRACE] 13:48:35:688 CPU/(4391:4391): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:48:35:689 CPU/(4391:4391): ANSISOP: dereferenciar, 2
+[TRACE] 13:48:35:690 CPU/(4391:4391): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:48:35:691 CPU/(4391:4391): UMC: get (0, 2, 4)
+[ERROR] 13:48:35:694 CPU/(4391:4391): Error obteniendo memoria: RESPONSE
+[TRACE] 13:48:35:695 CPU/(4391:4391): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:48:35:696 CPU/(4391:4391): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 13:48:35:696 CPU/(4391:4391): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:48:35:697 CPU/(4391:4391): UMC: set (0, 1, 4, 12)
+[ERROR] 13:48:35:698 CPU/(4391:4391): Error insertando memoria: RESPONSE
+[INFO] 13:48:35:699 CPU/(4391:4391): Ejecutando: end
+[TRACE] 13:48:35:699 CPU/(4391:4391): ANSISOP: finalizar
+[TRACE] 13:48:35:700 CPU/(4391:4391): NUCLEO: fin de programa
+[ERROR] 13:48:35:703 CPU/(4391:4391): Error enviando Fin de Programa
+[TRACE] 13:48:35:706 CPU/(4391:4391): Cerrando programa
+[INFO] 13:57:31:971 CPU/(4803:4803): Ejecutando: begin
+[TRACE] 13:57:32:39 CPU/(4803:4803): ANSISOP: llamarSinRetorno, begin
+[TRACE] 13:57:32:42 CPU/(4803:4803): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 13:57:32:47 CPU/(4803:4803): Ejecutando: variables z, a, b
+[TRACE] 13:57:32:57 CPU/(4803:4803): ANSISOP: definirVariable, z
+[TRACE] 13:57:32:73 CPU/(4803:4803): ANSISOP: definirVariable, a
+[TRACE] 13:57:32:74 CPU/(4803:4803): ANSISOP: definirVariable, b
+[INFO] 13:57:32:75 CPU/(4803:4803): Ejecutando: a = 3
+[TRACE] 13:57:32:82 CPU/(4803:4803): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:57:32:91 CPU/(4803:4803): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 13:57:32:92 CPU/(4803:4803): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:57:32:106 CPU/(4803:4803): UMC: set (0, 1, 4, 3)
+[ERROR] 13:57:32:121 CPU/(4803:4803): Error insertando memoria: RESPONSE
+[INFO] 13:57:32:122 CPU/(4803:4803): Ejecutando: b = 5
+[TRACE] 13:57:32:123 CPU/(4803:4803): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:57:32:123 CPU/(4803:4803): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 13:57:32:132 CPU/(4803:4803): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:57:32:134 CPU/(4803:4803): UMC: set (0, 2, 4, 5)
+[ERROR] 13:57:32:135 CPU/(4803:4803): Error insertando memoria: RESPONSE
+[INFO] 13:57:32:136 CPU/(4803:4803): Ejecutando: a = b + 12
+[TRACE] 13:57:32:138 CPU/(4803:4803): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 13:57:32:139 CPU/(4803:4803): ANSISOP: dereferenciar, 2
+[TRACE] 13:57:32:140 CPU/(4803:4803): ANSISOP: getMemoryAddr, 2
+[TRACE] 13:57:32:141 CPU/(4803:4803): UMC: get (0, 2, 4)
+[ERROR] 13:57:32:144 CPU/(4803:4803): Error obteniendo memoria: RESPONSE
+[TRACE] 13:57:32:146 CPU/(4803:4803): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 13:57:32:146 CPU/(4803:4803): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 13:57:32:147 CPU/(4803:4803): ANSISOP: getMemoryAddr, 1
+[TRACE] 13:57:32:147 CPU/(4803:4803): UMC: set (0, 1, 4, 12)
+[ERROR] 13:57:32:148 CPU/(4803:4803): Error insertando memoria: RESPONSE
+[INFO] 13:57:32:148 CPU/(4803:4803): Ejecutando: end
+[TRACE] 13:57:32:149 CPU/(4803:4803): ANSISOP: finalizar
+[TRACE] 13:57:32:150 CPU/(4803:4803): NUCLEO: fin de programa
+[ERROR] 13:57:32:152 CPU/(4803:4803): Error enviando Fin de Programa
+[TRACE] 13:57:32:155 CPU/(4803:4803): Cerrando programa
+[INFO] 14:01:55:859 CPU/(4828:4828): Ejecutando: begin
+[TRACE] 14:01:55:924 CPU/(4828:4828): ANSISOP: llamarSinRetorno, begin
+[TRACE] 14:01:55:927 CPU/(4828:4828): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 14:01:55:932 CPU/(4828:4828): Ejecutando: variables z, a, b
+[TRACE] 14:01:55:942 CPU/(4828:4828): ANSISOP: definirVariable, z
+[TRACE] 14:01:55:960 CPU/(4828:4828): ANSISOP: definirVariable, a
+[TRACE] 14:01:55:961 CPU/(4828:4828): ANSISOP: definirVariable, b
+[INFO] 14:01:55:962 CPU/(4828:4828): Ejecutando: a = 3
+[TRACE] 14:01:55:970 CPU/(4828:4828): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 14:01:55:976 CPU/(4828:4828): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 14:01:55:976 CPU/(4828:4828): ANSISOP: getMemoryAddr, 1
+[TRACE] 14:01:55:982 CPU/(4828:4828): UMC: set (0, 1, 4, 3)
+[ERROR] 14:01:55:8 CPU/(4828:4828): Error insertando memoria: RESPONSE
+[INFO] 14:01:55:9 CPU/(4828:4828): Ejecutando: b = 5
+[TRACE] 14:01:55:10 CPU/(4828:4828): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 14:01:55:10 CPU/(4828:4828): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 14:01:55:10 CPU/(4828:4828): ANSISOP: getMemoryAddr, 2
+[TRACE] 14:01:55:11 CPU/(4828:4828): UMC: set (0, 2, 4, 5)
+[ERROR] 14:01:56:12 CPU/(4828:4828): Error insertando memoria: RESPONSE
+[INFO] 14:01:56:12 CPU/(4828:4828): Ejecutando: a = b + 12
+[TRACE] 14:01:56:13 CPU/(4828:4828): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 14:01:56:14 CPU/(4828:4828): ANSISOP: dereferenciar, 2
+[TRACE] 14:01:56:15 CPU/(4828:4828): ANSISOP: getMemoryAddr, 2
+[TRACE] 14:01:56:15 CPU/(4828:4828): UMC: get (0, 2, 4)
+[ERROR] 14:01:56:25 CPU/(4828:4828): Error obteniendo memoria: RESPONSE
+[TRACE] 14:01:56:27 CPU/(4828:4828): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 14:01:56:28 CPU/(4828:4828): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 14:01:56:28 CPU/(4828:4828): ANSISOP: getMemoryAddr, 1
+[TRACE] 14:01:56:28 CPU/(4828:4828): UMC: set (0, 1, 4, 12)
+[ERROR] 14:01:56:29 CPU/(4828:4828): Error insertando memoria: RESPONSE
+[INFO] 14:01:56:30 CPU/(4828:4828): Ejecutando: end
+[TRACE] 14:01:56:30 CPU/(4828:4828): ANSISOP: finalizar
+[TRACE] 14:01:56:31 CPU/(4828:4828): NUCLEO: fin de programa
+[ERROR] 14:01:56:34 CPU/(4828:4828): Error enviando Fin de Programa
+[TRACE] 14:01:56:37 CPU/(4828:4828): Cerrando programa
+[INFO] 17:37:57:954 CPU/(5598:5598): Ejecutando: begin
+[TRACE] 17:37:57:960 CPU/(5598:5598): ANSISOP: llamarSinRetorno, begin
+[TRACE] 17:37:57:960 CPU/(5598:5598): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 17:37:57:960 CPU/(5598:5598): Ejecutando: variables z, a, b
+[TRACE] 17:37:57:960 CPU/(5598:5598): ANSISOP: definirVariable, z
+[TRACE] 17:37:57:961 CPU/(5598:5598): ANSISOP: definirVariable, a
+[TRACE] 17:37:57:961 CPU/(5598:5598): ANSISOP: definirVariable, b
+[INFO] 17:37:57:961 CPU/(5598:5598): Ejecutando: a = 3
+[TRACE] 17:37:57:961 CPU/(5598:5598): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:37:57:961 CPU/(5598:5598): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 17:37:57:961 CPU/(5598:5598): ANSISOP: getMemoryAddr, 1
+[TRACE] 17:37:57:961 CPU/(5598:5598): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 17:37:57:961 CPU/(5598:5598): Error insertando memoria: RESPONSE
+[INFO] 17:37:57:961 CPU/(5598:5598): Ejecutando: b = 5
+[TRACE] 17:37:57:961 CPU/(5598:5598): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:37:57:962 CPU/(5598:5598): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 17:37:57:962 CPU/(5598:5598): ANSISOP: getMemoryAddr, 2
+[TRACE] 17:37:57:962 CPU/(5598:5598): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 17:37:57:962 CPU/(5598:5598): Error insertando memoria: RESPONSE
+[INFO] 17:37:57:962 CPU/(5598:5598): Ejecutando: a = b + 12
+[TRACE] 17:37:57:962 CPU/(5598:5598): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:37:57:962 CPU/(5598:5598): ANSISOP: dereferenciar, 2
+[TRACE] 17:37:57:962 CPU/(5598:5598): ANSISOP: getMemoryAddr, 2
+[TRACE] 17:37:57:962 CPU/(5598:5598): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 17:37:57:962 CPU/(5598:5598): Error obteniendo memoria: RESPONSE
+[TRACE] 17:37:57:963 CPU/(5598:5598): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:37:57:963 CPU/(5598:5598): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 17:37:57:963 CPU/(5598:5598): ANSISOP: getMemoryAddr, 1
+[TRACE] 17:37:57:963 CPU/(5598:5598): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 17:37:57:963 CPU/(5598:5598): Error insertando memoria: RESPONSE
+[INFO] 17:37:57:963 CPU/(5598:5598): Ejecutando: end
+[TRACE] 17:37:57:963 CPU/(5598:5598): ANSISOP: finalizar
+[TRACE] 17:37:57:963 CPU/(5598:5598): NUCLEO: fin de programa
+[ERROR] 17:37:57:963 CPU/(5598:5598): Error enviando Fin de Programa
+[TRACE] 17:37:57:963 CPU/(5598:5598): Cerrando programa
+[INFO] 17:38:03:596 CPU/(5599:5599): Ejecutando: begin
+[TRACE] 17:38:03:673 CPU/(5599:5599): ANSISOP: llamarSinRetorno, begin
+[TRACE] 17:38:03:679 CPU/(5599:5599): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 17:38:03:689 CPU/(5599:5599): Ejecutando: variables z, a, b
+[TRACE] 17:38:03:705 CPU/(5599:5599): ANSISOP: definirVariable, z
+[TRACE] 17:38:03:716 CPU/(5599:5599): ANSISOP: definirVariable, a
+[TRACE] 17:38:03:717 CPU/(5599:5599): ANSISOP: definirVariable, b
+[INFO] 17:38:03:719 CPU/(5599:5599): Ejecutando: a = 3
+[TRACE] 17:38:03:726 CPU/(5599:5599): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:38:03:730 CPU/(5599:5599): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 17:38:03:738 CPU/(5599:5599): ANSISOP: getMemoryAddr, 1
+[TRACE] 17:38:03:753 CPU/(5599:5599): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 17:38:03:778 CPU/(5599:5599): Error insertando memoria: RESPONSE
+[INFO] 17:38:03:780 CPU/(5599:5599): Ejecutando: b = 5
+[TRACE] 17:38:03:780 CPU/(5599:5599): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:38:03:781 CPU/(5599:5599): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 17:38:03:781 CPU/(5599:5599): ANSISOP: getMemoryAddr, 2
+[TRACE] 17:38:03:782 CPU/(5599:5599): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 17:38:03:783 CPU/(5599:5599): Error insertando memoria: RESPONSE
+[INFO] 17:38:03:784 CPU/(5599:5599): Ejecutando: a = b + 12
+[TRACE] 17:38:03:786 CPU/(5599:5599): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:38:03:786 CPU/(5599:5599): ANSISOP: dereferenciar, 2
+[TRACE] 17:38:03:787 CPU/(5599:5599): ANSISOP: getMemoryAddr, 2
+[TRACE] 17:38:03:788 CPU/(5599:5599): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 17:38:03:791 CPU/(5599:5599): Error obteniendo memoria: RESPONSE
+[TRACE] 17:38:03:793 CPU/(5599:5599): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:38:03:793 CPU/(5599:5599): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 17:38:03:794 CPU/(5599:5599): ANSISOP: getMemoryAddr, 1
+[TRACE] 17:38:03:794 CPU/(5599:5599): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 17:38:03:795 CPU/(5599:5599): Error insertando memoria: RESPONSE
+[INFO] 17:38:03:795 CPU/(5599:5599): Ejecutando: end
+[TRACE] 17:38:03:796 CPU/(5599:5599): ANSISOP: finalizar
+[TRACE] 17:38:03:796 CPU/(5599:5599): NUCLEO: fin de programa
+[ERROR] 17:38:03:806 CPU/(5599:5599): Error enviando Fin de Programa
+[TRACE] 17:38:03:814 CPU/(5599:5599): Cerrando programa
+[INFO] 17:54:35:598 CPU/(6015:6015): Ejecutando: begin
+[TRACE] 17:54:35:668 CPU/(6015:6015): ANSISOP: llamarSinRetorno, begin
+[TRACE] 17:54:35:671 CPU/(6015:6015): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 17:54:35:680 CPU/(6015:6015): Ejecutando: variables z, a, b
+[TRACE] 17:54:35:691 CPU/(6015:6015): ANSISOP: definirVariable, z
+[TRACE] 17:54:35:706 CPU/(6015:6015): ANSISOP: definirVariable, a
+[TRACE] 17:54:35:707 CPU/(6015:6015): ANSISOP: definirVariable, b
+[INFO] 17:54:35:708 CPU/(6015:6015): Ejecutando: a = 3
+[TRACE] 17:54:35:716 CPU/(6015:6015): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:54:35:720 CPU/(6015:6015): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 17:54:35:721 CPU/(6015:6015): ANSISOP: getMemoryAddr, 1
+[TRACE] 17:54:35:733 CPU/(6015:6015): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 17:54:35:748 CPU/(6015:6015): Error insertando memoria: RESPONSE
+[INFO] 17:54:35:749 CPU/(6015:6015): Ejecutando: b = 5
+[TRACE] 17:54:35:750 CPU/(6015:6015): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:54:35:750 CPU/(6015:6015): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 17:54:35:750 CPU/(6015:6015): ANSISOP: getMemoryAddr, 2
+[TRACE] 17:54:35:751 CPU/(6015:6015): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 17:54:35:752 CPU/(6015:6015): Error insertando memoria: RESPONSE
+[INFO] 17:54:35:752 CPU/(6015:6015): Ejecutando: a = b + 12
+[TRACE] 17:54:35:753 CPU/(6015:6015): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:54:35:754 CPU/(6015:6015): ANSISOP: dereferenciar, 2
+[TRACE] 17:54:35:754 CPU/(6015:6015): ANSISOP: getMemoryAddr, 2
+[TRACE] 17:54:35:755 CPU/(6015:6015): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 17:54:35:758 CPU/(6015:6015): Error obteniendo memoria: RESPONSE
+[TRACE] 17:54:35:766 CPU/(6015:6015): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:54:35:766 CPU/(6015:6015): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 17:54:35:766 CPU/(6015:6015): ANSISOP: getMemoryAddr, 1
+[TRACE] 17:54:35:767 CPU/(6015:6015): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 17:54:35:768 CPU/(6015:6015): Error insertando memoria: RESPONSE
+[INFO] 17:54:35:768 CPU/(6015:6015): Ejecutando: end
+[TRACE] 17:54:35:769 CPU/(6015:6015): ANSISOP: finalizar
+[TRACE] 17:54:35:769 CPU/(6015:6015): NUCLEO: fin de programa
+[ERROR] 17:54:35:772 CPU/(6015:6015): Error enviando Fin de Programa
+[TRACE] 17:54:35:781 CPU/(6015:6015): Cerrando programa
+[INFO] 17:56:39:76 CPU/(6168:6168): Ejecutando: begin
+[TRACE] 17:56:40:144 CPU/(6168:6168): ANSISOP: llamarSinRetorno, begin
+[TRACE] 17:56:40:149 CPU/(6168:6168): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 17:56:40:161 CPU/(6168:6168): Ejecutando: variables z, a, b
+[TRACE] 17:56:40:172 CPU/(6168:6168): ANSISOP: definirVariable, z
+[TRACE] 17:56:40:197 CPU/(6168:6168): ANSISOP: definirVariable, a
+[TRACE] 17:56:40:197 CPU/(6168:6168): ANSISOP: definirVariable, b
+[INFO] 17:56:40:199 CPU/(6168:6168): Ejecutando: a = 3
+[TRACE] 17:56:40:216 CPU/(6168:6168): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:56:40:226 CPU/(6168:6168): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 17:56:40:227 CPU/(6168:6168): ANSISOP: getMemoryAddr, 1
+[TRACE] 17:56:40:232 CPU/(6168:6168): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 17:56:40:260 CPU/(6168:6168): Error insertando memoria: RESPONSE
+[INFO] 17:56:40:262 CPU/(6168:6168): Ejecutando: b = 5
+[TRACE] 17:56:40:263 CPU/(6168:6168): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:56:40:263 CPU/(6168:6168): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 17:56:40:264 CPU/(6168:6168): ANSISOP: getMemoryAddr, 2
+[TRACE] 17:56:40:264 CPU/(6168:6168): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 17:56:40:265 CPU/(6168:6168): Error insertando memoria: RESPONSE
+[INFO] 17:56:40:265 CPU/(6168:6168): Ejecutando: a = b + 12
+[TRACE] 17:56:40:273 CPU/(6168:6168): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:56:40:274 CPU/(6168:6168): ANSISOP: dereferenciar, 2
+[TRACE] 17:56:40:275 CPU/(6168:6168): ANSISOP: getMemoryAddr, 2
+[TRACE] 17:56:40:276 CPU/(6168:6168): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 17:56:40:279 CPU/(6168:6168): Error obteniendo memoria: RESPONSE
+[TRACE] 17:56:40:280 CPU/(6168:6168): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:56:40:281 CPU/(6168:6168): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 17:56:40:281 CPU/(6168:6168): ANSISOP: getMemoryAddr, 1
+[TRACE] 17:56:40:282 CPU/(6168:6168): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 17:56:40:282 CPU/(6168:6168): Error insertando memoria: RESPONSE
+[INFO] 17:56:40:283 CPU/(6168:6168): Ejecutando: end
+[TRACE] 17:56:40:283 CPU/(6168:6168): ANSISOP: finalizar
+[TRACE] 17:56:40:284 CPU/(6168:6168): NUCLEO: fin de programa
+[ERROR] 17:56:40:288 CPU/(6168:6168): Error enviando Fin de Programa
+[TRACE] 17:56:40:303 CPU/(6168:6168): Cerrando programa
+[INFO] 18:00:32:682 CPU/(6590:6590): Ejecutando: begin
+[TRACE] 18:00:32:742 CPU/(6590:6590): ANSISOP: llamarSinRetorno, begin
+[TRACE] 18:00:32:747 CPU/(6590:6590): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 18:00:32:755 CPU/(6590:6590): Ejecutando: variables z, a, b
+[TRACE] 18:00:32:769 CPU/(6590:6590): ANSISOP: definirVariable, z
+[TRACE] 18:00:32:786 CPU/(6590:6590): ANSISOP: definirVariable, a
+[TRACE] 18:00:32:787 CPU/(6590:6590): ANSISOP: definirVariable, b
+[INFO] 18:00:32:788 CPU/(6590:6590): Ejecutando: a = 3
+[TRACE] 18:00:32:796 CPU/(6590:6590): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:00:32:815 CPU/(6590:6590): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 18:00:32:816 CPU/(6590:6590): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:00:32:820 CPU/(6590:6590): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 18:00:32:835 CPU/(6590:6590): Error insertando memoria: RESPONSE
+[INFO] 18:00:32:836 CPU/(6590:6590): Ejecutando: b = 5
+[TRACE] 18:00:32:836 CPU/(6590:6590): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:00:32:837 CPU/(6590:6590): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 18:00:32:837 CPU/(6590:6590): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:00:32:838 CPU/(6590:6590): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 18:00:32:838 CPU/(6590:6590): Error insertando memoria: RESPONSE
+[INFO] 18:00:32:839 CPU/(6590:6590): Ejecutando: a = b + 12
+[TRACE] 18:00:32:847 CPU/(6590:6590): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:00:32:847 CPU/(6590:6590): ANSISOP: dereferenciar, 2
+[TRACE] 18:00:32:849 CPU/(6590:6590): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:00:32:850 CPU/(6590:6590): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 18:00:32:853 CPU/(6590:6590): Error obteniendo memoria: RESPONSE
+[TRACE] 18:00:32:855 CPU/(6590:6590): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:00:32:855 CPU/(6590:6590): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 18:00:32:856 CPU/(6590:6590): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:00:32:856 CPU/(6590:6590): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 18:00:32:857 CPU/(6590:6590): Error insertando memoria: RESPONSE
+[INFO] 18:00:32:857 CPU/(6590:6590): Ejecutando: end
+[TRACE] 18:00:32:858 CPU/(6590:6590): ANSISOP: finalizar
+[TRACE] 18:00:32:859 CPU/(6590:6590): NUCLEO: fin de programa
+[ERROR] 18:00:32:861 CPU/(6590:6590): Error enviando Fin de Programa
+[TRACE] 18:00:32:882 CPU/(6590:6590): Cerrando programa
+[INFO] 18:01:10:498 CPU/(6602:6602): Ejecutando: begin
+[TRACE] 18:01:10:582 CPU/(6602:6602): ANSISOP: llamarSinRetorno, begin
+[TRACE] 18:01:10:588 CPU/(6602:6602): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 18:01:10:598 CPU/(6602:6602): Ejecutando: variables z, a, b
+[TRACE] 18:01:10:614 CPU/(6602:6602): ANSISOP: definirVariable, z
+[TRACE] 18:01:10:628 CPU/(6602:6602): ANSISOP: definirVariable, a
+[TRACE] 18:01:10:628 CPU/(6602:6602): ANSISOP: definirVariable, b
+[INFO] 18:01:10:637 CPU/(6602:6602): Ejecutando: a = 3
+[TRACE] 18:01:10:649 CPU/(6602:6602): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:01:10:659 CPU/(6602:6602): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 18:01:10:659 CPU/(6602:6602): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:01:10:668 CPU/(6602:6602): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 18:01:10:684 CPU/(6602:6602): Error insertando memoria: RESPONSE
+[INFO] 18:01:10:688 CPU/(6602:6602): Ejecutando: b = 5
+[TRACE] 18:01:10:688 CPU/(6602:6602): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:01:10:689 CPU/(6602:6602): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 18:01:10:689 CPU/(6602:6602): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:01:10:690 CPU/(6602:6602): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 18:01:10:691 CPU/(6602:6602): Error insertando memoria: RESPONSE
+[INFO] 18:01:10:691 CPU/(6602:6602): Ejecutando: a = b + 12
+[TRACE] 18:01:10:699 CPU/(6602:6602): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:01:10:700 CPU/(6602:6602): ANSISOP: dereferenciar, 2
+[TRACE] 18:01:10:701 CPU/(6602:6602): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:01:10:702 CPU/(6602:6602): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 18:01:10:708 CPU/(6602:6602): Error obteniendo memoria: RESPONSE
+[TRACE] 18:01:10:710 CPU/(6602:6602): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:01:10:711 CPU/(6602:6602): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 18:01:10:711 CPU/(6602:6602): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:01:10:712 CPU/(6602:6602): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 18:01:10:713 CPU/(6602:6602): Error insertando memoria: RESPONSE
+[INFO] 18:01:10:713 CPU/(6602:6602): Ejecutando: end
+[TRACE] 18:01:10:714 CPU/(6602:6602): ANSISOP: finalizar
+[TRACE] 18:01:10:715 CPU/(6602:6602): NUCLEO: fin de programa
+[ERROR] 18:01:10:717 CPU/(6602:6602): Error enviando Fin de Programa
+[TRACE] 18:01:10:734 CPU/(6602:6602): Cerrando programa
+[INFO] 18:03:27:583 CPU/(6731:6731): Ejecutando: begin
+[TRACE] 18:03:27:651 CPU/(6731:6731): ANSISOP: llamarSinRetorno, begin
+[TRACE] 18:03:27:656 CPU/(6731:6731): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 18:03:27:669 CPU/(6731:6731): Ejecutando: variables z, a, b
+[TRACE] 18:03:27:682 CPU/(6731:6731): ANSISOP: definirVariable, z
+[TRACE] 18:03:27:698 CPU/(6731:6731): ANSISOP: definirVariable, a
+[TRACE] 18:03:27:699 CPU/(6731:6731): ANSISOP: definirVariable, b
+[INFO] 18:03:27:700 CPU/(6731:6731): Ejecutando: a = 3
+[TRACE] 18:03:27:708 CPU/(6731:6731): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:03:27:722 CPU/(6731:6731): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 18:03:27:723 CPU/(6731:6731): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:03:27:727 CPU/(6731:6731): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 18:03:27:753 CPU/(6731:6731): Error insertando memoria: RESPONSE
+[INFO] 18:03:27:755 CPU/(6731:6731): Ejecutando: b = 5
+[TRACE] 18:03:27:755 CPU/(6731:6731): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:03:27:755 CPU/(6731:6731): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 18:03:27:756 CPU/(6731:6731): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:03:27:756 CPU/(6731:6731): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 18:03:27:757 CPU/(6731:6731): Error insertando memoria: RESPONSE
+[INFO] 18:03:27:757 CPU/(6731:6731): Ejecutando: a = b + 12
+[TRACE] 18:03:27:758 CPU/(6731:6731): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:03:27:759 CPU/(6731:6731): ANSISOP: dereferenciar, 2
+[TRACE] 18:03:27:760 CPU/(6731:6731): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:03:27:761 CPU/(6731:6731): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 18:03:27:764 CPU/(6731:6731): Error obteniendo memoria: RESPONSE
+[TRACE] 18:03:27:766 CPU/(6731:6731): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:03:27:767 CPU/(6731:6731): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 18:03:27:768 CPU/(6731:6731): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:03:27:769 CPU/(6731:6731): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 18:03:27:771 CPU/(6731:6731): Error insertando memoria: RESPONSE
+[INFO] 18:03:27:772 CPU/(6731:6731): Ejecutando: end
+[TRACE] 18:03:27:773 CPU/(6731:6731): ANSISOP: finalizar
+[TRACE] 18:03:27:774 CPU/(6731:6731): NUCLEO: fin de programa
+[ERROR] 18:03:27:786 CPU/(6731:6731): Error enviando Fin de Programa
+[TRACE] 18:03:27:796 CPU/(6731:6731): Cerrando programa
+[INFO] 18:05:13:408 CPU/(7000:7000): Ejecutando: begin
+[TRACE] 18:05:13:467 CPU/(7000:7000): ANSISOP: llamarSinRetorno, begin
+[TRACE] 18:05:13:470 CPU/(7000:7000): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 18:05:13:488 CPU/(7000:7000): Ejecutando: variables z, a, b
+[TRACE] 18:05:13:499 CPU/(7000:7000): ANSISOP: definirVariable, z
+[TRACE] 18:05:13:509 CPU/(7000:7000): ANSISOP: definirVariable, a
+[TRACE] 18:05:13:510 CPU/(7000:7000): ANSISOP: definirVariable, b
+[INFO] 18:05:13:513 CPU/(7000:7000): Ejecutando: a = 3
+[TRACE] 18:05:13:529 CPU/(7000:7000): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:05:13:539 CPU/(7000:7000): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 18:05:13:540 CPU/(7000:7000): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:05:13:543 CPU/(7000:7000): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 18:05:13:565 CPU/(7000:7000): Error insertando memoria: RESPONSE
+[INFO] 18:05:13:566 CPU/(7000:7000): Ejecutando: b = 5
+[TRACE] 18:05:13:567 CPU/(7000:7000): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:05:13:567 CPU/(7000:7000): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 18:05:13:568 CPU/(7000:7000): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:05:13:568 CPU/(7000:7000): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 18:05:13:569 CPU/(7000:7000): Error insertando memoria: RESPONSE
+[INFO] 18:05:13:569 CPU/(7000:7000): Ejecutando: a = b + 12
+[TRACE] 18:05:13:570 CPU/(7000:7000): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:05:13:571 CPU/(7000:7000): ANSISOP: dereferenciar, 2
+[TRACE] 18:05:13:572 CPU/(7000:7000): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:05:13:573 CPU/(7000:7000): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 18:05:13:577 CPU/(7000:7000): Error obteniendo memoria: RESPONSE
+[TRACE] 18:05:13:581 CPU/(7000:7000): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:05:13:581 CPU/(7000:7000): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 18:05:13:582 CPU/(7000:7000): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:05:13:583 CPU/(7000:7000): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 18:05:13:589 CPU/(7000:7000): Error insertando memoria: RESPONSE
+[INFO] 18:05:13:594 CPU/(7000:7000): Ejecutando: end
+[TRACE] 18:05:13:594 CPU/(7000:7000): ANSISOP: finalizar
+[TRACE] 18:05:13:595 CPU/(7000:7000): NUCLEO: fin de programa
+[ERROR] 18:05:13:598 CPU/(7000:7000): Error enviando Fin de Programa
+[TRACE] 18:05:13:608 CPU/(7000:7000): Cerrando programa
+[INFO] 18:10:08:482 CPU/(7168:7168): Ejecutando: begin
+[TRACE] 18:10:08:541 CPU/(7168:7168): ANSISOP: llamarSinRetorno, begin
+[TRACE] 18:10:08:544 CPU/(7168:7168): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 18:10:08:552 CPU/(7168:7168): Ejecutando: variables z, a, b
+[TRACE] 18:10:08:569 CPU/(7168:7168): ANSISOP: definirVariable, z
+[TRACE] 18:10:08:578 CPU/(7168:7168): ANSISOP: definirVariable, a
+[TRACE] 18:10:08:579 CPU/(7168:7168): ANSISOP: definirVariable, b
+[INFO] 18:10:08:580 CPU/(7168:7168): Ejecutando: a = 3
+[TRACE] 18:10:08:588 CPU/(7168:7168): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:10:08:602 CPU/(7168:7168): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 18:10:08:603 CPU/(7168:7168): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:10:08:605 CPU/(7168:7168): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 18:10:08:633 CPU/(7168:7168): Error insertando memoria: RESPONSE
+[INFO] 18:10:08:636 CPU/(7168:7168): Ejecutando: b = 5
+[TRACE] 18:10:08:637 CPU/(7168:7168): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:10:08:637 CPU/(7168:7168): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 18:10:08:637 CPU/(7168:7168): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:10:08:638 CPU/(7168:7168): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 18:10:08:639 CPU/(7168:7168): Error insertando memoria: RESPONSE
+[INFO] 18:10:08:639 CPU/(7168:7168): Ejecutando: a = b + 12
+[TRACE] 18:10:08:640 CPU/(7168:7168): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:10:08:641 CPU/(7168:7168): ANSISOP: dereferenciar, 2
+[TRACE] 18:10:08:642 CPU/(7168:7168): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:10:08:642 CPU/(7168:7168): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 18:10:08:646 CPU/(7168:7168): Error obteniendo memoria: RESPONSE
+[TRACE] 18:10:08:647 CPU/(7168:7168): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:10:08:648 CPU/(7168:7168): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 18:10:08:648 CPU/(7168:7168): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:10:08:648 CPU/(7168:7168): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 18:10:08:649 CPU/(7168:7168): Error insertando memoria: RESPONSE
+[INFO] 18:10:08:650 CPU/(7168:7168): Ejecutando: end
+[TRACE] 18:10:08:650 CPU/(7168:7168): ANSISOP: finalizar
+[TRACE] 18:10:08:651 CPU/(7168:7168): NUCLEO: fin de programa
+[ERROR] 18:10:08:662 CPU/(7168:7168): Error enviando Fin de Programa
+[TRACE] 18:10:08:672 CPU/(7168:7168): Cerrando programa
+[INFO] 18:11:22:724 CPU/(7286:7286): Ejecutando: begin
+[TRACE] 18:11:22:791 CPU/(7286:7286): ANSISOP: llamarSinRetorno, begin
+[TRACE] 18:11:22:795 CPU/(7286:7286): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 18:11:22:815 CPU/(7286:7286): Ejecutando: variables z, a, b
+[TRACE] 18:11:22:836 CPU/(7286:7286): ANSISOP: definirVariable, z
+[TRACE] 18:11:22:853 CPU/(7286:7286): ANSISOP: definirVariable, a
+[TRACE] 18:11:22:864 CPU/(7286:7286): ANSISOP: definirVariable, b
+[INFO] 18:11:22:868 CPU/(7286:7286): Ejecutando: a = 3
+[TRACE] 18:11:22:887 CPU/(7286:7286): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:11:22:916 CPU/(7286:7286): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 18:11:22:917 CPU/(7286:7286): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:11:22:920 CPU/(7286:7286): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 18:11:22:947 CPU/(7286:7286): Error insertando memoria: RESPONSE
+[INFO] 18:11:22:950 CPU/(7286:7286): Ejecutando: b = 5
+[TRACE] 18:11:22:950 CPU/(7286:7286): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:11:22:951 CPU/(7286:7286): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 18:11:22:952 CPU/(7286:7286): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:11:22:953 CPU/(7286:7286): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 18:11:22:954 CPU/(7286:7286): Error insertando memoria: RESPONSE
+[INFO] 18:11:22:955 CPU/(7286:7286): Ejecutando: a = b + 12
+[TRACE] 18:11:22:956 CPU/(7286:7286): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:11:22:957 CPU/(7286:7286): ANSISOP: dereferenciar, 2
+[TRACE] 18:11:22:958 CPU/(7286:7286): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:11:22:960 CPU/(7286:7286): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 18:11:22:964 CPU/(7286:7286): Error obteniendo memoria: RESPONSE
+[TRACE] 18:11:22:971 CPU/(7286:7286): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:11:22:979 CPU/(7286:7286): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 18:11:22:979 CPU/(7286:7286): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:11:22:982 CPU/(7286:7286): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 18:11:22:985 CPU/(7286:7286): Error insertando memoria: RESPONSE
+[INFO] 18:11:22:985 CPU/(7286:7286): Ejecutando: end
+[TRACE] 18:11:22:988 CPU/(7286:7286): ANSISOP: finalizar
+[TRACE] 18:11:22:989 CPU/(7286:7286): NUCLEO: fin de programa
+[ERROR] 18:11:22:995 CPU/(7286:7286): Error enviando Fin de Programa
+[TRACE] 18:11:23:16 CPU/(7286:7286): Cerrando programa
+[INFO] 18:12:45:878 CPU/(7454:7454): Ejecutando: begin
+[TRACE] 18:12:45:938 CPU/(7454:7454): ANSISOP: llamarSinRetorno, begin
+[TRACE] 18:12:45:941 CPU/(7454:7454): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 18:12:45:948 CPU/(7454:7454): Ejecutando: variables z, a, b
+[TRACE] 18:12:45:970 CPU/(7454:7454): ANSISOP: definirVariable, z
+[TRACE] 18:12:45:980 CPU/(7454:7454): ANSISOP: definirVariable, a
+[TRACE] 18:12:45:987 CPU/(7454:7454): ANSISOP: definirVariable, b
+[INFO] 18:12:45:989 CPU/(7454:7454): Ejecutando: a = 3
+[TRACE] 18:12:45:0 CPU/(7454:7454): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:12:45:9 CPU/(7454:7454): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 18:12:46:10 CPU/(7454:7454): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:12:46:12 CPU/(7454:7454): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 18:12:46:33 CPU/(7454:7454): Error insertando memoria: RESPONSE
+[INFO] 18:12:46:35 CPU/(7454:7454): Ejecutando: b = 5
+[TRACE] 18:12:46:35 CPU/(7454:7454): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:12:46:35 CPU/(7454:7454): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 18:12:46:36 CPU/(7454:7454): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:12:46:36 CPU/(7454:7454): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 18:12:46:37 CPU/(7454:7454): Error insertando memoria: RESPONSE
+[INFO] 18:12:46:37 CPU/(7454:7454): Ejecutando: a = b + 12
+[TRACE] 18:12:46:38 CPU/(7454:7454): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:12:46:39 CPU/(7454:7454): ANSISOP: dereferenciar, 2
+[TRACE] 18:12:46:40 CPU/(7454:7454): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:12:46:41 CPU/(7454:7454): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 18:12:46:48 CPU/(7454:7454): Error obteniendo memoria: RESPONSE
+[TRACE] 18:12:46:60 CPU/(7454:7454): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:12:46:60 CPU/(7454:7454): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 18:12:46:62 CPU/(7454:7454): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:12:46:63 CPU/(7454:7454): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 18:12:46:63 CPU/(7454:7454): Error insertando memoria: RESPONSE
+[INFO] 18:12:46:64 CPU/(7454:7454): Ejecutando: end
+[TRACE] 18:12:46:65 CPU/(7454:7454): ANSISOP: finalizar
+[TRACE] 18:12:46:66 CPU/(7454:7454): NUCLEO: fin de programa
+[ERROR] 18:12:46:69 CPU/(7454:7454): Error enviando Fin de Programa
+[TRACE] 18:12:46:77 CPU/(7454:7454): Cerrando programa
+[INFO] 18:14:22:193 CPU/(7584:7584): Ejecutando: begin
+[TRACE] 18:14:22:261 CPU/(7584:7584): ANSISOP: llamarSinRetorno, begin
+[TRACE] 18:14:22:268 CPU/(7584:7584): ANSISOP: callFunction, Etiqueta: begin Donde Retornar: 0
+[INFO] 18:14:22:282 CPU/(7584:7584): Ejecutando: variables z, a, b
+[TRACE] 18:14:22:293 CPU/(7584:7584): ANSISOP: definirVariable, z
+[TRACE] 18:14:22:309 CPU/(7584:7584): ANSISOP: definirVariable, a
+[TRACE] 18:14:22:309 CPU/(7584:7584): ANSISOP: definirVariable, b
+[INFO] 18:14:22:311 CPU/(7584:7584): Ejecutando: a = 3
+[TRACE] 18:14:22:324 CPU/(7584:7584): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:14:22:339 CPU/(7584:7584): ANSISOP: asignar Puntero: 1 Valor: 3
+[TRACE] 18:14:22:340 CPU/(7584:7584): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:14:22:343 CPU/(7584:7584): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 3)
+[ERROR] 18:14:22:359 CPU/(7584:7584): Error insertando memoria: RESPONSE
+[INFO] 18:14:22:368 CPU/(7584:7584): Ejecutando: b = 5
+[TRACE] 18:14:22:368 CPU/(7584:7584): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:14:22:369 CPU/(7584:7584): ANSISOP: asignar Puntero: 2 Valor: 5
+[TRACE] 18:14:22:369 CPU/(7584:7584): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:14:22:369 CPU/(7584:7584): UMC: set (Page: 0, Offset: 2, Size: 4, Buffer: 5)
+[ERROR] 18:14:22:370 CPU/(7584:7584): Error insertando memoria: RESPONSE
+[INFO] 18:14:22:371 CPU/(7584:7584): Ejecutando: a = b + 12
+[TRACE] 18:14:22:372 CPU/(7584:7584): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 18:14:22:372 CPU/(7584:7584): ANSISOP: dereferenciar, 2
+[TRACE] 18:14:22:374 CPU/(7584:7584): ANSISOP: getMemoryAddr, 2
+[TRACE] 18:14:22:375 CPU/(7584:7584): UMC: get (Page: 0, Offset: 2, Size: 4)
+[ERROR] 18:14:22:379 CPU/(7584:7584): Error obteniendo memoria: RESPONSE
+[TRACE] 18:14:22:380 CPU/(7584:7584): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 18:14:22:381 CPU/(7584:7584): ANSISOP: asignar Puntero: 1 Valor: 12
+[TRACE] 18:14:22:381 CPU/(7584:7584): ANSISOP: getMemoryAddr, 1
+[TRACE] 18:14:22:382 CPU/(7584:7584): UMC: set (Page: 0, Offset: 1, Size: 4, Buffer: 12)
+[ERROR] 18:14:22:383 CPU/(7584:7584): Error insertando memoria: RESPONSE
+[INFO] 18:14:22:383 CPU/(7584:7584): Ejecutando: end
+[TRACE] 18:14:22:384 CPU/(7584:7584): ANSISOP: finalizar
+[TRACE] 18:14:22:384 CPU/(7584:7584): NUCLEO: fin de programa
+[ERROR] 18:14:22:387 CPU/(7584:7584): Error enviando Fin de Programa
+[TRACE] 18:14:22:403 CPU/(7584:7584): Cerrando programa

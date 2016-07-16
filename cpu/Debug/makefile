@@ -26,7 +26,7 @@ endif
 all: cpu
 
 dependents:
-	-cd /home/utnso/Desarrollo/TP/push-library/Release && $(MAKE) clean all
+	-cd /home/utnso/Desarrollo/TP/push-library/Release && $(MAKE) all
 
 # Tool invocations
 cpu: $(OBJS) $(USER_OBJS) /home/utnso/Desarrollo/TP/push-library/Release/libpush-library.so
