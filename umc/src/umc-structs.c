@@ -48,8 +48,13 @@ int initMemoriaPrincipal(t_config* config){
 
 	memoria_bloque = malloc(cantidad_de_marcos*marco_size); //char* que va a tener el contenido de todas las paginas
 
-	log_trace(logger, "Reservada memoria. Cantidad de marcos:%d, tamanio de marco:%d. Total de bytes:%d", cantidad_de_marcos, marco_size, cantidad_de_marcos*marco_size);
+	log_info(logger, "Iniciando memoria principal..........................");
+	log_info(logger, "Cantidad de marcos:%d", cantidad_de_marcos);
+	log_info(logger, "Tamanio de marco:%d", marco_size);
+	log_info(logger, "Reservada memoria. Total de bytes:%d", cantidad_de_marcos*marco_size);
+	log_info(logger, "Direccion inicial: %d", memoria_bloque);
 
+	log_info(logger, "Iniciando tabla de frames..........................");
 	tablaDeFrames = malloc(sizeof(tablaDeFrames));
 	tablaDeFrames->entradas = list_create();
 	int i;
@@ -171,14 +176,16 @@ response* finalizarPidDeUMC(int pid){
 	return createOKResponse();
 }
 
-char* initProgramaUMC(int pid, int cantPaginas){
+response* initProgramaUMC(int pid, int cantPaginas){
+	log_trace(logger, "Iniciando pid %d en UMC...", pid);
 	// verificar que no exista pid
 	if(buscarPorPID(pid)!=NULL){
-		return string_itoa(RESPUESTA_FAIL);
+		return createFAILResponse(RESPUESTA_FAIL);
 	}
 
 	// crear tabla de paginas
 	tabla_de_paginas* tablaDePaginas = crearTablaDePaginas(pid, cantPaginas);
+	log_trace(logger, "Create tabla de paginas de pid %d!", pid);
 	t_list* presentes = list_create();
 
 	int i;
@@ -194,7 +201,7 @@ char* initProgramaUMC(int pid, int cantPaginas){
 	tablaDePaginas->aguja = 0;
 
 	list_add(tablasDePaginas, tablaDePaginas);
-	return string_itoa(RESPUESTA_OK);
+	return createOKResponse();
 }
 
 char* obtenerBytes(char* contenido, int offset, int tamanio){
@@ -214,9 +221,14 @@ tabla_de_frame_entry* obtenerEntradaDeFrame(int nroFrame){
 	return NULL;
 }
 
-void escribirEnFrame(char* buffer, int offset, int tamanio, int frame){
-	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(frame);
-	memcpy(entrada->direccion_real + offset, buffer, tamanio);
+void escribirEnFrame(char* buffer, int offset, int tamanio, int nroFrame){
+	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(nroFrame);
+	char* where = entrada->direccion_real + offset;
+	log_trace(logger, "A punto de escribir frame...");
+	log_trace(logger, "Nro frame=%d, Offset=%d, Tamanio=%d, Direccion de memoria=%d", nroFrame, offset, tamanio, where);
+
+	memcpy(where, buffer, tamanio);
+	log_trace(logger, "Frame %d escrito!", nroFrame);
 }
 
 char* obtenerBytesDeMemoriaPrincipal(int frame, int offset, int tamanio){
@@ -254,7 +266,7 @@ int obtenerFrameDisponible(){
 
 void cargarEnMemoriaPrincipal(char* pagina, int nroFrame){
 	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(nroFrame);
-	memcpy(entrada->direccion_real, pagina, marco_size);
+	memcpy(entrada->direccion_real, pagina, 5);
 }
 
 void cargarPagina(int nroPagina, int pid, char* pagina){

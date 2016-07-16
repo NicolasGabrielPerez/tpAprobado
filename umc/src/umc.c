@@ -12,55 +12,62 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 int listener;
 
 void *gestionarCPU(void* socket){
-	printf("Creado hilo de gestión de CPU\n");
-	printf("De socket: %d\n", (int)socket);
+	log_trace(logger, "Creado hilo de gestion CPU [Socket %d]", (int) socket);
 
 	int pidActivo = 0;
-	int32_t headerInt;
-	char* header = malloc(HEADER_SIZE);
+
 	while(1){
-		if (recv((int)socket, header, HEADER_SIZE, 0) <=0) {
-			printf("Socket de CPU %d desconectado\n", (int) socket);
+
+		log_info(logger, "Esperando mensajes de [Socket %d]", (int) socket);
+		message* message = receiveMessage((int) socket);
+
+		if(message->codError == SOCKET_DESCONECTADO){
+			log_warning(logger, "Socket de CPU %d desconectado\n", (int) socket);
 			return 0;
 		}
-		memcpy(&headerInt, header, sizeof(int32_t));
-		if(headerInt==HEADER_ALMACENAR_PAGINAS){
+
+		if(message->header == HEADER_ALMACENAR_PAGINAS){
+			log_trace(logger, "HEADER_ALMACENAR_PAGINAS recibido [Socket %d]", (int) socket);
 			recibirAlmacenarPaginas((int)socket, pidActivo);
 			continue;
 		}
-		if(headerInt==HEADER_SOLICITAR_PAGINAS){
+		if(message->header == HEADER_SOLICITAR_PAGINAS){
+			log_trace(logger, "HEADER_SOLICITAR_PAGINAS recibido [Socket %d]", (int) socket);
 			recibirSolicitarPaginas((int)socket, pidActivo);
 			continue;
 		}
-		if(headerInt==HEADER_CAMBIO_PROCESO_ACTIVO){
+		if(message->header == HEADER_CAMBIO_PROCESO_ACTIVO){
+			log_trace(logger, "HEADER_CAMBIO_PROCESO_ACTIVO recibido [Socket %d]", (int) socket);
 			recibirCambioDeProcesoActivo((int)socket, &pidActivo);
 			continue;
 		}
+
+		//TODO deleteMessage(response);
 	}
 
 	return 0;
 }
 
 void *gestionarNucleo(void* socket){
-	printf("Creado hilo de gestión de Nucleo\n");
-	printf("De socket: %d\n", (int)socket);
+	log_trace(logger, "Creado hilo de gestion NUCLEO [Socket %d]", (int) socket);
 
 	while(1){
 
+		log_info(logger, "Esperando mensajes de [Socket %d]", (int) socket);
 		message* message = receiveMessage((int) socket);
 
 		if(message->codError == SOCKET_DESCONECTADO){
-			printf("Socket de NUCLEO %d desconectado\n", (int) socket);
+			log_warning(logger, "Socket de NUCLEO %d desconectado\n", (int) socket);
 			return 0;
 		}
 
 		if(message->header == HEADER_INIT_PROGRAMA){
-			log_trace(logger, "Init program received");
+			log_trace(logger, "HEADER_INIT_PROGRAMA recibido");
 			recbirInitPrograma((int)socket);
 			continue;
 		}
 		if(message->header == HEADER_FIN_PROGRAMA){
-			log_trace(logger, "End program received");
+			log_trace(logger, "HEADER_FIN_PROGRAMA recibido");
 			recibirFinalizarPrograma((int)socket);
 			continue;
 		}
@@ -96,30 +103,43 @@ response* recibir(int socket, int size){
 }
 
 void enviarPageSize(int socket){
-	char* pageSizeSerializado;
+	char* pageSizeSerializado = malloc(sizeof(int32_t));
 	serializarInt(pageSizeSerializado, &marco_size);
 	sendMessage(socket, HEADER_SIZE, sizeof(int32_t), pageSizeSerializado);
+	free(pageSizeSerializado);
 }
 
 int makeHandshake(int socket){
 	message* message = receiveMessage(socket);
-	return convertToInt32(message->contenido);
+
+	if(message->codError == SOCKET_DESCONECTADO){
+		log_error(logger, "Error haciendo handshake [Socket %d]", socket);
+		return -1;
+	}
+
+	int tipo = convertToInt32(message->contenido);
+
+	if(tipo == TIPO_NUCLEO){
+		log_trace(logger, "Nuevo conexion de NUCLEO [Socket %d]", socket);
+		return TIPO_NUCLEO;
+	}
+	if(tipo == TIPO_CPU){
+		log_trace(logger, "Nuevo conexion de CPU [Socket %d]", socket);
+		return TIPO_CPU;
+	}
+
+	log_error(logger, "Tipo desconocido [Socket %d]", socket);
+
+	return -1;
 }
 
 void manejarNuevasConexiones(){
 	int new_socket = aceptarNuevaConexion(listener);
 	int tipo = makeHandshake(new_socket);
-	if(tipo == -1){
-		printf("Hubo error en handshake");
-		return;
-	}
-	if(tipo == TIPO_NUCLEO || tipo == TIPO_CPU){
-		if(tipo == TIPO_NUCLEO) printf("Nuevo conexion de tipo NUCLEO\n");
-		if(tipo == TIPO_CPU) printf("Nuevo conexion de tipo CPU\n");
-		enviarPageSize(new_socket);
-	}
 
-	crearHiloDeComponente(tipo, new_socket);
+	if(tipo != -1){
+		crearHiloDeComponente(tipo, new_socket);
+	}
 }
 
 int main(void) {
@@ -140,7 +160,8 @@ int main(void) {
 	pthread_attr_init(&nucleo_attr);
 	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
 
-	char* puerto_cpu_nucleo = config_get_string_value(config, "PUERTO_CPU_NUCLEO"); //puerto escucha de Nucleo y CPU
+	char* puerto_cpu_nucleo = config_get_string_value(config, "PUERTO_CPU_NUCLEO");
+	log_info(logger, "Iniciando puerto escucha para Cpu y Nucleo [Puerto %s]...", puerto_cpu_nucleo);
 	listener = crear_puerto_escucha(puerto_cpu_nucleo);
 
 	config_destroy(config);

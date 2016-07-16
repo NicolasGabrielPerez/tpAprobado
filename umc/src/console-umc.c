@@ -113,11 +113,19 @@ void ejecutarComando(char* command){
 }
 
 void* consolaDeComandos(){
+	printf("--------------- Bienvenido a la consola de UMC ---------------\n");
+	printf("Estos son los comandos disponibles:\n");
+	printf("retardo <milisegundos> *Retardo a esperar ante una solicitud\n");
+	printf("dump <info> <pid> *info: 'table' o 'data'. Pid vacio => todos los procesos.\n");
+	printf("flush tlb *Limpiar toda la tlb\n");
+	printf("flush memory <pid> *Marca como modificadas todas las paginas del pid\n");
+	printf("----------------------------------------------------------------------------\n");
+
 	int rc;
 	char* buff = malloc(30);
 
 	while(1){
-		rc = getLine ("Ingrese comando> ", buff, 30);
+		rc = getLine ("Esperando comando> ", buff, 30);
 		if (rc == NO_INPUT) {
 			// Extra NL since my system doesn't output that on EOF.
 			printf ("\nSin input de comando\n");
@@ -135,14 +143,6 @@ void* consolaDeComandos(){
 }
 
 void initUmcConsole(){
-	printf("----------------------------------------------------------------------------\n");
-	printf("Iniciando consola de comandos...\n");
 	pthread_t newThread;
 	pthread_create(&newThread, &nucleo_attr, &consolaDeComandos, NULL);
-	printf("Consola de comandos lista. Comandos:\n");
-	printf("retardo <milisegundos> *Retardo a esperar ante una solicitud\n");
-	printf("dump <info> <pid> *info: 'table' o 'data'. Pid vacio => todos los procesos.\n");
-	printf("flush tlb *Limpiar toda la tlb\n");
-	printf("flush memory <pid> *Marca como modificadas todas las paginas del pid\n");
-	printf("----------------------------------------------------------------------------\n");
 }

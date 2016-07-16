@@ -11,6 +11,7 @@ void initTLB(t_config* config){
 	int cantidad_entradas_tlb = config_get_int_value(config, "ENTRADAS_TLB");
 
 	if(cantidad_entradas_tlb==0){
+		log_info(logger, "TLB Deshabilitada");
 		TLBEnable = 0;
 		return;
 	}
@@ -21,6 +22,10 @@ void initTLB(t_config* config){
 
 	TLB->size = cantidad_entradas_tlb;
 	TLB->entradas = list_create();
+
+	log_info(logger, "[TLB] Creada TLB");
+	log_info(logger, "[TLB] Cantidad de entradas maxima: %d", TLB->size);
+	log_info(logger, "[TLB] Cantidad de entradas actual: %d", list_size(TLB->entradas));
 }
 
 int tlbTieneEntradasLibres(){

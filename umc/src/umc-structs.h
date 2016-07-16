@@ -92,7 +92,7 @@
 
 	int initMemoriaPrincipal(t_config* config);
 
-	char* initProgramaUMC(int pid, int cantPaginas);
+	response* initProgramaUMC(int pid, int cantPaginas);
 
 	void escribirEnFrame(char* buffer, int offset, int tamanio, int frame);
 

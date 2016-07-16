@@ -9,31 +9,27 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 	int32_t tamanio;
 	char* buffer;
 
-	if (recv(cpu_socket, &nroPagina, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* nroPaginaMessage = receiveMessage(cpu_socket);
+	nroPagina = convertToInt32(nroPaginaMessage->contenido);
 
-	if (recv(cpu_socket, &offset, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* offsetMessage = receiveMessage(cpu_socket);
+	offset = convertToInt32(offsetMessage->contenido);
 
-	if (recv(cpu_socket, &tamanio, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* tamanioMessage = receiveMessage(cpu_socket);
+	tamanio = convertToInt32(tamanioMessage->contenido);
 
-	buffer = malloc(tamanio);
-	if (recv(cpu_socket, buffer, tamanio, 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* bufferMessage = receiveMessage(cpu_socket);
+	buffer = bufferMessage->contenido;
+
+	log_trace(logger, "Pedido almacenar paginas [pid: %d, nroPagina %d, offset %d, tamanio %d]", pidActivo, nroPagina, offset, tamanio);
+	log_trace(logger, "[Buffer: %s]", buffer);
 
 	//Esto es solo una validacion
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(pidActivo);
 	if(tablaDePaginas==NULL){
+		log_error(logger, "Pid %d no existe", pidActivo);
 		enviarFAIL(cpu_socket, PID_NO_EXISTE);
+		log_trace(logger, "Enviada respuesta de fallo");
 		return;
 	}
 
@@ -46,19 +42,19 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 		}
 	}
 
-	int nroFrame; //nroFrame a escribir
-
 	umcResult result = getPageEntry(tablaDePaginas, nroPagina);
 	if(!result.ok){
 		enviarFAIL(cpu_socket, result.codError);
+		log_trace(logger, "Enviada respuesta de fallo");
 	}
 
-	escribirEnFrame(buffer, offset, tamanio, nroFrame);
+	escribirEnFrame(buffer, offset, tamanio, result.frameEntry->nroFrame);
 
 	//Actualizar TLB
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
 
 	enviarOKSinContenido(cpu_socket);
+	log_trace(logger, "Enviada respuesta Ok! [Socket %d]", cpu_socket);
 }
 
 void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
@@ -67,20 +63,16 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 	int32_t offset;
 	int32_t tamanio;
 
-	if (recv(cpu_socket, &nroPagina, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* nroPaginaMessage = receiveMessage(cpu_socket);
+	nroPagina = convertToInt32(nroPaginaMessage->contenido);
 
-	if (recv(cpu_socket, &offset, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* offsetMessage = receiveMessage(cpu_socket);
+	offset = convertToInt32(offsetMessage->contenido);
 
-	if (recv(cpu_socket, &tamanio, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* tamanioMessage = receiveMessage(cpu_socket);
+	tamanio = convertToInt32(tamanioMessage->contenido);
+
+	log_trace(logger, "Pedido recibir paginas [pid: %d, nroPagina %d, offset %d, tamanio %d]", pidActivo, nroPagina, offset, tamanio);
 
 	//Esto es solo una validacion
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(pidActivo);
@@ -104,28 +96,31 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 		enviarFAIL(cpu_socket, result.codError);
 	}
 
-	retornar:
-		//Actualizar TLB
-		if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
+	//Actualizar TLB
+	if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
 
-		enviarOKConContenido(cpu_socket, marco_size, result.frameEntry->direccion_real);
+	enviarOKConContenido(cpu_socket, tamanio, result.frameEntry->direccion_real + offset);
 }
 
 void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){
 	int32_t pid;
-	if (recv(cpu_socket, &pid, sizeof(int32_t), 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+	message* pidMessage = receiveMessage(cpu_socket);
+	pid = convertToInt32(pidMessage->contenido);
+
+	log_trace(logger, "Pedido cambio pid activo [pid: %d]", pid);
+
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(pid);
 	if(tablaDePaginas==NULL){
+		log_error(logger, "El pid %d no existe", pid);
 		enviarFAIL(cpu_socket, PID_NO_EXISTE);
+		log_trace(logger, "Enviada respuesta de fallo");
 		return;
 	}
 	if(TLBEnable){
-		flush(pidActivo);
+		flush(*pidActivo);
 	}
 	*pidActivo = pid;
 
 	enviarOKSinContenido(cpu_socket);
+	log_trace(logger, "Enviada respuesta Ok");
 }

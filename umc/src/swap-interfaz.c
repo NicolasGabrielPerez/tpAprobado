@@ -13,16 +13,21 @@ response* handshakeSwap(){
 
 void initSwap(t_config* config){
 	char* ip_swap = config_get_string_value(config, "IP_SWAP");
-	char* puerto_swap = config_get_string_value(config, "PUERTO_SWAP"); //puerto escucha de swap
+	char* puerto_swap = config_get_string_value(config, "PUERTO_SWAP");
+	log_info(logger, "Swap IP: %s", ip_swap);
+	log_info(logger, "Swap port: %s", puerto_swap);
+
+	log_info(logger, "Contectandose con Swap.....................");
 	swap_socket = crear_socket_cliente(ip_swap, puerto_swap);
+	log_info(logger, "Conexion con Swap realizada");
 
 	response* swapInitResponse = handshakeSwap();
 
 	if(swapInitResponse->ok){
-		printf("Respuesta incial de Swap: %s\n", swapInitResponse->contenido);
+		log_info(logger, "Respuesta incial de Swap: %s\n", swapInitResponse->contenido);
 		return;
 	} else{
-		printf("Error %d", swapInitResponse->codError);
+		log_error(logger, "Error de Swap: %d", swapInitResponse->codError);
 	}
 
 	exit(1);
@@ -53,6 +58,7 @@ response* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
 
 response* finalizarProgramaSwap(int* pid){
 	pthread_mutex_lock(&swap_semaphore);
+	log_trace(logger, "Enviando fin de pid %d a Swap...", pid);
 	if (send(swap_socket, &HEADER_FIN_PROGRAMA, sizeof(int32_t), 0) == -1) {
 		perror("send");
 		exit(1);
@@ -67,12 +73,15 @@ response* finalizarProgramaSwap(int* pid){
 		exit(1);
 	}
 	response* swapResponse = recibirResponse(swap_socket);
+	log_trace(logger, "Obtenida respuesta de Swap");
 	pthread_mutex_unlock(&swap_semaphore);
 	return swapResponse;
 }
 
 response* pedirPaginaASwap(int nroPagina, int pid){
 	pthread_mutex_lock(&swap_semaphore);
+	log_trace(logger, "Enviando pedido de pagina a Swap...");
+	log_trace(logger, "Pedido [pid %d, nroPagina %d]", pid, nroPagina);
 	if (send(swap_socket, &HEADER_SOLICITAR_PAGINAS, sizeof(int32_t), 0) == -1) {
 		perror("send");
 		exit(1);
@@ -86,6 +95,7 @@ response* pedirPaginaASwap(int nroPagina, int pid){
 		exit(1);
 	}
 	response* swapResponse = recibirResponse(swap_socket);
+	log_trace(logger, "Obtenida respuesta de Swap");
 	pthread_mutex_unlock(&swap_semaphore);
 	return swapResponse;
 }
