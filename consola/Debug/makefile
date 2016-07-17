@@ -23,26 +23,31 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: consola
+all: ansisop
 
 dependents:
-	-cd /home/utnso/Desarrollo/TP/push-library/Debug && $(MAKE) all
+	-cd /home/utnso/git/tp/push-library/Debug && $(MAKE) clean all
 
 # Tool invocations
-consola: $(OBJS) $(USER_OBJS) /home/utnso/Desarrollo/TP/push-library/Debug/libpush-library.so
+ansisop: $(OBJS) $(USER_OBJS) /home/utnso/git/tp/push-library/Debug/libpush-library.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/Desarrollo/TP/push-library/Debug" -o "consola" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/utnso/git/tp/push-library/Debug" -o "ansisop" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
+	$(MAKE) --no-print-directory post-build
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) consola
+	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) ansisop
+	-@echo ' '
+
+post-build:
+	-sudo cp ansisop "/urs/bin/";
 	-@echo ' '
 
 .PHONY: all clean dependents
-.SECONDARY:
-/home/utnso/Desarrollo/TP/push-library/Debug/libpush-library.so:
+.SECONDARY: post-build
+/home/utnso/git/tp/push-library/Debug/libpush-library.so:
 
 -include ../makefile.targets

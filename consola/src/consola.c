@@ -77,9 +77,9 @@ int main(int argc, char **argv) {
 	pthread_attr_init(&nucleo_attr);
 	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
 
-	t_config* config = config_create("consola.config");
+	t_config* config = config_create("/home/utnso/consola.config");
 	if(config==NULL){
-		printf("No se pudo leer la configuración");
+		printf("No se pudo leer la configuración\n");
 		return EXIT_FAILURE;
 	}
 	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
