@@ -20,14 +20,15 @@ int main(void) {
 
 	initNucleo(config); //lee valores de quantum y io
 	initCPUListener(config);
-	initConsolaListener(config);
-	conectarConUMC(config); //conecta con UMC y hace handshake
+	//initConsolaListener(config);
+	//conectarConUMC(config); //conecta con UMC y hace handshake
 
-	log_create("nucleo_log.txt", "Núcleo", true, LOG_LEVEL_TRACE);
+	nucleo_logger = log_create("nucleo_log.txt", "Núcleo", true, LOG_LEVEL_TRACE);
 
 	pthread_attr_init(&nucleo_attr);
 	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
 
+	/*
 	pthread_t cpuCommunicationThread;
 	pthread_create(&cpuCommunicationThread, &nucleo_attr, &cpu_comunication_program, NULL);
 
@@ -38,8 +39,10 @@ int main(void) {
 	pthread_create(&fileObserverThread, &nucleo_attr, &hiloDeLectura, config);
 
 	pthread_t plannificationThread;		//Hilo de planificación
-	pthread_create(&plannificationThread, &nucleo_attr, &plannificationProgram, config);
-//*/
+	pthread_create(&plannificationThread, &nucleo_attr, &plannificationProgram, NULL);
+*/
+	test_cpu_communication();
+	while(1){};
 
 	return EXIT_SUCCESS;
 }

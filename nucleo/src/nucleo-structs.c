@@ -33,7 +33,7 @@ void initNucleo(t_config* config){
     semaforos_ids = config_get_array_value(config, "SEM_IDS");
 	semaforos_init_values = config_get_array_value(config, "SEM_INIT");
 	shared_values = config_get_array_value(config, "SHARED_VARS");
-	stack_size = config_get_array_value(config, "STACK_SIZE");
+	stack_size = config_get_int_value(config, "STACK_SIZE");
 
 	//Estruturas para control de estados
 	READY_Process_Queue = queue_create();
@@ -98,7 +98,7 @@ void set_semaforo_list(){
 	while(semaforos_ids[i] != NULL){
 		t_semaforo* semaforo = malloc(sizeof(t_semaforo));
 		semaforo->sem_id = semaforos_ids[i];
-		semaforo->sem_value = (u_int32_t)semaforos_init_values[i];
+		semaforo->sem_value = atoi(semaforos_init_values[i]);
 		semaforo->blocked_process_queue = queue_create();
 		list_add(semaforo_control_list, semaforo);
 		i++;
@@ -241,6 +241,7 @@ void set_vars_dictionary(){
 	int i = 0;
 		while(shared_values[i] != NULL){
 			dictionary_put(vars_control_dictionary, shared_values[i], 0);
+			i++;
 		}
 }
 

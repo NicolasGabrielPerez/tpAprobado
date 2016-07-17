@@ -4,7 +4,11 @@
 #include <sockets/pcb.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include "cpu-interfaz.h"
+#include "planificador.h"
 
+pthread_attr_t nucleo_attr;
 t_list* General_Process_List;
 
 int auxCounter;
@@ -238,4 +242,26 @@ void test_planification(){
 			printf("--%s\n", pcb->tagIndex);
 		}
 	}*/
+}
+
+void test_cpu_communication(){
+	//Conectarme con una instancia de CPU
+	//Hilo de select
+	pthread_attr_init(&nucleo_attr);
+	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
+
+	pthread_t cpuCommunicationThread;
+	pthread_create(&cpuCommunicationThread, &nucleo_attr, &cpu_comunication_program, NULL);
+
+	pthread_t plannificationThread;		//Hilo de planificación
+	pthread_create(&plannificationThread, &nucleo_attr, &plannificationProgram, NULL);
+	//Genero una estructura de programa (PCB) nuevo
+	PCB* pcb = new_pcb(0);
+	create_program_PCB(pcb, programa1, 100);
+
+	add_pcb_to_general_list(pcb);
+	set_pcb_READY(pcb);
+	//Creo hilos
+
+	//Envío de mensajes
 }

@@ -23,4 +23,6 @@ t_dictionary* create_testing_dictionary(int dictionarySize);
 
 void test_serialization();
 
+void test_cpu_communication();
+
 #endif /* TESTING_SERIALIZATION_H_ */

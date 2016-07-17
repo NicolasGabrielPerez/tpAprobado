@@ -27,7 +27,7 @@ void set_IO_devices_list(){
 	while(io_ids[i] != NULL){
 		t_IO_Device* device = malloc(sizeof(t_IO_Device));
 		device->ioId = io_ids[i];
-		device->sleepTime = (u_int32_t)io_sleep_times[i];
+		device->sleepTime = atoi(io_sleep_times[i]);
 		device->BlockedProcessesQueue = queue_create();
 		list_add(IO_Device_List, device);
 
