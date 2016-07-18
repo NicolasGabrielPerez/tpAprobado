@@ -44,7 +44,7 @@ void enviarPCB(){
 	pcb = 0;
 }
 
-void nucleo_init(t_config* config) {
+bool nucleo_init(t_config* config) {
 
 	//Hacer HANDSHAKE: HEADER_HANDSHAKE
 	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
@@ -53,13 +53,18 @@ void nucleo_init(t_config* config) {
 
 	socket_nucleo = crear_socket_cliente(ip_nucleo, puerto_nucleo); //socket usado para conectarse al nucleo
 
+	int32_t result = sendMessage(socket_nucleo, HEADER_HANDSHAKE, 0, "0");
+
 	//Recibir el header
 	message* message = receiveMessage(socket_nucleo);
 	if(message->header == HEADER_HANDSHAKE) {
 		log_trace(logger, "Iniciado socket: Nucleo");
 	} else {
 		log_error(logger, "Error al iniciar socket: Nucleo");
+		return false;
 	}
+
+	return true;
 }
 
 void nucleo_delete(){//final
@@ -71,11 +76,21 @@ PCB* nucleo_recibir_pcb() {
 	log_trace(logger, "NUCLEO: recibiendo PCB");
 
 	message* message = receiveMessage(socket_nucleo);
+	if(message->codError == SOCKET_DESCONECTADO) {
+		return 0;
+	}
+
 	PCB* pcb = deserialize_pcb(message->contenido);
 
 	//Recibir quantum count
 	message = receiveMessage(socket_nucleo);
+	if(message->codError == SOCKET_DESCONECTADO) {
+		return 0;
+	}
+
 	char* content = message->contenido;
+
+	QUANTUM = convertToInt32(content);
 
 	return pcb;
 }
@@ -212,7 +227,7 @@ void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_va
 	char* data = serialize_globalVar(var, buffer);
 
 	if (sendMessage(socket_nucleo, HEADER_SETEAR_VARIABLE, sizeof(char) * string_length(data), data) == -1) {
-		 log_error(logger, "Error enviando variable compartida");
+		log_error(logger, "Error enviando variable compartida");
 	}
 
 	buffer_free(buffer);

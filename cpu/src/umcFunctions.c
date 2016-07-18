@@ -32,7 +32,7 @@ const u_int32_t BUFFER_SIZE_UMC = 1024;
 const u_int32_t HEADER_SIZE_UMC = sizeof(int32_t);
 
 
-void umc_init(t_config* config){
+bool umc_init(t_config* config){
 
 	//Hacer HANDSHAKE: HEADER_HANDSHAKE
 	//Enviar tipo: TIPO_CPU
@@ -46,13 +46,18 @@ void umc_init(t_config* config){
 	int32_t response = sendMessageInt(socket_umc, HEADER_HANDSHAKE, TIPO_CPU);
 	if(response <= 0) {
 		log_error(logger, "Se cerró la conexion");
+		return false;
 	}
 
 	message* message = receiveMessage(socket_umc);
-
+	if(message->codError != -1) {
+		log_error(logger, "UMC: Error en handshake");
+		return false;
+	}
 	PAGE_SIZE = convertToInt32(message->contenido);
 
 	log_trace(logger, "Tamaño de Página: %d", PAGE_SIZE);
+	return true;
 }
 
 void umc_delete() {

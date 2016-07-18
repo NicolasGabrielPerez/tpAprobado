@@ -26,8 +26,7 @@
 #include "test.h"
 
 t_log* logger;
-
-u_int32_t UMC_PAGE_SIZE = 4;
+;
 u_int32_t QUANTUM = 3;
 
 u_int32_t socketNucleo = 0;
@@ -59,8 +58,13 @@ AnSISOP_kernel kernel_functions = {
 bool doQuantum(int quantumCount) {
 	bool hasToExit = false;
 
-	//TODO: Pedir a la UMC la siguiente instruccion a ejecutar
-	char* instruction = "test";//umc_get(codeIndex, offset, size);
+	u_int32_t i = pcb->programCounter;
+	u_int32_t start = pcb->codeIndex[i].start;
+	u_int32_t size = pcb->codeIndex[i].offset;
+	u_int32_t page = start / PAGE_SIZE;
+	u_int32_t offset = start % PAGE_SIZE;
+
+	char* instruction = umc_get(page, offset, size);
 
 	log_trace(logger, string_from_format("Ejecutando quantum: %d", quantumCount));
 	log_trace(logger, string_from_format("Ejecutando instruccion: %s", instruction));
@@ -89,14 +93,14 @@ bool doQuantum(int quantumCount) {
 }
 
 //Devuelve un booleano si tiene que salir del programa.
-bool receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
+bool receiveInstructions(PCB* pcb, int quantumCount) {
 
 	log_trace(logger, "Recibido el PCB, ejecutando...");
 
 	int quantumCounter = 0;
 	int hasToExit = false;
 
-	while(quantumCounter <= QUANTUM_COUNT) {
+	while(quantumCounter <= quantumCount) {
 		//TODO: A revisar
 		if(pcb == 0) return hasToExit;
 
@@ -110,7 +114,7 @@ bool receiveInstructions(PCB* pcb, int QUANTUM_COUNT) {
 
 void exitProgram() {
 
-	log_trace(logger, "Cerrando programa");
+	//log_trace(logger, "Cerrando programa");
 
 	umc_delete();
 	nucleo_delete();
@@ -176,14 +180,22 @@ int main(int argc, char **argv) {
 
 	log_trace(logger, "Iniciada la configuracion");
 
-	nucleo_init(config);
-	umc_init(config);
+	bool success = nucleo_init(config);
+	if(!success) {
+		exitProgram();
+	}
+
+	//success = umc_init(config);
+	if(!success) {
+		exitProgram();
+	}
 
 //	test();
 
 	bool hasToExit = false;
 	while(hasToExit == false) {
 		pcb = nucleo_recibir_pcb();
+		if(pcb == 0) continue;
 		umc_process_active(pcb->processId);
 		hasToExit = receiveInstructions(pcb, QUANTUM);
 	}

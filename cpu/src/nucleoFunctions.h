@@ -21,7 +21,7 @@
 
 #include <sockets/pcb.h>
 
-void nucleo_init(t_config* config);
+bool nucleo_init(t_config* config);
 void nucleo_delete();
 
 PCB* nucleo_recibir_pcb();
