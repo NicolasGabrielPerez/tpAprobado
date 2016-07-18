@@ -8,6 +8,8 @@ char** semaforos_ids;
 char** semaforos_init_values;
 char** shared_values;
 int stack_size;
+int test_mode;
+char* umc_ip;
 
 int32_t memoryPageSize;
 
@@ -34,6 +36,9 @@ void initNucleo(t_config* config){
 	semaforos_init_values = config_get_array_value(config, "SEM_INIT");
 	shared_values = config_get_array_value(config, "SHARED_VARS");
 	stack_size = config_get_int_value(config, "STACK_SIZE");
+	umc_ip = config_get_string_value(config, "UMC_IP");
+	test_mode = config_get_int_value(config, "TEST_MODE");
+
 
 	//Estruturas para control de estados
 	READY_Process_Queue = queue_create();
@@ -267,5 +272,27 @@ void hiloDeLectura(t_config* config){
 	}
 }
 //---------------------------------------------- </VARIABLES>
+
+//---------------------------------------------- <PROGRAMA>
+void init_threads_config(pthread_attr_t nucleo_attr){
+	pthread_attr_init(&nucleo_attr);
+	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
+}
+
+void init_cpu_communication_thread(pthread_attr_t nucleo_attr){
+	pthread_t cpuCommunicationThread;
+	pthread_create(&cpuCommunicationThread, &nucleo_attr, &cpu_comunication_program, NULL);
+}
+
+void init_console_communication_thread(pthread_attr_t nucleo_attr){
+	pthread_t consoleCommunicationThread;
+	pthread_create(&consoleCommunicationThread, &nucleo_attr, &console_comunication_program, NULL);
+}
+
+void init_planification_thread(pthread_attr_t nucleo_attr){
+	pthread_t plannificationThread;		//Hilo de planificación
+	pthread_create(&plannificationThread, &nucleo_attr, &plannificationProgram, NULL);
+}
+//---------------------------------------------- </PROGRAMA>
 
 

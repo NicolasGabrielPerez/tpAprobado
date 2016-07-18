@@ -116,8 +116,23 @@ void manejarConexionesConsolas(){
 	}
 }
 
-void console_comunication_program(){
-	while(1){
+void* console_comunication_program(){
+	fd_set read_fds; //set auxiliar
+		read_fds = consola_sockets_set;
+
+		while(1){
+
+			if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
+				perror("select");
+				exit(4);
+			}
+			int i;
+			for(i = 0; i <= fd_cpu_max; i++) {
+				manejarSocketChanges(i, &read_fds);
+			};
+		}
+
+	/*while(1){
 		manejarConexionesConsolas();
-	}
+	}*/
 }

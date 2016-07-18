@@ -247,14 +247,11 @@ void test_planification(){
 void test_cpu_communication(){
 	//Conectarme con una instancia de CPU
 	//Hilo de select
-	pthread_attr_init(&nucleo_attr);
-	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
+	init_threads_config(nucleo_attr);
+	init_cpu_communication_thread(nucleo_attr);
 
-	pthread_t cpuCommunicationThread;
-	pthread_create(&cpuCommunicationThread, &nucleo_attr, &cpu_comunication_program, NULL);
+	init_planification_thread(nucleo_attr);
 
-	pthread_t plannificationThread;		//Hilo de planificación
-	pthread_create(&plannificationThread, &nucleo_attr, &plannificationProgram, NULL);
 	//Genero una estructura de programa (PCB) nuevo
 	PCB* pcb = new_pcb(0);
 	create_program_PCB(pcb, programa1, 100);

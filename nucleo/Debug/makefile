@@ -26,13 +26,13 @@ endif
 all: nucleo
 
 dependents:
-	-cd /home/utnso/Desarrollo/TP/push-library/Debug && $(MAKE) all
+	-cd /home/utnso/workspace/TP/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug && $(MAKE) all
 
 # Tool invocations
-nucleo: $(OBJS) $(USER_OBJS) /home/utnso/Desarrollo/TP/push-library/Debug/libpush-library.so
+nucleo: $(OBJS) $(USER_OBJS) /home/utnso/workspace/TP/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug/libpush-library.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/Desarrollo/TP/push-library/Debug" -o "nucleo" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/utnso/workspace/TP/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug" -o "nucleo" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -43,6 +43,6 @@ clean:
 
 .PHONY: all clean dependents
 .SECONDARY:
-/home/utnso/Desarrollo/TP/push-library/Debug/libpush-library.so:
+/home/utnso/workspace/TP/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug/libpush-library.so:
 
 -include ../makefile.targets

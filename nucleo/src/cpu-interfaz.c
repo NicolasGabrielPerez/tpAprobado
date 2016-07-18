@@ -6,6 +6,8 @@ int cpu_listener;
 fd_set cpu_sockets_set;
 int fd_cpu_max;
 
+int test_mode;
+
 // SEND
 void sendPCB(int socket ,PCB* unPCB){
 	Buffer *buffer = malloc(sizeof(Buffer));
@@ -26,65 +28,77 @@ void handleCpuRequests(int socket){
 	message* mensaje;
 	mensaje = receiveMessage(socket);
 
-	if(mensaje->header == HEADER_HANDSHAKE){
-		handShakeWithCPU(socket);
+	if(mensaje->codError == SOCKET_DESCONECTADO){
+		log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
+		//TODO: Implementar apagado de CPU
+		//Sacar estructura de control de la lista general de cpu
+		//Mover PCB de lista de RUNNING a READY
 	}
 
-	if(mensaje->header == HEADER_NOTIFICAR_IO){
-		t_CPU* cpu = get_CPU_by_socket(socket);						//Obtengo estructura CPU
-		process_call_io(mensaje->contenido, cpu->PID);
+	if(!test_mode){
+		if(mensaje->header == HEADER_HANDSHAKE){
+			handShakeWithCPU(socket);
+		}
 
-		//Pedir PCB
-		//sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);
-		//Al pedir PCB, CPU debe enviarlo
-	}
+		if(mensaje->header == HEADER_NOTIFICAR_IO){
+			t_CPU* cpu = get_CPU_by_socket(socket);						//Obtengo estructura CPU
+			process_call_io(mensaje->contenido, cpu->PID);
 
-	//Recepción de estructura PCB desde CPU => actualiza PCB
-	if(mensaje->header == HEADER_ENVIAR_PCB){
-		PCB* pcb = deserialize_pcb(mensaje->contenido);
-		nucleo_updatePCB(pcb);
-	}
+			//Pedir PCB
+			//sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);
+			//Al pedir PCB, CPU debe enviarlo
+		}
 
-	if(mensaje->header == HEADER_NOTIFICAR_FIN_QUANTUM){
-		t_CPU* cpu = get_CPU_by_socket(socket);
-		nucleo_notificarFinDeQuantum(mensaje, cpu);
-	}
-	if(mensaje->header == HEADER_FIN_PROGRAMA){
-		t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
-		finalizarFelizmenteTodo(cpu->PID);				//Me encargo de notificar y destruir estructuras correspondientes
-	}
-	if(mensaje->header == HEADER_NOTIFICAR_FIN_RAFAGA){
-		//nucleo_notificarFinDeRafaga(mensaje);
-		t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
-		change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
-		//sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);	//Pedir PCB
-	}
-	if(mensaje->header == HEADER_NOTIFICAR_WAIT){
-		t_CPU* cpu = get_CPU_by_socket(socket);
-		nucleo_wait(mensaje, cpu);
-	}
-	if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
-		nucleo_signal(mensaje);
-	}
-	/*if(mensaje->header == HEADER_IMPRIMIR){
+		//Recepción de estructura PCB desde CPU => actualiza PCB
+		if(mensaje->header == HEADER_ENVIAR_PCB){
+			PCB* pcb = deserialize_pcb(mensaje->contenido);
+			nucleo_updatePCB(pcb);
+		}
+
+		if(mensaje->header == HEADER_NOTIFICAR_FIN_QUANTUM){
+			t_CPU* cpu = get_CPU_by_socket(socket);
+			nucleo_notificarFinDeQuantum(mensaje, cpu);
+		}
+		if(mensaje->header == HEADER_FIN_PROGRAMA){
+			t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
+			finalizarFelizmenteTodo(cpu->PID);				//Me encargo de notificar y destruir estructuras correspondientes
+		}
+		if(mensaje->header == HEADER_NOTIFICAR_FIN_RAFAGA){
+			//nucleo_notificarFinDeRafaga(mensaje);
+			t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
+			change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
+			//sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);	//Pedir PCB
+		}
+		if(mensaje->header == HEADER_NOTIFICAR_WAIT){
+			t_CPU* cpu = get_CPU_by_socket(socket);
+			nucleo_wait(mensaje, cpu);
+		}
+		if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
+			nucleo_signal(mensaje);
+		}
+		/*if(mensaje->header == HEADER_IMPRIMIR){
 		t_CPU* cpu = get_CPU_by_socket(socket);
 		nucleo_imprimir(mensaje, cpu);
 	}*/
-	if(mensaje->header == HEADER_IMPRIMIR_TEXTO){
-		t_CPU* cpu = get_CPU_by_socket(socket);
-		nucleo_imprimir_texto(mensaje, cpu);
-	}
-	//perror("header invalido");
-	//enviarFAIL(socket, HEADER_INVALIDO);
+		if(mensaje->header == HEADER_IMPRIMIR_TEXTO){
+			t_CPU* cpu = get_CPU_by_socket(socket);
+			nucleo_imprimir_texto(mensaje, cpu);
+		}
+		//perror("header invalido");
+		//enviarFAIL(socket, HEADER_INVALIDO);
 
-	if(mensaje->header == HEADER_SETEAR_VARIABLE){
-		t_globalVar* var = deserialize_globalVar(mensaje->contenido);
-		nucleo_setear_variable(var);
-	}
+		if(mensaje->header == HEADER_SETEAR_VARIABLE){
+			t_globalVar* var = deserialize_globalVar(mensaje->contenido);
+			nucleo_setear_variable(var);
+		}
 
-	if(mensaje->header == HEADER_OBTENER_VARIABLE){
-		t_CPU* cpu = get_CPU_by_socket(socket);
-		nucleo_obtener_variable(mensaje, cpu);
+		if(mensaje->header == HEADER_OBTENER_VARIABLE){
+			t_CPU* cpu = get_CPU_by_socket(socket);
+			nucleo_obtener_variable(mensaje, cpu);
+		}
+	}
+	else{	//Modo Test
+		log_trace(nucleo_logger, "COMMUNICATION TEST: ID Mensaje %d , Contenido: %s", mensaje->header, mensaje->contenido);
 	}
 }
 
@@ -215,37 +229,42 @@ void handleCPURequest(int cpu_socket){
 
 void manejarSocketChanges(int socket, fd_set* read_set){
 	if (FD_ISSET(socket, read_set)) {
+
 		if (socket == cpu_listener) { //nuevo cpu
 			int new_fd = aceptarNuevaConexion(cpu_listener);
 			actualizarFdCPUMax(new_fd);
 
+			handleCpuRequests(new_fd);
+
 			//Agrego un nuevo cpu a la lista de control
 			nucleo_nuevo_cpu(new_fd);
 		}
-
-	} else{
-		//handleCPURequest(socket);
-		handleCpuRequests(socket);
+		else{
+			handleCpuRequests(socket);
+		}
 	}
 }
 
 
 void manejarConexionesCPUs(){
-	fd_set read_fds; //set auxiliar
-	read_fds = cpu_sockets_set;
-	if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
-		perror("select");
-		exit(4);
-	}
-	int i;
-	for(i = 0; i <= fd_cpu_max; i++) {
-		manejarSocketChanges(i, &read_fds);
-	};
+
+
 }
 
-void cpu_comunication_program(){
+void* cpu_comunication_program(){
+	fd_set read_fds; //set auxiliar
+	read_fds = cpu_sockets_set;
+
 	while(1){
-		manejarConexionesCPUs();
+
+		if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
+			perror("select");
+			exit(4);
+		}
+		int i;
+		for(i = 0; i <= fd_cpu_max; i++) {
+			manejarSocketChanges(i, &read_fds);
+		};
 	}
 }
 

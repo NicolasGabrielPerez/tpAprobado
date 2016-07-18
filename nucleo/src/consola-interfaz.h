@@ -27,6 +27,6 @@
 
 	void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket);
 
-	void console_comunication_program();
+	void* console_comunication_program();
 
 #endif

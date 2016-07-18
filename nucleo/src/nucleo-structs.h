@@ -17,8 +17,12 @@
 #include <sockets/sockets.h>
 #include <sockets/config.h>
 #include <sockets/pcb.h>
+#include <pthread.h>
 #include "io-device.h"
 #include "cpu.h"
+#include "cpu-interfaz.h"
+#include "consola-interfaz.h"
+#include "planificador.h"
 
 extern int32_t memoryPageSize;
 extern u_int32_t quantum;
@@ -29,9 +33,12 @@ extern t_list* General_Process_List;			//Lista general de procesos (PCBs)
 extern t_list* CPU_control_list;				//Lista general que contiene las referencias a todos los CPUs conectado al módulo
 extern t_list* semaforo_control_list;			//Lista general de semáforos dedicado a operaciones privilegiadas
 extern t_dictionary* vars_control_dictionary;	//Diccionario general de variables globales
+extern char* umc_ip;
 
 extern char** io_ids;
 extern char** io_sleep_times;
+
+extern int test_mode;
 
 extern t_log* nucleo_logger;
 
@@ -65,4 +72,9 @@ void set_next_pcb_RUNNING(int cpu_id);
 int wait(char* id);
 void signal(char* id);
 void set_pcb_READY(PCB* pcb);
+
+void init_threads_config(pthread_attr_t nucleo_attr);
+void init_cpu_communication_thread(pthread_attr_t nucleo_attr);
+void init_console_communication_thread(pthread_attr_t nucleo_attr);
+
 #endif

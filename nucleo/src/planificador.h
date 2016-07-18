@@ -8,6 +8,6 @@
 #ifndef PLANIFICADOR_H_
 #define PLANIFICADOR_H_
 
-void plannificationProgram();
+void* plannificationProgram();
 
 #endif /* PLANIFICADOR_H_ */

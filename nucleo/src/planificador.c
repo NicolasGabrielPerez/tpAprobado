@@ -71,7 +71,7 @@ void planificar(){
 }
 
 //Al encontrar un cpu libre envía el proximo PCB READY a ejecución
-void plannificationProgram(){
+void* plannificationProgram(){
 	while(1){
 		t_CPU* freeCPU = get_next_free_CPU();
 		if(freeCPU != NULL){
