@@ -109,7 +109,7 @@ void enviarPageSize(int socket){
 	free(pageSizeSerializado);
 }
 
-int makeHandshake(int socket){
+int console_makeHandshake(int socket){
 	message* message = receiveMessage(socket);
 
 	if(message->codError == SOCKET_DESCONECTADO){
@@ -135,7 +135,7 @@ int makeHandshake(int socket){
 
 void manejarNuevasConexiones(){
 	int new_socket = aceptarNuevaConexion(listener);
-	int tipo = makeHandshake(new_socket);
+	int tipo = console_makeHandshake(new_socket);
 
 	if(tipo != -1){
 		crearHiloDeComponente(tipo, new_socket);

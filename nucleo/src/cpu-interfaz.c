@@ -1,5 +1,6 @@
 #include "cpu-interfaz.h"
 #include "umc-interfaz.h"
+#include "nucleo-structs.h"
 
 u_int32_t quantum;
 int cpu_listener;
@@ -7,21 +8,6 @@ fd_set cpu_sockets_set;
 int fd_cpu_max;
 
 int test_mode;
-
-// SEND
-void sendPCB(int socket ,PCB* unPCB){
-	Buffer *buffer = malloc(sizeof(Buffer));
-	buffer = new_buffer();
-	char* pcbzerial = serialize_pcb(unPCB ,buffer);
-	int size = sizeof(pcbzerial);
-	buffer_free( buffer);
-	sendMessage(socket, HEADER_ENVIAR_PCB,size , pcbzerial);
-}
-
-void notificar_a_cpu_su_muerte(int socket){
-
-	sendMessage(socket, SIGUSR1, 0 , "");
-}
 
 void handleCpuRequests(int socket){
 
@@ -61,13 +47,10 @@ void handleCpuRequests(int socket){
 		}
 		if(mensaje->header == HEADER_FIN_PROGRAMA){
 			t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
-			finalizarFelizmenteTodo(cpu->PID);				//Me encargo de notificar y destruir estructuras correspondientes
+			set_pcb_EXIT(cpu->PID);				//Me encargo de notificar y destruir estructuras correspondientes
 		}
 		if(mensaje->header == HEADER_NOTIFICAR_FIN_RAFAGA){
-			//nucleo_notificarFinDeRafaga(mensaje);
-			t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
-			change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
-			//sendMessage(socket, HEADER_ENVIAR_PCB, 0, 0);	//Pedir PCB
+			nucleo_notificarFinDeRafaga(mensaje, socket);
 		}
 		if(mensaje->header == HEADER_NOTIFICAR_WAIT){
 			t_CPU* cpu = get_CPU_by_socket(socket);
@@ -102,6 +85,26 @@ void handleCpuRequests(int socket){
 	}
 }
 
+//---------------------------------------------- <SEND>
+void handShakeWithCPU(int cpu_socket){
+	sendMessage(cpu_socket, HEADER_HANDSHAKE, 0, 0);
+}
+
+void cpu_sendPCB(PCB* pcb, int cpu_socket){
+	Buffer* buffer = new_buffer();
+	char* serialized_pcb = serialize_pcb(pcb, buffer);
+	int size = strlen(serialized_pcb);
+
+	sendMessage(cpu_socket, HEADER_ENVIAR_PCB, size, serialized_pcb);
+	cpu_sendQuantum(cpu_socket);
+}
+
+void cpu_sendQuantum(int cpu_socket){
+	sendMessageInt(cpu_socket, HEADER_ENVIAR_QUANTUM, quantum);
+}
+//---------------------------------------------- </SEND>
+
+//---------------------------------------------- <RECEIVE>
 PCB* nucleo_obtener_pcb(message* programBlock){
 
 	char* PCBSerialized = malloc(programBlock->contenidoSize);
@@ -115,7 +118,10 @@ void nucleo_notificarFinDeQuantum(message* mensaje, t_CPU* cpu){
 	log_trace(nucleo_logger, "PROGRAMA %s: Ejecución de quantum %d ", cpu->PID, mensaje->contenido);
 }
 
-void nucleo_notificarFinDeRafaga(message* mensaje){}
+void nucleo_notificarFinDeRafaga(message* mensaje, int socket){
+	t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
+	change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
+}
 
 void nucleo_notificarFinDePrograma(message* mensaje){//FINALIZADA
 	//int32_t PID
@@ -143,14 +149,14 @@ void nucleo_signal(message* mensaje){
 void nucleo_imprimir_texto(message* mensaje, t_CPU* cpu){
 	char* result = malloc(mensaje->contenidoSize);
 	result = mensaje->contenido;
-	sendResults(cpu->PID, result);
+	console_sendResults(cpu->PID, result);
 	free(result);
 }
 
 void nucleo_imprimir(message* mensaje, t_CPU* cpu){
 	char* result = malloc(sizeof("mensaje harcodeado de nucleo imprimir")+1);
 	result = "mensaje harcodeado de nucleo imprimir";
-	sendResults(cpu->PID, result);
+	console_sendResults(cpu->PID, result);
 }
 
 void nucleo_obtener_variable(message* mensaje, t_CPU* cpu){
@@ -161,19 +167,10 @@ void nucleo_obtener_variable(message* mensaje, t_CPU* cpu){
 void nucleo_setear_variable(t_globalVar* var){
 	set_var_value(var->varName, var->value);
 }
+//---------------------------------------------- </RECEIVE>
 
-//No se precisa
-void sendInstruction(int socket,char* instruccion){
-	int contenidoSize = sizeof(instruccion);
-
-	if (enviarOKConContenido(socket,contenidoSize,instruccion)<0){
-		perror ("send instruccion");
-		exit(1);
-	}
-
-}
-
-void initCPUListener(t_config* config){
+//---------------------------------------------- <COMMUNICATION>
+void com_initCPUListener(t_config* config){
 	char* puerto_cpu = config_get_string_value(config, "PUERTO_CPU");
 	cpu_listener = crear_puerto_escucha(puerto_cpu);
 	FD_ZERO(&cpu_sockets_set);    // clear the master and temp sets
@@ -181,58 +178,16 @@ void initCPUListener(t_config* config){
 	fd_cpu_max = cpu_listener;
 }
 
-void actualizarFdCPUMax(int socket){
+void com_actualizarFdCPUMax(int socket){
 	if(socket>fd_cpu_max) fd_cpu_max = socket;
 }
 
-void handShakeWithCPU(int cpu_socket){
-	sendMessage(cpu_socket, HEADER_HANDSHAKE, 0, 0);
-}
-
-
-void cpu_sendPCB(PCB* pcb, int cpu_socket){
-	Buffer* buffer = new_buffer();
-	char* serialized_pcb = serialize_pcb(pcb, buffer);
-	int size = strlen(serialized_pcb);
-
-	sendMessage(cpu_socket, HEADER_ENVIAR_PCB, size, serialized_pcb);
-	cpu_sendQuantum(cpu_socket);
-}
-
-
-void cpu_sendQuantum(int cpu_socket){
-	sendMessageInt(cpu_socket, HEADER_ENVIAR_QUANTUM, quantum);
-}
-
-void finPrograma(int cpu_socket){
-	sendMessage(cpu_socket, HEADER_FIN_PROGRAMA, 0, "");
-}
-
-void handleCPURequest(int cpu_socket){
-	char* header = malloc(HEADER_SIZE);
-	if (recv((int)socket, header, HEADER_SIZE, 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
-	int32_t iHeader = convertToInt32(header);
-	if(iHeader == HEADER_HANDSHAKE){
-		handShakeWithCPU(cpu_socket);
-		return;
-	}
-	if(iHeader == FIN_PROGRAMA){
-		finPrograma(cpu_socket);
-		return;
-	}
-
-	enviarFAIL(cpu_socket, HEADER_INVALIDO);
-}
-
-void manejarSocketChanges(int socket, fd_set* read_set){
+void com_manejarSocketChanges(int socket, fd_set* read_set){
 	if (FD_ISSET(socket, read_set)) {
 
 		if (socket == cpu_listener) { //nuevo cpu
 			int new_fd = aceptarNuevaConexion(cpu_listener);
-			actualizarFdCPUMax(new_fd);
+			com_actualizarFdCPUMax(new_fd);
 
 			handleCpuRequests(new_fd);
 
@@ -245,10 +200,21 @@ void manejarSocketChanges(int socket, fd_set* read_set){
 	}
 }
 
+void com_manejarConexionesCPUs(){
+	fd_set read_fds; //set auxiliar
+		read_fds = cpu_sockets_set;
 
-void manejarConexionesCPUs(){
+		while(1){
 
-
+			if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
+				perror("select");
+				exit(4);
+			}
+			int i;
+			for(i = 0; i <= fd_cpu_max; i++) {
+				com_manejarSocketChanges(i, &read_fds);
+			};
+		}
 }
 
 void* cpu_comunication_program(){
@@ -263,14 +229,8 @@ void* cpu_comunication_program(){
 		}
 		int i;
 		for(i = 0; i <= fd_cpu_max; i++) {
-			manejarSocketChanges(i, &read_fds);
+			com_manejarSocketChanges(i, &read_fds);
 		};
 	}
 }
-
-//Agrega un nuevo cpu a la lista general de control
-void nucleo_nuevo_cpu(int cpu_socket){
-	t_CPU* cpu = new_cpu(cpu_socket);
-	add_new_cpu(cpu);
-	log_trace(nucleo_logger, "COMUNICACION: nuevo cpu conectado  %d", cpu_socket);
-}
+//---------------------------------------------- </COMMUNICATION>

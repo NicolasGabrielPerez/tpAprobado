@@ -17,5 +17,6 @@ t_CPU* get_next_free_CPU();
 t_CPU* get_CPU_by_socket(int socket);
 t_CPU* new_cpu(int cpu_id);
 void add_new_cpu(t_CPU* cpu);
+void liberarCpu(int socket);
 
 #endif /* CPU_H_ */

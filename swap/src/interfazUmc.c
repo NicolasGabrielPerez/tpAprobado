@@ -128,7 +128,7 @@ void recibirFinPrograma(){
 	enviarResultado(finalizarResult, umc_socket);
 }
 
-void makeHandshake(){
+void console_makeHandshake(){
 	char mensajeInicial[10] = "Soy Swap!";
 	enviarOKConContenido(umc_socket, sizeof(mensajeInicial), mensajeInicial);
 }

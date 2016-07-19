@@ -177,6 +177,13 @@ void set_pcb_BLOCKED(PCB* pcb){
 	queue_push(BLOCKED_Process_Queue, pcb);
 }
 
+//Rutina de finalización de un programa
+void set_pcb_EXIT(int processID){
+	umc_notificarFinDePrograma(processID);		//Notifica fin de programa a UMC
+	end_process(processID);						//Destruye las estructuras del proceso dentro del núcleo
+	console_endProgram(processID);				//Notifica fin de programa a Consola
+}
+
 void change_status_RUNNING_to_READY(t_CPU* cpu){
 	//sacar PCB de RUNNING
 	PCB* pcb = remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
@@ -200,7 +207,7 @@ void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
 
 //Finalizar un proceso
 void end_process(int PID){
-
+	//TODO:Implementar
 }
 
 void nucleo_updatePCB(PCB* newPCB){
@@ -286,7 +293,7 @@ void init_cpu_communication_thread(pthread_attr_t nucleo_attr){
 
 void init_console_communication_thread(pthread_attr_t nucleo_attr){
 	pthread_t consoleCommunicationThread;
-	pthread_create(&consoleCommunicationThread, &nucleo_attr, &manejarConexionesConsolas, NULL);
+	pthread_create(&consoleCommunicationThread, &nucleo_attr, &console_comunication_program, NULL);
 }
 
 void init_planification_thread(pthread_attr_t nucleo_attr){
@@ -295,4 +302,11 @@ void init_planification_thread(pthread_attr_t nucleo_attr){
 }
 //---------------------------------------------- </PROGRAMA>
 
-
+//---------------------------------------------- <CPU>
+//Agrega un nuevo cpu a la lista general de control
+void nucleo_nuevo_cpu(int cpu_socket){
+	t_CPU* cpu = new_cpu(cpu_socket);
+	add_new_cpu(cpu);
+	log_trace(nucleo_logger, "COMUNICACION: nuevo cpu conectado  %d", cpu_socket);
+}
+//---------------------------------------------- </CPU>

@@ -19,8 +19,8 @@ int main(void) {
 	t_config* config = getConfig("nucleo.config");
 
 	initNucleo(config); //lee valores de quantum y io
-	initCPUListener(config);
-	//initConsolaListener(config);
+	com_initCPUListener(config);
+	com_initConsolaListener(config);
 	conectarConUMC(config); //conecta con UMC y hace handshake
 
 	nucleo_logger = log_create("nucleo_log.txt", "Núcleo", true, LOG_LEVEL_TRACE);

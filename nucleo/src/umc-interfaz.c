@@ -5,6 +5,7 @@
 
 int socket_umc;
 
+//---------------------------------------------- <SEND>
 //Valida con la UMC si es posible almacenar el nuevo programa y lo almacena
 void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char* program){
 
@@ -16,7 +17,6 @@ void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char
 	message* message = receiveMessage(socket_umc);
 	if(message->header == HEADER_PAGINAS_DISPONIBLES){
 		//Notificar programa aceptado
-
 		sendMessage(pcb->processId, HEADER_PAGINAS_DISPONIBLES, 0, 0);
 		//Agregar PCB a la lista general
 		add_pcb_to_general_list(pcb);
@@ -38,15 +38,26 @@ void umc_endProgram(u_int32_t PID){
 	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, PID);
 }
 
-void aceptarPrograma(message* mensaje){
-	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
-	add_pcb_to_general_list(nuevoPCB);
-}
-
 //Envía el PID del programa a finalizar
 void umc_notificarFinDePrograma(int processID){
 	char* stringPID = string_itoa(processID);		//Convierte el ID a string
 	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, sizeof(stringPID), stringPID);
+}
+
+void handshake_con_UMC(){
+	sendMessageInt(socket_umc,HEADER_HANDSHAKE, TIPO_NUCLEO);
+	//Recibir tamaño de página
+	message* pageSizeMessage = receiveMessage(socket_umc);
+
+	memoryPageSize = convertToInt32(pageSizeMessage->contenido);
+
+	free(pageSizeMessage->contenido);
+	free(pageSizeMessage);
+}
+//---------------------------------------------- </SEND>
+void aceptarPrograma(message* mensaje){
+	PCB* nuevoPCB = deserialize_pcb( mensaje->contenido);
+	add_pcb_to_general_list(nuevoPCB);
 }
 
 void conectarConUMC(t_config* config){
@@ -58,16 +69,5 @@ void conectarConUMC(t_config* config){
 	log_trace(nucleo_logger, "COMUNICACIÓN: Realizada conexión con UMC");
 }
 
-void handshake_con_UMC(){
-	sendMessageInt(socket_umc,HEADER_HANDSHAKE, TIPO_NUCLEO);
-
-	//Recibir tamaño de página
-	message* pageSizeMessage = receiveMessage(socket_umc);
-
-	memoryPageSize = convertToInt32(pageSizeMessage->contenido);
-
-	free(pageSizeMessage->contenido);
-	free(pageSizeMessage);
-}
 
 

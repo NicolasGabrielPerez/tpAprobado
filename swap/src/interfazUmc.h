@@ -17,6 +17,6 @@
 
 	void recibirFinPrograma();
 
-	void makeHandshake();
+	void console_makeHandshake();
 
 #endif /* INTERFAZ_UMC_H_ */

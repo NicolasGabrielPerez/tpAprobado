@@ -11,7 +11,7 @@ void handshake_con_UMC();
 
 void conectarConUMC(t_config* config);
 
-void umc_notificarFinDePrograma();
+void umc_notificarFinDePrograma(int processID);
 
 void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char* program);
 

@@ -9,21 +9,19 @@
 	extern int fd_consola_max;
 	extern int consola_listener;
 
-	void initConsolaListener(t_config* config);
+	void com_initConsolaListener(t_config* config);
 
-	void manejarConexionesConsolas();
+	void com_manejarConexionesConsolas();
 
 	void console_endProgram(int socket);
 
-	void sendResults(int socket, char* result);
+	void console_sendResults(int socket, char* result);
 
 	void handleConsoleRquests(int socket);
 
-	char* recibirProgramaANSISOP(message* ANSISOP);
+	char* nucleo_recibirProgramaANSISOP(message* ANSISOP);
 
-	void makeHandshake(int consola_socket);
-
-	void finalizarFelizmenteTodo(int processID);
+	void console_makeHandshake(int consola_socket);
 
 	void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSocket);
 

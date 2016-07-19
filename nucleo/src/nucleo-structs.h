@@ -53,6 +53,7 @@ void set_IO_devices_list();
 void set_pcb_READY(PCB* pcb);
 void set_pcb_RUNNING(PCB* pcb);
 void set_pcb_BLOCKED(PCB* pcb);
+void set_pcb_EXIT(int processID);
 
 int getProgramPagesCount(char* program);
 
@@ -77,4 +78,8 @@ void init_threads_config(pthread_attr_t nucleo_attr);
 void init_cpu_communication_thread(pthread_attr_t nucleo_attr);
 void init_console_communication_thread(pthread_attr_t nucleo_attr);
 
+t_semaforo* get_semaforo_by_ID(t_list* list, char* id);
+void queue_blocked_process_to_semaforo(char* id, PCB* pcb);
+
+void nucleo_nuevo_cpu(int cpu_socket);
 #endif
