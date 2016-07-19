@@ -286,7 +286,7 @@ void init_cpu_communication_thread(pthread_attr_t nucleo_attr){
 
 void init_console_communication_thread(pthread_attr_t nucleo_attr){
 	pthread_t consoleCommunicationThread;
-	pthread_create(&consoleCommunicationThread, &nucleo_attr, &console_comunication_program, NULL);
+	pthread_create(&consoleCommunicationThread, &nucleo_attr, &manejarConexionesConsolas, NULL);
 }
 
 void init_planification_thread(pthread_attr_t nucleo_attr){
