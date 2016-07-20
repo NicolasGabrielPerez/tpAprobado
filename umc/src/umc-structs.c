@@ -111,6 +111,8 @@ tabla_de_paginas* crearTablaDePaginas(int pid, int cantPaginas){
 		pageEntry->nroPagina = i;
 		pageEntry->pid = pid;
 		pageEntry->presente = 0;
+		pageEntry->uso = 0;
+		pageEntry->modificado = 0;
 		list_add(tablaDePaginas->entradas, pageEntry);
 	}
 	return tablaDePaginas;
@@ -164,6 +166,8 @@ void borrarTablaDePaginas(tabla_de_paginas* tablaDePaginas){
 
 response* finalizarPidDeUMC(int pid){
 
+	demorarSolicitud();
+
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(pid);
 
 	// verificar que exista pid
@@ -190,10 +194,12 @@ response* initProgramaUMC(int pid, int cantPaginas){
 
 	int i;
 	for(i = 0; i<marcos_x_proc; i++){
-		presente* presente = malloc(sizeof(presente));
-		presente->nroFrame = -1;
-		presente->nroPagina = -1;
-		list_add(presentes, presente);
+		presente* presenteNuevo = malloc(sizeof(presente));
+		presenteNuevo->nroFrame = -1;
+		presenteNuevo->nroPagina = -1;
+		presenteNuevo->uso = 0;
+		presenteNuevo->modificado = 0;
+		list_add(presentes, presenteNuevo);
 	}
 
 	tablaDePaginas->presentes = presentes;
@@ -266,7 +272,7 @@ int obtenerFrameDisponible(){
 
 void cargarEnMemoriaPrincipal(char* pagina, int nroFrame){
 	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(nroFrame);
-	memcpy(entrada->direccion_real, pagina, 5);
+	memcpy(entrada->direccion_real, pagina, marco_size);
 }
 
 void cargarPagina(int nroPagina, int pid, char* pagina){

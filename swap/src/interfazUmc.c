@@ -50,10 +50,12 @@ void recibirInitPrograma(){
 
 	if(!hayEspacioDisponible(cantPaginas)){
 		enviarFAIL(umc_socket, ESPACIO_NO_DISPONIBLE);
+		log_warning(logger, "No hay espacio disponible");
 		return;
 	}
 	if(existePid(pid)){
 		enviarFAIL(umc_socket, PID_YA_EXISTE);
+		log_error(logger, "Pid %d ya existe", pid);
 		return;
 	}
 
@@ -61,7 +63,7 @@ void recibirInitPrograma(){
 
 	enviarOKSinContenido(umc_socket);
 
-	log_info(logger, "Pid %d iniciado", pid);
+	log_info(logger, "Enviada respuesta. Pid %d iniciado", pid);
 }
 
 void recibirPedidoPagina(){
@@ -115,7 +117,10 @@ void recibirFinPrograma(){
 		exit(1);
 	}
 
+	log_info(logger, "Pedido fin> Pid: %d", pid);
+
 	if(!existePid(pid)){
+		log_warning(logger, "Pid: %d no existe", pid);
 		respuesta = string_itoa(RESPUESTA_FAIL);
 		if (send(umc_socket, respuesta, sizeof(int32_t), 0) == -1) {
 				perror("send");

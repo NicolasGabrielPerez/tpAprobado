@@ -130,6 +130,8 @@ void crearBitMap(){
 	for(i=0; i<cantPaginasSwap; i++){
 		bitarray_clean_bit(swapAdmin->bitMap, i);
 	}
+
+	log_trace(logger, "Cread bitmap. Cantiad de bits: %d", bitarray_get_max_bit(swapAdmin->bitMap));
 }
 
 void crearFramesTable(){
@@ -143,12 +145,13 @@ void crearFramesTable(){
 		list_add(framesEntries, frameEntry);
 	}
 	swapAdmin->framesEntries = framesEntries;
+	log_trace(logger, "Creada table de frames. Cantidad de entradas: %d", list_size(swapAdmin->framesEntries));
 }
 
 int crearAdminStructs(){
 	swapAdmin = malloc(sizeof(swap_admin));
-	crearBitMap(swapAdmin);
-	crearFramesTable(swapAdmin);
+	crearBitMap();
+	crearFramesTable();
 
 	return EXIT_SUCCESS;
 }

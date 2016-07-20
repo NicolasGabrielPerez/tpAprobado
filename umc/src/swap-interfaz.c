@@ -56,24 +56,25 @@ response* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
 	return swapResponse;
 }
 
-response* finalizarProgramaSwap(int* pid){
+response* finalizarProgramaSwap(int pid){
 	pthread_mutex_lock(&swap_semaphore);
 	log_trace(logger, "Enviando fin de pid %d a Swap...", pid);
 	if (send(swap_socket, &HEADER_FIN_PROGRAMA, sizeof(int32_t), 0) == -1) {
 		perror("send");
 		exit(1);
 	}
-	if (send(swap_socket, pid, sizeof(int32_t), 0) == -1) {
+	if (send(swap_socket, &pid, sizeof(int32_t), 0) == -1) {
 		perror("send");
 		exit(1);
 	}
-	char* respuestaSwap = malloc(RESPUESTA_SIZE);
-	if (recv(swap_socket, respuestaSwap, RESPUESTA_SIZE, 0) == -1) {
-		perror("recv");
-		exit(1);
-	}
+
 	response* swapResponse = recibirResponse(swap_socket);
-	log_trace(logger, "Obtenida respuesta de Swap");
+	if(swapResponse->ok){
+		log_info(logger, "Obtenida respuesta OK de Swap");
+	} else{
+		log_warning(logger, "Obtenido error %d de Swap", swapResponse->codError);
+	}
+
 	pthread_mutex_unlock(&swap_semaphore);
 	return swapResponse;
 }

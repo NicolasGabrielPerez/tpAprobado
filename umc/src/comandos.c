@@ -11,6 +11,16 @@ void printPagesTable(tabla_de_paginas* tabla){
 				entry->nroPagina, entry->presente, entry->nroFrame, entry->uso, entry->modificado);
 		printf("------- Fin entrada de tabla -------\n");
 	}
+
+	int j;
+	printf("Presentes\n");
+	for(j=0; j< list_size(tabla->presentes); j++){
+		presente* presente = list_get(tabla->presentes, j);
+		printf("Pagina: %d | Frame= %d | U=%d | M=%d\n",
+						presente->nroPagina, presente->nroFrame, presente->uso, presente->modificado);
+
+	}
+
 	printf("----------------- Fin de tabla -----------------\n");
 }
 

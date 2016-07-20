@@ -22,6 +22,8 @@
 
 	response* getPagina(int nroPagina, int pid);
 
+	int cantFramesDisponibles();
+
 	void initLogger();
 
 #endif /* PAGES_ADMIN_H_ */

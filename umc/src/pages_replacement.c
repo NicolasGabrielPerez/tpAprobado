@@ -10,7 +10,7 @@ void init(enum AlgoritmoReemplazo algoritmoReemplzao){
 	algoritmo = algoritmoReemplzao;
 }
 
-void prepararPresenteParaSerCargado(presente* presente, tabla_de_paginas* tablaDePaginas, int nroPagina){
+void cargarNroPagYFrame(presente* presente, tabla_de_paginas* tablaDePaginas, int nroPagina){
 	if((presente->nroPagina != -1) && presente->modificado){ //REEMPLAZO DE PAGINA
 		//Escribir en swap lo que va a ser reemplazado
 		tabla_de_frame_entry* victimaFrame = obtenerEntradaDeFrame(presente->nroFrame);
@@ -147,6 +147,14 @@ presente* buscarPresente(tabla_de_paginas* tablaDePaginas, int nroPagina){
 	return presente;
 }
 
+void actualizarPaginaVictima(int pid, int nroPagina){
+	if(nroPagina == -1){
+		return; // nada que actualizar
+	}
+	tabla_de_paginas_entry* victimPage = obtenerEntradaDePagina(pid, nroPagina);
+	victimPage->presente = 0;
+}
+
 umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina){
 
 	//chequear nroPagina existe
@@ -158,6 +166,7 @@ umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina){
 	if(pageEntry->presente){ //NO HAY PAGE FAULT. Aguja sigue igual y bit de referencia de LA PAGINA se pone en 1
 		pageEntry->uso = 1;
 		presente* presente = buscarPresente(tablaDePaginas, nroPagina);
+		presente->uso = 1;
 		tabla_de_frame_entry* frameEntry = obtenerEntradaDeFrame(presente->nroFrame);
 		return createUmcResult(1, 0, pageEntry, frameEntry);
 	}
@@ -166,10 +175,15 @@ umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina){
 	//Es decir, hay que buscar el indice de la victima, dentro de la lista de presentes
 	//Actualizar aguja, y bits de uso
 	presente* presenteACargar = obtenerIndiceDondeCargar(tablaDePaginas);
-	prepararPresenteParaSerCargado(presenteACargar, tablaDePaginas, nroPagina);
+
+	actualizarPaginaVictima(tablaDePaginas->pid, presenteACargar->nroPagina);
+
+	cargarNroPagYFrame(presenteACargar, tablaDePaginas, nroPagina);
 
 	cargarEnPresentes(tablaDePaginas->pid, presenteACargar); //cargar nuevo presente en memoria real
 	pageEntry->presente = 1;
+	pageEntry->nroFrame = presenteACargar->nroFrame;
+	presenteACargar->uso = 1;
 	tabla_de_frame_entry* frameCargado = obtenerEntradaDeFrame(presenteACargar->nroFrame);
 
 	return createUmcResult(1, 0, pageEntry, frameCargado);

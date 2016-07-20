@@ -7,6 +7,7 @@ void operarSegunHeader(int32_t header){
 	if(header == HEADER_INIT_PROGRAMA){
 		log_info(logger, "Recibido Header Init Programa");
 		recibirInitPrograma();
+		log_info(logger, "Cantidad de frames disponibles: %d", cantFramesDisponibles());
 		return;
 	}
 	if(header == HEADER_SOLICITAR_PAGINAS){
@@ -21,7 +22,8 @@ void operarSegunHeader(int32_t header){
 	}
 	if(header == HEADER_FIN_PROGRAMA){
 		log_info(logger, "Recibido Header Fin Programa");
-		recibirFinPrograma(); //TODO revisar
+		recibirFinPrograma();
+		log_info(logger, "Cantidad de frames disponibles: %d", cantFramesDisponibles());
 		return;
 	}
 }
@@ -47,16 +49,10 @@ int main(void) {
 
 		bytes_recibidos = recv(umc_socket, header, HEADER_SIZE, 0);
 
-		if(bytes_recibidos == -1) {
-		   perror("recv");
-		   exit(1);
+		if(bytes_recibidos <= 0) {
+			log_warning(logger, "Conexion con UMC finalizada");
+		    break;
 		}
-
-		 if (bytes_recibidos == 0) {
-		   // connection closed
-		   printf("UMC hung up\n");
-		   break;
-	   }
 
 	   memcpy(&headerInt, header, sizeof(int32_t));
 	   operarSegunHeader(headerInt);

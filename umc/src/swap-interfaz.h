@@ -12,7 +12,7 @@
 
 	response* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente);
 
-	response* finalizarProgramaSwap(int* pid);
+	response* finalizarProgramaSwap(int pid);
 
 	response* pedirPaginaASwap(int nroPagina, int pid);
 

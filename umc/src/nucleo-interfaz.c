@@ -52,7 +52,7 @@ void recibirFinalizarPrograma(int nucleo_socket){
 		return;
 	}
 
-	response* swapResponse = finalizarProgramaSwap(&pid);
+	response* swapResponse = finalizarProgramaSwap(pid);
 	log_trace(logger, "Pid %d finalizado", pid);
 	enviarResponse(nucleo_socket, swapResponse);
 	log_trace(logger, "Enviada respuesta OK! de fin pid %d", pid);

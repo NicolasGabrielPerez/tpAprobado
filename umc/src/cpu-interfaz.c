@@ -1,8 +1,5 @@
 #include "cpu-interfaz.h"
 
-#include "pages_replacement.h"
-#include "umc-structs.h"
-
 void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 	int32_t nroPagina;
 	int32_t offset;

@@ -121,10 +121,12 @@ int console_makeHandshake(int socket){
 
 	if(tipo == TIPO_NUCLEO){
 		log_trace(logger, "Nuevo conexion de NUCLEO [Socket %d]", socket);
+		sendMessageInt(socket, HEADER_HANDSHAKE, marco_size);
 		return TIPO_NUCLEO;
 	}
 	if(tipo == TIPO_CPU){
 		log_trace(logger, "Nuevo conexion de CPU [Socket %d]", socket);
+		sendMessageInt(socket, HEADER_HANDSHAKE, marco_size);
 		return TIPO_CPU;
 	}
 
@@ -153,6 +155,8 @@ int main(void) {
 
 	initMemoriaPrincipal(config);
 
+	initUmcConsole();
+
 	initTLB(config);
 
 	initSwap(config);
@@ -165,8 +169,6 @@ int main(void) {
 	listener = crear_puerto_escucha(puerto_cpu_nucleo);
 
 	config_destroy(config);
-
-	initUmcConsole();
 
 	while(1){
 		printf("Esperando conexiones...\n");

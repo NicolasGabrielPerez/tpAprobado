@@ -26,13 +26,13 @@ endif
 all: umc
 
 dependents:
-	-cd /home/utnso/Desarrollo/TP/push-library/Debug && $(MAKE) clean all
+	-cd /home/utnso/git/tp/push-library/Debug && $(MAKE) all
 
 # Tool invocations
-umc: $(OBJS) $(USER_OBJS) /home/utnso/Desarrollo/TP/push-library/Debug/libpush-library.so
+umc: $(OBJS) $(USER_OBJS) /home/utnso/git/tp/push-library/Debug/libpush-library.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/Desarrollo/TP/push-library/Debug" -o "umc" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/utnso/git/tp/push-library/Debug" -o "umc" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -43,6 +43,6 @@ clean:
 
 .PHONY: all clean dependents
 .SECONDARY:
-/home/utnso/Desarrollo/TP/push-library/Debug/libpush-library.so:
+/home/utnso/git/tp/push-library/Debug/libpush-library.so:
 
 -include ../makefile.targets

@@ -65,6 +65,7 @@ void setearFramesEntriesNuevoPid(int nroFrameNuevoPrograma, int pid, int cantPag
 		frameEntry->nroPagina = indicePagina;
 		indicePagina++;
 		frameEntry->pid = pid;
+		setearOcupado(indiceFrame);
 	}
 }
 
@@ -96,15 +97,15 @@ void escribirNuevoPrograma(int pid, int cantPaginas, char* codFuente, int nroFra
 int hayEspacioContiguo(int indice, int cantPaginas){
 	int i;
 	int end = indice+cantPaginas;
-	int contadorEspacioContiguo;
-	for(i=indice; i<end; i++){
+	int contadorEspacioContiguo = 0;
+	for(i=indice; i<end && contadorEspacioContiguo<cantPaginas && i<cantPaginasSwap; i++){
 		if(frameDisponible(i)){
 			contadorEspacioContiguo++;
 		} else{
 			return false;
 		}
 	}
-	return true;
+	return contadorEspacioContiguo >= cantPaginas;
 }
 
 int getEspacioContiguoStart(int cantPaginas){
@@ -144,6 +145,7 @@ int bajarNextUsed(int nroFrameDisponible){ //return -1 si no hay nada que bajar.
 }
 
 void desfragmentarParticion(){
+	log_trace(logger, "Compactando particion...");
 	int i;
 
 	for(i = 0; i< cantPaginasSwap; i++){
@@ -159,6 +161,7 @@ void initPaginas(int pid, int cantPaginas, char* codFuente){
 		escribirNuevoPrograma(pid, cantPaginas, codFuente, nroFrameNuevoPrograma);
 		return;
 	}
+
 	//Ya viene verificado que existe espacio disponible para esa cantidad de paginas
 	//Pero en este caso habria que desfragmentar para poder reservar espacio contiguo
 	desfragmentarParticion();
@@ -198,6 +201,7 @@ response* finalizarPrograma(int pid){
 		frame_entry* frameEntry = list_get(entries, i);
 		frameEntry->pid = 0;
 		liberarFrame(frameEntry->nroFrame);
+		log_info(logger, "Frame %d liberado", frameEntry->nroFrame);
 	}
 	return createOKResponse();
 }

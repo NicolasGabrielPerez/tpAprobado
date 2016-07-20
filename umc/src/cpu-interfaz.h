@@ -1,5 +1,6 @@
 #ifndef CPU_INTERFAZ_H_
 #define CPU_INTERFAZ_H_
+#include "pages_replacement.h"
 #include "umc-structs.h"
 #include <sockets/communication.h>
 
