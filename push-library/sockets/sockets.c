@@ -73,7 +73,7 @@ int crear_socket_cliente(char* ip, char* port) { //devuelve un nuevo socket para
 	}
 
 	if (p == NULL) { //hubo error...
-		fprintf(stderr, "client: failed to connect\n");
+		fprintf(stderr, "Cliente: fallo al conectar\n");
 		return 2;
 	}
 
@@ -85,29 +85,6 @@ int crear_socket_cliente(char* ip, char* port) { //devuelve un nuevo socket para
 	freeaddrinfo(servinfo); // all done with this structure
 
 	return sockfd;
-}
-
-char* handshake(int sockfd, char* send_messaage){
-	int message_size = HANDSHAKE_MESSAGE_SIZE;
-	char buf[message_size];
-	int numbytes; //lo uso para poner la cantidad de bytes recibidos
-	puts("Voy a enviar algo...\n");
-	if (send(sockfd,send_messaage, message_size, 0) == -1) {
-	  perror("send");
-	}
-
-	if ((numbytes = recv(sockfd, buf, message_size, 0)) == -1) {
-		perror("recv");
-		exit(1);
-	}
-
-	printf("received '%s'\n",buf);
-	printf("numbytes: '%d'\n",numbytes);
-	buf[numbytes] = '\0';
-
-	puts("Handshake finalizado felizmente\n");
-
-	return buf;
 }
 
 int crear_puerto_escucha(char* port){
@@ -144,7 +121,7 @@ int crear_puerto_escucha(char* port){
 
    // if we got here, it means we didn't get bound
    if (p == NULL) {
-	   fprintf(stderr, "selectserver: failed to bind\n");
+	   fprintf(stderr, "Server: fallo al hacer bind en puerto %s\n", port);
 	   exit(2);
    }
 
@@ -207,8 +184,7 @@ int aceptarNuevaConexion(int listener){
 	if (new_socket == -1) {
 		perror("accept");
 	}
-	printf("umc: new connection from %s on "
-	"socket %d\n",
+	printf("Nueva conexion %s en socket %d\n",
 	inet_ntop(remoteaddr.ss_family,
 	get_in_addr((struct sockaddr*)&remoteaddr),
 			remoteIP, INET6_ADDRSTRLEN),
