@@ -50,7 +50,7 @@ bool umc_init(t_config* config){
 	}
 
 	message* message = receiveMessage(socket_umc);
-	if(message->codError != -1) {
+	if(message->header != HEADER_HANDSHAKE) {
 		log_error(logger, "UMC: Error en handshake");
 		return false;
 	}

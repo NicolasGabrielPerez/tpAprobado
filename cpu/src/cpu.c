@@ -180,12 +180,14 @@ int main(int argc, char **argv) {
 
 	log_trace(logger, "Iniciada la configuracion");
 
-	bool success = nucleo_init(config);
+	bool success;
+
+	success = nucleo_init(config);
 	if(!success) {
 		exitProgram();
 	}
 
-	//success = umc_init(config);
+	success = umc_init(config);
 	if(!success) {
 		exitProgram();
 	}
