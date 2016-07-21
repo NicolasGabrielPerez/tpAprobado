@@ -77,7 +77,12 @@ void free_stackContent(t_stackContent* stackContent) {
 }
 
 void free_pcb(PCB* pcb) {
-
+	//int i;
+	//t_intructions instruction;
+	/*for( i = pcb->instructionsCount - 1 ; i > 0 ; i-- ){
+		instruction = pcb->codeIndex[i];
+		free(instruction);
+	}*/
 	list_destroy_and_destroy_elements(pcb->stack, free_stackContent);
 	free(pcb);
 }

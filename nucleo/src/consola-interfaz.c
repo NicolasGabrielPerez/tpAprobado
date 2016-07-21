@@ -76,11 +76,14 @@ void console_makeHandshake(int consola_socket){
 	sendMessage(consola_socket, HEADER_HANDSHAKE, 0, NULL);
 }
 
-void com_manejarCambiosEnSocket(int socket, fd_set* read_set){
+void com_consoleManejarCambiosEnSocket(int socket, fd_set* read_set){
 	if (FD_ISSET(socket, read_set)) {
-		if (socket == consola_listener) { //nuevo cpu
+		if (socket == consola_listener) {
 			int new_fd = aceptarNuevaConexion(consola_listener);
 			actualizarFdMax(new_fd);
+			handleConsoleRquests(new_fd);
+
+			FD_SET(new_fd, read_set);
 		} else{
 			//Cambio en socket consola => interpretar los mensajes de forma apropiada
 			handleConsoleRquests(socket);
@@ -99,25 +102,25 @@ void com_manejarConexionesConsolas(){
 
 	int i;
 	for(i = 0; i <= fd_consola_max; i++) {
-		com_manejarCambiosEnSocket(i, &read_fds);
+		com_consoleManejarCambiosEnSocket(i, &read_fds);
 	}
 }
 
 void* console_comunication_program(){
 	fd_set read_fds; //set auxiliar
-		read_fds = consola_sockets_set;
+	read_fds = consola_sockets_set;
 
-		while(1){
+	while(1){
 
-			if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
-				perror("select");
-				exit(4);
-			}
-			int i;
-			for(i = 0; i <= fd_cpu_max; i++) {
-				com_manejarSocketChanges(i, &read_fds);
-			};
+		if (select(fd_consola_max+1, &read_fds, NULL, NULL, NULL) == -1) {
+			perror("select");
+			exit(4);
 		}
+		int i;
+		for(i = 0; i <= fd_consola_max; i++) {
+			com_consoleManejarCambiosEnSocket(i, &read_fds);
+		};
+	}
 
 	/*while(1){
 		manejarConexionesConsolas();

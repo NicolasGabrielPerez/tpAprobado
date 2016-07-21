@@ -207,7 +207,8 @@ void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
 
 //Finalizar un proceso
 void end_process(int PID){
-	//TODO:Implementar
+	PCB* pcb = remove_pcb_by_ID(General_Process_List, PID);
+	free_pcb(pcb);
 }
 
 void nucleo_updatePCB(PCB* newPCB){

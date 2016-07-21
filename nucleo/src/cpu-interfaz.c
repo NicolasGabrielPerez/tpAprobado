@@ -182,7 +182,7 @@ void com_actualizarFdCPUMax(int socket){
 	if(socket>fd_cpu_max) fd_cpu_max = socket;
 }
 
-void com_manejarSocketChanges(int socket, fd_set* read_set){
+void com_cpuManejarSocketChanges(int socket, fd_set* read_set){
 	if (FD_ISSET(socket, read_set)) {
 
 		if (socket == cpu_listener) { //nuevo cpu
@@ -193,6 +193,7 @@ void com_manejarSocketChanges(int socket, fd_set* read_set){
 
 			//Agrego un nuevo cpu a la lista de control
 			nucleo_nuevo_cpu(new_fd);
+			FD_SET(new_fd, read_set);
 		}
 		else{
 			handleCpuRequests(socket);
@@ -212,7 +213,7 @@ void com_manejarConexionesCPUs(){
 			}
 			int i;
 			for(i = 0; i <= fd_cpu_max; i++) {
-				com_manejarSocketChanges(i, &read_fds);
+				com_cpuManejarSocketChanges(i, &read_fds);
 			};
 		}
 }
@@ -229,7 +230,7 @@ void* cpu_comunication_program(){
 		}
 		int i;
 		for(i = 0; i <= fd_cpu_max; i++) {
-			com_manejarSocketChanges(i, &read_fds);
+			com_cpuManejarSocketChanges(i, &read_fds);
 		};
 	}
 }
