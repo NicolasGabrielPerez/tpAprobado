@@ -5,6 +5,6 @@
 #include <commons/string.h>
 #include "comandos.h"
 
-	void initUmcConsole();
+	void initSwapConsole();
 
 #endif /* CONSOLE_UMC_H_ */

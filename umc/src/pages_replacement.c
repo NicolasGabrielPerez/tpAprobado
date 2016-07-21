@@ -186,5 +186,6 @@ umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina){
 	presenteACargar->uso = 1;
 	tabla_de_frame_entry* frameCargado = obtenerEntradaDeFrame(presenteACargar->nroFrame);
 
+	demorarSolicitud();
 	return createUmcResult(1, 0, pageEntry, frameCargado);
 }

@@ -142,7 +142,7 @@ void* consolaDeComandos(){
 	}
 }
 
-void initUmcConsole(){
+void initSwapConsole(){
 	pthread_t newThread;
-	pthread_create(&newThread, &nucleo_attr, &consolaDeComandos, NULL);
+	pthread_create(&newThread, &pthread_attr, &consolaDeComandos, NULL);
 }

@@ -1,6 +1,7 @@
 #include "swap-structs.h"
 #include "interfazUmc.h"
 #include "pages_admin.h"
+#include "console-swap.h"
 
 void operarSegunHeader(int32_t header){
 
@@ -39,13 +40,14 @@ int main(void) {
 
 	initSwap(config);
 
+	initSwapConsole();
+
 	initUmc(config);
 
 	int bytes_recibidos = 1;
 	char* header = malloc(HEADER_SIZE);
 	int32_t headerInt;
 	while(bytes_recibidos){
-		printf("Esperando conexiones...\n");
 
 		bytes_recibidos = recv(umc_socket, header, HEADER_SIZE, 0);
 

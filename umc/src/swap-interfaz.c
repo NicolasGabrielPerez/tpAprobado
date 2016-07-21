@@ -14,12 +14,9 @@ response* handshakeSwap(){
 void initSwap(t_config* config){
 	char* ip_swap = config_get_string_value(config, "IP_SWAP");
 	char* puerto_swap = config_get_string_value(config, "PUERTO_SWAP");
-	log_info(logger, "Swap IP: %s", ip_swap);
-	log_info(logger, "Swap port: %s", puerto_swap);
 
-	log_info(logger, "Contectandose con Swap.....................");
+	log_info(logger, "Contectandose con Swap...[Swap IP: %s, Swap port: %s]", ip_swap, puerto_swap);
 	swap_socket = crear_socket_cliente(ip_swap, puerto_swap);
-	log_info(logger, "Conexion con Swap realizada");
 
 	response* swapInitResponse = handshakeSwap();
 

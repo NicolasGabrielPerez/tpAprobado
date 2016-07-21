@@ -10,7 +10,7 @@ void initLogger(){
 char* leerDeParticion(int nroFrame, int size){
 	char* buffer = malloc(size);
 	fseek(swapAdmin->particion, nroFrame*paginaSize, SEEK_SET);
-	log_trace(logger, "Frame a leer: %d. Posicion: %d", nroFrame, ftell(swapAdmin->particion));
+	demorarSolicitud();
 	fread(buffer, sizeof(char), size, swapAdmin->particion);
 
 	return buffer;
@@ -54,6 +54,14 @@ int existePid(int pid){
 	return 0;
 }
 
+void setearOcupado(int nroFrame){
+	bitarray_set_bit(swapAdmin->bitMap, nroFrame);
+}
+
+void setearLibre(int nroFrame){
+	bitarray_clean_bit(swapAdmin->bitMap, nroFrame);
+}
+
 void setearFramesEntriesNuevoPid(int nroFrameNuevoPrograma, int pid, int cantPaginas){
 	int espacioContiguoEnd = nroFrameNuevoPrograma + cantPaginas;
 	int indiceFrame; //coincide con el nroFrame
@@ -71,7 +79,7 @@ void setearFramesEntriesNuevoPid(int nroFrameNuevoPrograma, int pid, int cantPag
 
 void escribirEnParticion(int nroFrame, char* buffer, int size){
 	fseek(swapAdmin->particion, nroFrame*paginaSize, SEEK_SET);
-	log_trace(logger, "Frame a escribir: %d. Posicion: %d", nroFrame, ftell(swapAdmin->particion));
+	demorarSolicitud();
 	fwrite(buffer, sizeof(char), size, swapAdmin->particion);
 	fflush(swapAdmin->particion);
 }
@@ -126,26 +134,27 @@ frame_entry* getNextUsed(int aPartirDe){
 	return NULL;
 }
 
-void setearOcupado(int nroFrame){
-	bitarray_set_bit(swapAdmin->bitMap, nroFrame);
-}
-
-void setearLibre(int nroFrame){
-	bitarray_clean_bit(swapAdmin->bitMap, nroFrame);
-}
-
 int bajarNextUsed(int nroFrameDisponible){ //return -1 si no hay nada que bajar. Es decir, no hay ningun frame ocupado a partir de esa posicion
 	frame_entry* nextUsed = getNextUsed(nroFrameDisponible);
 	if(nextUsed == NULL) return -1;
 
-	escribirEnParticion(nroFrameDisponible*paginaSize, leerDeFrame(nextUsed), paginaSize);
+	escribirEnParticion(nroFrameDisponible, leerDeFrame(nextUsed), paginaSize);
+
 	setearOcupado(nroFrameDisponible);
+	frame_entry* actual = getFrameEntryPorNroFrame(nroFrameDisponible);
+	actual->pid = nextUsed->pid;
+	actual->nroPagina = nextUsed->nroPagina;
+
 	setearLibre(nextUsed->nroFrame);
+	nextUsed->pid = 0;
+	nextUsed->nroPagina = 0;
+
 	return 1;
 }
 
 void desfragmentarParticion(){
 	log_trace(logger, "Compactando particion...");
+	demorarCompactacion();
 	int i;
 
 	for(i = 0; i< cantPaginasSwap; i++){
@@ -200,8 +209,8 @@ response* finalizarPrograma(int pid){
 	for(i=0;i<list_size(entries);i++){
 		frame_entry* frameEntry = list_get(entries, i);
 		frameEntry->pid = 0;
+		frameEntry->nroPagina = 0;
 		liberarFrame(frameEntry->nroFrame);
-		log_info(logger, "Frame %d liberado", frameEntry->nroFrame);
 	}
 	return createOKResponse();
 }

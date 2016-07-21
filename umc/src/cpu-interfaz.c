@@ -39,6 +39,7 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 		}
 	}
 
+	demorarSolicitud();
 	umcResult result = getPageEntry(tablaDePaginas, nroPagina);
 	if(!result.ok){
 		enviarFAIL(cpu_socket, result.codError);
@@ -50,6 +51,7 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 	//Actualizar TLB
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
 
+	demorarSolicitud();
 	enviarOKSinContenido(cpu_socket);
 	log_trace(logger, "Enviada respuesta Ok! [Socket %d]", cpu_socket);
 }
@@ -88,6 +90,7 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 		}
 	}
 
+	demorarSolicitud();
 	umcResult result = getPageEntry(tablaDePaginas, nroPagina);
 	if(!result.ok){
 		enviarFAIL(cpu_socket, result.codError);
@@ -96,6 +99,7 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 	//Actualizar TLB
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
 
+	demorarSolicitud();
 	enviarOKConContenido(cpu_socket, tamanio, result.frameEntry->direccion_real + offset);
 }
 

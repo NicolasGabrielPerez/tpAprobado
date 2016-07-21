@@ -37,7 +37,7 @@ int initMemoriaPrincipal(t_config* config){
 	cantidad_de_marcos = config_get_int_value(config, "MARCOS");
 	marco_size = config_get_int_value(config, "MARCO_SIZE");
 	marcos_x_proc = config_get_int_value(config, "MARCOS_X_PROC");
-
+	retardo = config_get_int_value(config, "RETARDO");
 	char* algoritmo = config_get_string_value(config, "ALGORITMO");
 
 	if(string_equals_ignore_case(algoritmo, "clock")){
@@ -49,12 +49,9 @@ int initMemoriaPrincipal(t_config* config){
 	memoria_bloque = malloc(cantidad_de_marcos*marco_size); //char* que va a tener el contenido de todas las paginas
 
 	log_info(logger, "Iniciando memoria principal..........................");
-	log_info(logger, "Cantidad de marcos:%d", cantidad_de_marcos);
-	log_info(logger, "Tamanio de marco:%d", marco_size);
+	log_info(logger, "Cantidad de marcos: %d | Tamanio de marco: %d", cantidad_de_marcos, marco_size);
 	log_info(logger, "Reservada memoria. Total de bytes:%d", cantidad_de_marcos*marco_size);
-	log_info(logger, "Direccion inicial: %d", memoria_bloque);
 
-	log_info(logger, "Iniciando tabla de frames..........................");
 	tablaDeFrames = malloc(sizeof(tablaDeFrames));
 	tablaDeFrames->entradas = list_create();
 	int i;
@@ -181,12 +178,12 @@ response* finalizarPidDeUMC(int pid){
 }
 
 response* initProgramaUMC(int pid, int cantPaginas){
-	log_trace(logger, "Iniciando pid %d en UMC...", pid);
 	// verificar que no exista pid
 	if(buscarPorPID(pid)!=NULL){
 		return createFAILResponse(RESPUESTA_FAIL);
 	}
 
+	demorarSolicitud();
 	// crear tabla de paginas
 	tabla_de_paginas* tablaDePaginas = crearTablaDePaginas(pid, cantPaginas);
 	log_trace(logger, "Create tabla de paginas de pid %d!", pid);
@@ -230,14 +227,12 @@ tabla_de_frame_entry* obtenerEntradaDeFrame(int nroFrame){
 void escribirEnFrame(char* buffer, int offset, int tamanio, int nroFrame){
 	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(nroFrame);
 	char* where = entrada->direccion_real + offset;
-	log_trace(logger, "A punto de escribir frame...");
-	log_trace(logger, "Nro frame=%d, Offset=%d, Tamanio=%d, Direccion de memoria=%d", nroFrame, offset, tamanio, where);
-
 	memcpy(where, buffer, tamanio);
 	log_trace(logger, "Frame %d escrito!", nroFrame);
 }
 
 char* obtenerBytesDeMemoriaPrincipal(int frame, int offset, int tamanio){
+	demorarSolicitud();
 	int i;
 	for(i=0; i<list_size(tablaDeFrames->entradas);i++){
 		tabla_de_frame_entry* actual = list_get(tablaDeFrames->entradas, i);

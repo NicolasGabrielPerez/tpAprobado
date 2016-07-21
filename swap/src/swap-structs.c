@@ -23,8 +23,44 @@ int cantPaginasSwap;
 int swapSize; //en bytes
 int retardo_fragmentacion;
 char* particionFileName;
-
+int retardo;
 swap_admin* swapAdmin;
+
+void demorarCompactacion()
+{
+   struct timespec req, rem;
+
+   if(retardo_fragmentacion > 999)
+   {
+        req.tv_sec = (int)(retardo_fragmentacion / 1000);                            /* Must be Non-Negative */
+        req.tv_nsec = (retardo_fragmentacion - ((long)req.tv_sec * 1000)) * 1000000; /* Must be in range of 0 to 999999999 */
+   }
+   else
+   {
+        req.tv_sec = 0;                         /* Must be Non-Negative */
+        req.tv_nsec = retardo_fragmentacion * 1000000;    /* Must be in range of 0 to 999999999 */
+   }
+
+   nanosleep(&req , &rem);
+}
+
+void demorarSolicitud()
+{
+   struct timespec req, rem;
+
+   if(retardo > 999)
+   {
+        req.tv_sec = (int)(retardo / 1000);                            /* Must be Non-Negative */
+        req.tv_nsec = (retardo - ((long)req.tv_sec * 1000)) * 1000000; /* Must be in range of 0 to 999999999 */
+   }
+   else
+   {
+        req.tv_sec = 0;                         /* Must be Non-Negative */
+        req.tv_nsec = retardo * 1000000;    /* Must be in range of 0 to 999999999 */
+   }
+
+   nanosleep(&req , &rem);
+}
 
 void setConfig(t_config* config){
 	paginaSize = config_get_int_value(config, "TAMANIO_PAGINA");
@@ -32,6 +68,7 @@ void setConfig(t_config* config){
 	retardo_fragmentacion = config_get_int_value(config, "RETARDO_COMPACTACION");
 	particionFileName = config_get_string_value(config, "NOMBRE_PARTICION");
 	swapSize = cantPaginasSwap * paginaSize;
+	retardo = config_get_int_value(config, "RETARDO_ACCESO");
 }
 
 char* generarComandoDDSwap(){
@@ -140,8 +177,8 @@ void crearFramesTable(){
 	for(i=0; i<cantPaginasSwap; i++){
 		frame_entry* frameEntry = malloc(sizeof(frame_entry));
 		frameEntry->nroFrame = i;
-		frameEntry->pid = -1;
-		frameEntry->nroPagina = -1;
+		frameEntry->pid = 0;
+		frameEntry->nroPagina = 0;
 		list_add(framesEntries, frameEntry);
 	}
 	swapAdmin->framesEntries = framesEntries;

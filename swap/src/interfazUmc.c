@@ -5,7 +5,7 @@ int umc_socket;
 int initUmc(t_config* config){
 	char* puerto_umc = config_get_string_value(config, "PUERTO_UMC");
 	int umc_listener = crear_puerto_escucha(puerto_umc);
-	printf("Esperando a UMC...\n");
+	printf("Esperando a UMC [puerto %s]...\n", puerto_umc);
 	umc_socket = aceptarNuevaConexion(umc_listener);
 
 	log_trace(logger, "Conexion requerida por UMC aceptada. Socket: %d", umc_socket);
@@ -16,10 +16,8 @@ int initUmc(t_config* config){
 		log_info(logger, "Recibido header handshake de UMC");
 	}
 
-	char* umcHandshakeMessaje = "Swap Handshake :thumbup:\n\0";
+	char* umcHandshakeMessaje = "Swap Handshake :thumbup:";
 	enviarOKConContenido(umc_socket, strlen(umcHandshakeMessaje), umcHandshakeMessaje);
-
-	log_info(logger, "Enviado mensaje inicial a UMC");
 
 	return EXIT_SUCCESS;
 }
@@ -132,9 +130,3 @@ void recibirFinPrograma(){
 	response* finalizarResult = finalizarPrograma(pid);
 	enviarResultado(finalizarResult, umc_socket);
 }
-
-void console_makeHandshake(){
-	char mensajeInicial[10] = "Soy Swap!";
-	enviarOKConContenido(umc_socket, sizeof(mensajeInicial), mensajeInicial);
-}
-

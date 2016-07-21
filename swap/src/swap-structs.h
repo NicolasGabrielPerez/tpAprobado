@@ -34,6 +34,7 @@
 #include <commons/log.h>
 
 	extern t_log* logger;
+	extern int retardo;
 
 	typedef struct frame_entry{
 		int nroFrame;
@@ -63,5 +64,9 @@
 	frame_entry* getFrameEntryPorNroFrame(int nroFrame);
 
 	t_list* buscarEntries(int pid);
+
+	void demorarSolicitud();
+
+	void demorarCompactacion();
 
 #endif /* SWAP_STRUCTS_H_ */

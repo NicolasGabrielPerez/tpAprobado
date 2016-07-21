@@ -5,7 +5,7 @@
 #include "tlb.h"
 #include "console-umc.h"
 
-pthread_attr_t nucleo_attr;
+pthread_attr_t pthread_attr;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -82,10 +82,10 @@ int crearHiloDeComponente(int tipo, int new_socket){
 	pthread_t newThread;
 	int creacion;
 	if(tipo==TIPO_NUCLEO){
-		creacion = pthread_create(&newThread, &nucleo_attr, &gestionarNucleo, (void*) new_socket);
+		creacion = pthread_create(&newThread, &pthread_attr, &gestionarNucleo, (void*) new_socket);
 	}
 	if(tipo==TIPO_CPU){
-		creacion = pthread_create(&newThread, &nucleo_attr, &gestionarCPU, (void*) new_socket);
+		creacion = pthread_create(&newThread, &pthread_attr, &gestionarCPU, (void*) new_socket);
 	}
 	return creacion;
 }
@@ -109,7 +109,7 @@ void enviarPageSize(int socket){
 	free(pageSizeSerializado);
 }
 
-int console_makeHandshake(int socket){
+int makeHandshake(int socket){
 	message* message = receiveMessage(socket);
 
 	if(message->codError == SOCKET_DESCONECTADO){
@@ -137,11 +137,155 @@ int console_makeHandshake(int socket){
 
 void manejarNuevasConexiones(){
 	int new_socket = aceptarNuevaConexion(listener);
-	int tipo = console_makeHandshake(new_socket);
+	int tipo = makeHandshake(new_socket);
 
 	if(tipo != -1){
 		crearHiloDeComponente(tipo, new_socket);
 	}
+}
+
+void initPid(int pid, int cantPaginas, char* codFuente){
+
+	response* swapResponse = initProgramaSwap(&pid, &cantPaginas, codFuente);
+
+	if(swapResponse->ok){
+		response* umcInitPidResponse = initProgramaUMC(pid, cantPaginas);
+		if(!umcInitPidResponse->ok){
+			log_error(logger, "Error");
+			return;
+		}
+		log_trace(logger, "Enviada respuesta OK! de init pid %d", pid);
+	}
+
+	if(!swapResponse->ok){
+		log_warning(logger, "Respuesta de fallo: Error %d", swapResponse->codError);
+	}
+}
+
+char* solicitarPagina(int nroPaginaSolicitada, int offset, int size, int pid){
+	//Esto es solo una validacion
+	tabla_de_paginas* tablaDePaginas = buscarPorPID(pid);
+	if(tablaDePaginas==NULL){
+		return NULL;
+	}
+
+	if(TLBEnable){
+		//Buscar en TLB. Si esta, ir a buscar a memoria y enviar bytes
+		int frame = buscarEnTLB(nroPaginaSolicitada, pid);
+		if(frame!=-1){
+			return obtenerBytesDeMemoriaPrincipal(frame, offset, size);
+		}
+	}
+
+	umcResult result = getPageEntry(tablaDePaginas, nroPaginaSolicitada);
+	if(!result.ok){
+		return NULL;
+	}
+
+	//Actualizar TLB
+	if(TLBEnable) actualizarTLB(nroPaginaSolicitada, pid, result.frameEntry->nroFrame);
+
+	char* contenido = malloc(size);
+	memcpy(contenido, result.frameEntry->direccion_real + offset, size);
+	return contenido;
+}
+
+int escribirEnPagina(int nroPagina, int offset, int size, char* buffer, int pid){
+	//Esto es solo una validacion
+	tabla_de_paginas* tablaDePaginas = buscarPorPID(pid);
+	if(tablaDePaginas==NULL){
+		log_error(logger, "Pid %d no existe", pid);
+		return -1;
+	}
+
+
+	char* escritura;
+
+	if(buffer == NULL){
+		escritura = "XXYYZZ";
+	} else{
+		escritura = buffer;
+	}
+
+	if(TLBEnable){
+		int frame = buscarEnTLB(nroPagina, pid);
+		if(frame!=-1){
+			escribirEnFrame(escritura, offset, size, frame);
+			return 1;
+		}
+	}
+
+	umcResult result = getPageEntry(tablaDePaginas, nroPagina);
+	if(!result.ok){
+		return -1;
+		log_trace(logger, "Enviada respuesta de fallo");
+	}
+
+	escribirEnFrame(escritura, offset, size, result.frameEntry->nroFrame);
+
+	//Actualizar TLB
+	if(TLBEnable) actualizarTLB(nroPagina, pid, result.frameEntry->nroFrame);
+
+	log_trace(logger, "Pagina escrita!");
+	return 1;
+}
+
+void finalizarPid(int pid){
+	response* result = finalizarPidDeUMC(pid);
+
+	if(!result->ok){
+		printf("FATAL ERROR");
+		return;
+	}
+
+	response* swapResponse = finalizarProgramaSwap(pid);
+}
+
+void testFragmentacionExterna(){
+
+	int pid11 = 11;
+	int cantPaginasPorPrograma = 5;
+
+	char* codFuente1 = "#!/usr/bin/ansisop\n"
+				"begin\n"
+				"variables a, b\n"
+				"a = 3\n"
+				"b = 5\n"
+				"a = b + 12\n"
+				"end";
+
+	initPid(pid11, cantPaginasPorPrograma, codFuente1);
+
+	int pid22 = 22;
+	initPid(pid22, cantPaginasPorPrograma, codFuente1);
+
+	int pid33 = 33;
+	initPid(pid33, cantPaginasPorPrograma, codFuente1);
+
+	//Hasta aca deberia haber 3 pid ocupando 15 frames en swap
+
+	finalizarPid(pid22);
+
+	//Ahora 2 pid ocupando 10 frames en swap => Espacio disponible en swap = 6
+
+	char* codFuente6Pages = "#!/usr/bin/ansisop\n"
+				"begin\n"
+				"variables a, b\n"
+				"a = 3\n"
+				"b = 5\n"
+				"a = b + 12\n"
+				"end"
+				"12345678";
+	initPid(50, 6, codFuente6Pages);
+
+	int nroPaginaSolicitada = 2;
+	int offset = 0;
+	int pageSize = 8;
+
+	char* pagina0 = solicitarPagina(0, 0, pageSize, pid11);
+	pagina0[pageSize] = '\0';
+	printf("paginaSolicitada1: %s\n", pagina0);
+
 }
 
 int main(void) {
@@ -155,14 +299,16 @@ int main(void) {
 
 	initMemoriaPrincipal(config);
 
-	initUmcConsole();
+	initSwapConsole();
 
 	initTLB(config);
 
 	initSwap(config);
 
-	pthread_attr_init(&nucleo_attr);
-	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
+	testFragmentacionExterna();
+
+	pthread_attr_init(&pthread_attr);
+	pthread_attr_setdetachstate(&pthread_attr, PTHREAD_CREATE_DETACHED);
 
 	char* puerto_cpu_nucleo = config_get_string_value(config, "PUERTO_CPU_NUCLEO");
 	log_info(logger, "Iniciando puerto escucha para Cpu y Nucleo [Puerto %s]...", puerto_cpu_nucleo);
