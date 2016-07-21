@@ -20,17 +20,15 @@ pthread_t comando;
 pthread_attr_t nucleo_attr;
 
 int FEOP=1;
+int socket_nucleo;
 
 
-
-void espera_resultados(int socketCliente){
+void* espera_resultados(){
 
 	int fin_program = 1;
 	while(fin_program || FEOP){
-
-
 		message* nucleoResponse;
-		nucleoResponse = receiveMessage(socketCliente);
+		nucleoResponse = receiveMessage(socket_nucleo);
 		// deserialize response
 
 
@@ -55,10 +53,11 @@ void espera_resultados(int socketCliente){
 			free(mensaje);
 		}
 
+		free(nucleoResponse);
 	}
 }
 
-void comandosPorPantalla(int socketCliente){
+void* comandosPorPantalla(void* test){
 	char package[MAXDATASIZE];
 	int enviar = 1;
 	while(enviar || FEOP ){
@@ -66,7 +65,7 @@ void comandosPorPantalla(int socketCliente){
 
 		if (!strcmp(package,"kill")) {
 			enviar = 0;
-			sendMessage(socketCliente, HEADER_FIN_PROGRAMA, 0, "");
+			sendMessage(socket_nucleo, HEADER_FIN_PROGRAMA, 0, "");
 		}
 	}
 
@@ -83,27 +82,37 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 	char* puerto_nucleo = config_get_string_value(config, "PUERTO_NUCLEO");
+	char* ip = config_get_string_value(config, "IP_NUCLEO");
 
-	printf("Config: PUERTO_NUCLEO=%s\n", puerto_nucleo);
+	printf("Config: PUERTO_NUCLEO= %s\nIP_NUCLEO= %s\n", puerto_nucleo, ip);
 
 
-	int socket_nucleo = crear_socket_cliente("utnso40", puerto_nucleo);
+	//Hago handshake con umc
 
-	//Hago handskae con umc
-	if(sendMessage(socket_nucleo, HEADER_HANDSHAKE,0 , "") != 0){
-		puts("Error en handshake con el Núcleo");
+	socket_nucleo = crear_socket_cliente(ip, puerto_nucleo);
+
+	int32_t result = sendMessage(socket_nucleo, HEADER_HANDSHAKE, 0, "0");
+
+	message* message = receiveMessage(socket_nucleo);
+	if(message->header == HEADER_HANDSHAKE) {
+		printf("Handshake success");
+	} else {
+		printf("Error al iniciar socket nucleo");
+		return EXIT_FAILURE;
 	}
+	free(message);
+	//FIN HANDSHAKE
+
 
 	//inicio interprete
 	char* file;
-
 	FILE *fp;
 
-	int  length =string_length(argv[1]);
-	file = string_substring (argv[1], 2 , length);
+	//int  length =string_length(argv[1]);
+//	file =argv[1];
+	file = "/home/utnso/Descargas/scripts-ansisop-master/scripts/facil.ansisop";
 
-
-	fp = fopen ( file , "r" );
+	fp = fopen ( file , "rb+" );
 	if (fp==NULL) {fputs ("File error",stderr); exit (1);}
 
 	fseek(fp, 0, SEEK_END);
@@ -112,18 +121,22 @@ int main(int argc, char **argv) {
 
 	char *paquete = malloc(len);
 
-	fscanf(fp, "%s" , paquete);
+	fread(paquete, len, 1, fp);
+	fclose(fp);
 
+	//fin interprete
+
+	printf("Codigo: %s", paquete);
+
+	//envio codigo
 	int header = HEADER_INIT_PROGRAMA;
 	sendMessage(socket_nucleo, header, len, paquete);
 	free(paquete);
 
 
-	pthread_create(&resultados, &nucleo_attr, &espera_resultados, (void*) socket_nucleo);
-	pthread_create(&comando, &nucleo_attr, &comandosPorPantalla, (void*) socket_nucleo);
+	//pthread_create(&resultados, &nucleo_attr, &espera_resultados, 0);
+	//pthread_create(&comando, &nucleo_attr, &comandosPorPantalla, socket_nucleo);
 	espera_resultados(socket_nucleo);
-
-
 
 
 	puts("Terminé felizmente");
