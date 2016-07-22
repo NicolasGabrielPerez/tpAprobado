@@ -78,21 +78,17 @@ response* recibirResponse(int socket){
 	response* respuesta = malloc(sizeof(response));
 
 	if (recv(socket, &respuesta->ok, sizeof(int32_t), 0) <=0 ) {
-		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if (recv(socket, &respuesta->codError, sizeof(int32_t), 0) <=0) {
-		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if (recv(socket, &respuesta->contenidoSize, sizeof(int32_t), 0) <=0) {
-		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if(respuesta->contenidoSize >0){
 		respuesta->contenido = malloc(respuesta->contenidoSize);
 		if (recv(socket, respuesta->contenido, respuesta->contenidoSize, 0) <=0) {
-			free(respuesta);
 			return createFAILResponse(SOCKET_DESCONECTADO);
 		}
 	} else{
