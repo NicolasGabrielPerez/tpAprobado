@@ -12,6 +12,7 @@
 #include <sockets/sockets.h>
 #include <sockets/communication.h>
 #include <pthread.h>
+#include "console-consola.h"
 
 #define MAXDATASIZE 100 // max number of bytes we can get at once
 
@@ -73,6 +74,8 @@ void* comandosPorPantalla(void* test){
 
 
 int main(int argc, char **argv) {
+	initCommandConsole();
+
 	pthread_attr_init(&nucleo_attr);
 	pthread_attr_setdetachstate(&nucleo_attr, PTHREAD_CREATE_DETACHED);
 
