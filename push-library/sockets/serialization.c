@@ -306,6 +306,11 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 		serialize_string(pcb->tagIndex, buffer);
 	}
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+
+	//guti
+	serialize_int(pcb->guti, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+
 	//stackCount
 	serialize_int(pcb->stackCount, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
@@ -313,9 +318,7 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	serialize_stackIndex(pcb->stack, pcb->stackCount, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
-	//guti
-	serialize_int(pcb->guti, buffer);
-	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+
 
 	return (char*)buffer->data;
 }
@@ -332,10 +335,11 @@ PCB* deserialize_pcb(char* serializedPCB){
 	pcb->codeIndex = deserialize_codeIndex(serializedComponents[5], pcb->instructionsCount);	//codeIndex
 	pcb->tagIndexSize = atoi(serializedComponents[6]);					//tagIndexSize
 	pcb->tagIndex = serializedComponents[7];							//tagIndex
-	pcb->stackCount = atoi(serializedComponents[8]);					//stackCount
+	pcb->guti = atoi(serializedComponents[8]);
+	pcb->stackCount = atoi(serializedComponents[9]);					//stackCount
 
-	pcb->stack = deserialize_stack(serializedComponents[9], pcb->stackCount);
-	pcb->guti = atoi(serializedComponents[10]);
+	pcb->stack = deserialize_stack(serializedComponents[10], pcb->stackCount);
+
 
 	return pcb;
 }
