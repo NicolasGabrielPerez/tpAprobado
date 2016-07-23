@@ -50,9 +50,6 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	programMetadata = metadata_desde_literal(program);
 
 	pcb->stack = list_create();
-	t_stackContent* stackContent = init_stackContent();
-	list_add(pcb->stack, stackContent);
-
 	pcb->programCounter = programMetadata->instruccion_inicio;
 	pcb->tagIndex = programMetadata->etiquetas;
 	pcb->tagIndexSize = programMetadata->etiquetas_size;
