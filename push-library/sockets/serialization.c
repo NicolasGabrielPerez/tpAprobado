@@ -244,8 +244,10 @@ t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructi
 
 t_list* deserialize_stack(char* serializedStack, int stackCount){
 	t_list* stack = list_create();
-	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
 
+	if(stackCount == 0) return stack;
+
+	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
 	char** deserializedList = string_split(serializedStack, STACK_SEPARATOR);
 	char** deserializedElement;
 
