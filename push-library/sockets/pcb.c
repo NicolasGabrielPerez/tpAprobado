@@ -20,6 +20,7 @@
 #include "serialization.h"
 
 t_list* General_Process_List;
+int32_t memoryPageSize;
 
 int get_greater_value(PCB* pcb, int lastId){
 	if(pcb->processId > lastId)
@@ -58,7 +59,17 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	pcb->codePagesCount = codePagesCount;
 	pcb->stackCount = 0;
 	pcb->memoryIndex = 0;
+	if(memoryPageSize != 0){
+		pcb->guti =  (strlen(program) / memoryPageSize);
+		if(strlen(program) % memoryPageSize){
+			pcb->guti++;
+		}
+	}
+	else{
+		pcb->guti = 0;
+	}
 }
+
 
 PCB* new_pcb(int processID) {
 

@@ -128,7 +128,6 @@ void serialize_codeIndex(t_intructions* codeIndex, t_size instructionsCount, Buf
 
 			serialize_ending_special_character(CODEINDEX_SEPARATOR, buffer);	//Fin de objeto
 		}
-		serialize_end_of_string(buffer->data);
 	}
 }
 
@@ -314,6 +313,10 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	serialize_stackIndex(pcb->stack, pcb->stackCount, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
+	//guti
+	serialize_int(pcb->guti, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+
 	return (char*)buffer->data;
 }
 
@@ -330,8 +333,10 @@ PCB* deserialize_pcb(char* serializedPCB){
 	pcb->tagIndexSize = atoi(serializedComponents[6]);					//tagIndexSize
 	pcb->tagIndex = serializedComponents[7];							//tagIndex
 	pcb->stackCount = atoi(serializedComponents[8]);					//stackCount
+	pcb->guti = atoi(serializedComponents[9]);
 
 	pcb->stack = deserialize_stack(serializedComponents[9], pcb->stackCount);
+	pcb->guti = atoi(serializedComponents[10]);
 
 	return pcb;
 }
