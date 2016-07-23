@@ -12,6 +12,9 @@
 #include <parser/parser.h>
 #include <parser/sintax.h>
 
+#include <signal.h>
+#include <pthread.h>
+
 #include <commons/config.h>
 #include <commons/string.h>
 #include <commons/log.h>
@@ -32,6 +35,8 @@ u_int32_t QUANTUM = 3;
 u_int32_t socketNucleo = 0;
 u_int32_t socketUmc = 0;
 
+bool hasToExit = false;
+
 AnSISOP_funciones functions = {
 	.AnSISOP_definirVariable	= definirVariable,
 	.AnSISOP_obtenerPosicionVariable= obtenerPosicionVariable,
@@ -50,21 +55,47 @@ AnSISOP_funciones functions = {
 };
 
 AnSISOP_kernel kernel_functions = {
-		.AnSISOP_wait	= wait,
-		.AnSISOP_signal	= signal
+		.AnSISOP_wait	= ansiop_wait,
+		.AnSISOP_signal	= ansiop_signal
 };
 
-//Devuelve un booleano si tiene que salir del programa.
-bool doQuantum(int quantumCount) {
-	bool hasToExit = false;
 
+void sigusr1_handler(int signum) {
+    if (signum == SIGUSR1)
+    {
+    	log_trace(logger, string_from_format("Recibida señal SIGUSR1... Saliendo del programa"));
+        hasToExit = true;
+    }
+}
+
+
+//Devuelve un booleano si tiene que salir del programa.
+void doQuantum(int quantumCount) {
 	u_int32_t i = pcb->programCounter;
 	u_int32_t start = pcb->codeIndex[i].start;
 	u_int32_t size = pcb->codeIndex[i].offset;
 	u_int32_t page = start / PAGE_SIZE;
 	u_int32_t offset = start % PAGE_SIZE;
 
-	char* instruction = umc_get(page, offset, size);
+	char* instruction = string_new();
+	while(size > PAGE_SIZE){
+		char* instructionPage = umc_get(page, offset, PAGE_SIZE - offset);
+		instructionPage[PAGE_SIZE - offset] = '\0';
+
+		string_append(&instruction, instructionPage);
+		free(instructionPage);
+
+		size -= (PAGE_SIZE - offset);
+		start += (PAGE_SIZE - offset);
+
+		offset = start % PAGE_SIZE;
+		page = start / PAGE_SIZE;
+	}
+
+	char* instructionPage = umc_get(page, offset, size);
+	instructionPage[size] = '\0';
+	string_append(&instruction, instructionPage);
+	free(instructionPage);
 
 	log_trace(logger, string_from_format("Ejecutando quantum: %d", quantumCount));
 	log_trace(logger, string_from_format("Ejecutando instruccion: %s", instruction));
@@ -78,10 +109,6 @@ bool doQuantum(int quantumCount) {
 	if(quantumCount >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
 		char* result = nucleo_notificarFinDeRafaga(pcb);
-		int isDifferent = strcmp(result, "SIGUSR1");
-		if(isDifferent == 0) {
-			hasToExit = true;
-		}
 
 		quantumCount = 0;
 	}
@@ -89,27 +116,24 @@ bool doQuantum(int quantumCount) {
 	//Incrementar Program Counter
 	pcb->programCounter++;
 
-	return hasToExit;
+	return;
 }
 
 //Devuelve un booleano si tiene que salir del programa.
-bool receiveInstructions(PCB* pcb, int quantumCount) {
+void receiveInstructions(PCB* pcb, int quantumCount) {
 
 	log_trace(logger, "Recibido el PCB, ejecutando...");
 
 	int quantumCounter = 0;
-	int hasToExit = false;
 
 	while(quantumCounter <= quantumCount) {
 		//TODO: A revisar
-		if(pcb == 0) return hasToExit;
+		if(pcb == 0) return;
 
-		bool tmp = doQuantum(quantumCounter);
+		doQuantum(quantumCounter);
 
-		if(hasToExit == false) hasToExit = tmp;
 		quantumCounter++;
 	}
-	return hasToExit;
 }
 
 void exitProgram() {
@@ -123,48 +147,15 @@ void exitProgram() {
 	exit(EXIT_SUCCESS);
 }
 
-
 void test() {
+	printf("Iniciado thread\n");
+	signal(SIGUSR1, sigusr1_handler);
+}
 
-	pcb = test_pcb_init(1);
-	umc_process_active(pcb->processId);
-
-	//char* instruction = umc_get(0, 0, 4);
-
-	while(true) {
-		char* instruction = "";
-		switch(pcb->programCounter) {
-			case 0:
-				instruction = "begin";
-				break;
-			case 1:
-				instruction = "variables a, b";
-				break;
-			case 2:
-				instruction = "a = 3";
-				break;
-			case 3:
-				instruction = "b = 5";
-				break;
-			case 4:
-				instruction = "a = b + 12";
-				break;
-			case 5:
-				instruction = "end";
-				break;
-			default:
-				free_pcb(pcb);
-				exitProgram();
-		}
-		char* instructionChar = strdup(instruction);
-		log_info(logger, "Ejecutando: %s", instructionChar);
-
-		analizadorLinea(instructionChar, &functions, &kernel_functions);
-		pcb->programCounter++;
-
-		free(instructionChar);
-	}
-
+pthread_attr_t pthread_attr;
+void createSIGUSR1Thread() {
+	pthread_t thread;
+	pthread_create(&thread, &pthread_attr, &test,  0);
 }
 
 int main(int argc, char **argv) {
@@ -192,14 +183,15 @@ int main(int argc, char **argv) {
 		exitProgram();
 	}
 
-//	test();
+	createSIGUSR1Thread();
 
-	bool hasToExit = false;
 	while(hasToExit == false) {
-		pcb = nucleo_recibir_pcb();
+		//pcb = nucleo_recibir_pcb();
+		sleep(1);
+		printf("Loop\n");
 		if(pcb == 0) continue;
 		umc_process_active(pcb->processId);
-		hasToExit = receiveInstructions(pcb, QUANTUM);
+		receiveInstructions(pcb, QUANTUM);
 	}
 
 	exitProgram();

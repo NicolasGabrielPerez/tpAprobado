@@ -12,7 +12,7 @@ t_variable* getMemoryAddr(t_puntero position) {
 
 	log_trace(logger, "ANSISOP: getMemoryAddr, %d", position);
 	t_variable* memoryAddr = malloc(sizeof(t_variable));
-	memoryAddr->pageNumber = (position / PAGE_SIZE);
+	memoryAddr->pageNumber = (position / PAGE_SIZE) + pcb->guti;
 	memoryAddr->offset = position % PAGE_SIZE;
 	memoryAddr->size = sizeof(t_valor_variable);
 
@@ -226,7 +226,7 @@ void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {
 }
 
 
-void wait(t_nombre_semaforo id) {
+void ansiop_wait(t_nombre_semaforo id) {
 
 	log_trace(logger, "ANSISOP: wait %c", id);
 
@@ -236,7 +236,7 @@ void wait(t_nombre_semaforo id) {
 }
 
 
-void signal(t_nombre_semaforo id) {
+void ansiop_signal(t_nombre_semaforo id) {
 
 	log_trace(logger, "ANSISOP: signal %c", id);
 

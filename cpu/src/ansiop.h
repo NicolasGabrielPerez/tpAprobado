@@ -37,8 +37,8 @@
 
 	void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo);
 
-	void wait(t_nombre_semaforo id);
-	void signal(t_nombre_semaforo id);
+	void ansiop_wait(t_nombre_semaforo id);
+	void ansiop_signal(t_nombre_semaforo id);
 
 
 #endif

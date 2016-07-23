@@ -729,3 +729,25 @@
 [TRACE] 18:14:22:384 CPU/(7584:7584): NUCLEO: fin de programa
 [ERROR] 18:14:22:387 CPU/(7584:7584): Error enviando Fin de Programa
 [TRACE] 18:14:22:403 CPU/(7584:7584): Cerrando programa
+[TRACE] 11:26:34:5 CPU/(3223:3223): Iniciada la configuracion
+[TRACE] 11:27:00:257 CPU/(3226:3226): Iniciada la configuracion
+[TRACE] 11:27:05:584 CPU/(3226:3226): NUCLEO IP: 127.0.0.1 PUERTO: 5000
+
+[ERROR] 14:27:05:584 CPU/(3226:3226): Error al iniciar socket: Nucleo
+[TRACE] 11:27:41:259 CPU/(3294:3294): Iniciada la configuracion
+[TRACE] 11:27:47:553 CPU/(3294:3294): NUCLEO IP: 127.0.0.1 PUERTO: 5000
+
+[ERROR] 14:27:47:553 CPU/(3294:3294): Error al iniciar socket: Nucleo
+[TRACE] 11:37:34:38 CPU/(3818:3818): Iniciada la configuracion
+[TRACE] 11:37:34:38 CPU/(3818:3818): NUCLEO IP: 127.0.0.1 PUERTO: 5000
+
+[ERROR] 14:37:34:38 CPU/(3818:3818): Error al iniciar socket: Nucleo
+[TRACE] 11:38:53:323 CPU/(3902:3902): Iniciada la configuracion
+[TRACE] 11:39:43:810 CPU/(3952:3952): Iniciada la configuracion
+[TRACE] 11:39:43:810 CPU/(3952:3952): NUCLEO: recibiendo PCB
+[TRACE] 11:39:43:810 CPU/(3952:3952): NUCLEO: recibiendo PCB
+[TRACE] 11:40:15:729 CPU/(3993:3993): Iniciada la configuracion
+[TRACE] 11:41:34:692 CPU/(4047:4047): Iniciada la configuracion
+[TRACE] 11:41:45:764 CPU/(4047:4047): Recibida señal SIGUSR1... Saliendo del programa
+[TRACE] 11:42:12:639 CPU/(4083:4083): Iniciada la configuracion
+[TRACE] 11:42:30:771 CPU/(4083:4083): Recibida señal SIGUSR1... Saliendo del programa

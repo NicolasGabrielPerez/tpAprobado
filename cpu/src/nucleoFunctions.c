@@ -31,6 +31,8 @@ int socket_nucleo;
 
 void enviarPCB(){
 
+	pcb->stackCount = list_size(pcb->stack) - 1;
+
 	Buffer *buffer = new_buffer();
 	char* pcbzerial = serialize_pcb(pcb, buffer);
 
@@ -91,6 +93,11 @@ PCB* nucleo_recibir_pcb() {
 	char* content = message->contenido;
 
 	QUANTUM = convertToInt32(content);
+
+	if(list_size(pcb->stack) == 0) {
+		t_stackContent* stackContent = init_stackContent();
+		list_add(pcb->stack, stackContent);
+	}
 
 	return pcb;
 }

@@ -37,6 +37,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="push-library"/>
 									<listOptionValue builtIn="false" value="commons"/>
 									<listOptionValue builtIn="false" value="parser-ansisop"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="pthread"/>
 								</option>
 								<option id="gnu.c.link.option.paths.222151106" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/push-library/Debug}&quot;"/>
@@ -49,7 +50,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1863735045" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.2066231780" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
 								<option id="gnu.both.asm.option.include.paths.1991661150" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/push-library}&quot;"/>
+									<listOptionValue builtIn="false" value="/push-library"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1569748356" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
