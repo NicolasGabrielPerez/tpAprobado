@@ -26,8 +26,10 @@ void umc_delete();
 
 
 void umc_process_active(int processId);
-void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer);
-char* umc_get(t_puntero page, t_puntero offset, t_size size);
+//void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer);
+//char* umc_get(t_puntero page, t_puntero offset, t_size size);
 
+char* umc_get_with_page_control(t_puntero start, t_size size);
+void umc_set_with_page_control(t_puntero start, t_size size, char* buffer);
 
 #endif

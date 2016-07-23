@@ -31,7 +31,6 @@ int socket_umc;
 const u_int32_t BUFFER_SIZE_UMC = 1024;
 const u_int32_t HEADER_SIZE_UMC = sizeof(int32_t);
 
-
 bool umc_init(t_config* config){
 
 	//Hacer HANDSHAKE: HEADER_HANDSHAKE
@@ -84,6 +83,8 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 
 	log_trace(logger, "UMC: set (Page: %d, Offset: %d, Size: %d, Buffer: %s)", page, offset, size, buffer);
 
+	if(socket_umc == 0) return;
+
 	int32_t resp = sendMessageInt(socket_umc, HEADER_ALMACENAR_PAGINAS, 0);
 
 	resp = sendMessageInt(socket_umc, HEADER_ALMACENAR_PAGINAS, page);
@@ -110,6 +111,8 @@ char* umc_get(t_puntero page, t_puntero offset, t_size size) {
 
 	log_trace(logger, "UMC: get (Page: %d, Offset: %d, Size: %d)", page, offset, size);
 
+	if(socket_umc == 0) return malloc(size);
+
 	int32_t resp = sendMessageInt(socket_umc, HEADER_SOLICITAR_PAGINAS, 0);
 
 	resp = sendMessageInt(socket_umc, HEADER_SOLICITAR_PAGINAS, page);
@@ -130,4 +133,60 @@ char* umc_get(t_puntero page, t_puntero offset, t_size size) {
 	free(respuesta);
 
 	return result;
+}
+
+
+char* umc_get_with_page_control(t_puntero start, t_size size) {
+
+	u_int32_t page = start / PAGE_SIZE;
+	u_int32_t offset = start % PAGE_SIZE;
+
+	char* content = string_new();
+	while(size > PAGE_SIZE){
+		char* instructionPage = umc_get(page, offset, PAGE_SIZE - offset);
+		instructionPage[PAGE_SIZE - offset] = '\0';
+
+		string_append(&content, instructionPage);
+		free(instructionPage);
+
+		size -= (PAGE_SIZE - offset);
+		start += (PAGE_SIZE - offset);
+
+		offset = start % PAGE_SIZE;
+		page = start / PAGE_SIZE;
+	}
+
+	char* instructionPage = umc_get(page, offset, size);
+	instructionPage[size] = '\0';
+	string_append(&content, instructionPage);
+	free(instructionPage);
+
+	return content;
+}
+
+void umc_set_with_page_control(t_puntero start, t_size size, char* buffer) {
+	u_int32_t page = start / PAGE_SIZE;
+	u_int32_t offset = start % PAGE_SIZE;
+	u_int32_t step = 0;
+
+	while(size > PAGE_SIZE){
+
+		char* bufferToSend = string_substring(buffer, step, PAGE_SIZE - offset);
+		bufferToSend[PAGE_SIZE] = '\0';
+
+		umc_set(page, offset, PAGE_SIZE - offset, bufferToSend);
+
+		size -= (PAGE_SIZE - offset);
+		start += (PAGE_SIZE - offset);
+		step += (PAGE_SIZE - offset);
+
+		offset = start % PAGE_SIZE;
+		page = start / PAGE_SIZE;
+
+		free(bufferToSend);
+	}
+
+	char* bufferToSend = string_substring(buffer, step, PAGE_SIZE - offset);
+	umc_set(page, offset, size, bufferToSend);
+	free(bufferToSend);
 }

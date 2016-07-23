@@ -74,28 +74,8 @@ void doQuantum(int quantumCount) {
 	u_int32_t i = pcb->programCounter;
 	u_int32_t start = pcb->codeIndex[i].start;
 	u_int32_t size = pcb->codeIndex[i].offset;
-	u_int32_t page = start / PAGE_SIZE;
-	u_int32_t offset = start % PAGE_SIZE;
 
-	char* instruction = string_new();
-	while(size > PAGE_SIZE){
-		char* instructionPage = umc_get(page, offset, PAGE_SIZE - offset);
-		instructionPage[PAGE_SIZE - offset] = '\0';
-
-		string_append(&instruction, instructionPage);
-		free(instructionPage);
-
-		size -= (PAGE_SIZE - offset);
-		start += (PAGE_SIZE - offset);
-
-		offset = start % PAGE_SIZE;
-		page = start / PAGE_SIZE;
-	}
-
-	char* instructionPage = umc_get(page, offset, size);
-	instructionPage[size] = '\0';
-	string_append(&instruction, instructionPage);
-	free(instructionPage);
+	char* instruction = umc_get_with_page_control(start, size);
 
 	log_trace(logger, string_from_format("Ejecutando quantum: %d", quantumCount));
 	log_trace(logger, string_from_format("Ejecutando instruccion: %s", instruction));
@@ -170,6 +150,15 @@ int main(int argc, char **argv) {
 	}
 
 	log_trace(logger, "Iniciada la configuracion");
+
+
+	//TEST
+	PAGE_SIZE = 3;
+	t_puntero start = 25;
+	t_puntero size = 16;
+	log_trace(logger, "Iniciado test con PAGE_SIZE: %d, START: %d, SIZE: %d", PAGE_SIZE, start, size);
+	umc_set_with_page_control(25, 16, "1234567890abcdef");
+	umc_get_with_page_control(25, 16);
 
 	bool success;
 
