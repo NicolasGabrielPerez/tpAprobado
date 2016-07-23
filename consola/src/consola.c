@@ -129,9 +129,11 @@ int main(int argc, char **argv) {
 
 	//fin interprete
 
-	printf("Codigo: %s", paquete);
+	//len = string_length(paquete) + 1;
+	printf("Codigo: %s Longitud: %lf\n", paquete, len);
 
 	//envio codigo
+
 	int header = HEADER_INIT_PROGRAMA;
 	sendMessage(socket_nucleo, header, len, paquete);
 	free(paquete);

@@ -36,6 +36,8 @@ void kill(){
 void ejecutarComando(char* command){
 	string_trim_left(&command);
 
+	//TODO
+	//Hacer los demas comandos y cambiar a str_equals o algo asi.
 	if(string_starts_with(command, "kill")){
 		kill();
 		return;
