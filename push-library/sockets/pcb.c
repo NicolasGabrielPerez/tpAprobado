@@ -56,6 +56,7 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	pcb->codeIndex = programMetadata->instrucciones_serializado;
 	pcb->codePagesCount = codePagesCount;
 	pcb->stackCount = 0;
+	pcb->memoryIndex = 0;
 }
 
 PCB* new_pcb(int processID) {
