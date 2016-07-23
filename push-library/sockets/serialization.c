@@ -333,7 +333,6 @@ PCB* deserialize_pcb(char* serializedPCB){
 	pcb->tagIndexSize = atoi(serializedComponents[6]);					//tagIndexSize
 	pcb->tagIndex = serializedComponents[7];							//tagIndex
 	pcb->stackCount = atoi(serializedComponents[8]);					//stackCount
-	pcb->guti = atoi(serializedComponents[9]);
 
 	pcb->stack = deserialize_stack(serializedComponents[9], pcb->stackCount);
 	pcb->guti = atoi(serializedComponents[10]);
