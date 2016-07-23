@@ -87,7 +87,7 @@ response* recibirResponse(int socket){
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if(respuesta->contenidoSize >0){
-		respuesta->contenido = malloc(respuesta->contenidoSize);
+		respuesta->contenido = malloc(respuesta->contenidoSize + 1);
 		if (recv(socket, respuesta->contenido, respuesta->contenidoSize, 0) <=0) {
 			return createFAILResponse(SOCKET_DESCONECTADO);
 		}

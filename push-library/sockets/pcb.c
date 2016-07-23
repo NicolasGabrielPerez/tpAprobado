@@ -49,6 +49,10 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	t_metadata_program *programMetadata = malloc(sizeof(t_metadata_program));
 	programMetadata = metadata_desde_literal(program);
 
+	pcb->stack = list_create();
+	t_stackContent stackContent = init_stackContent();
+	list_add(pcb->stack, stackContent);
+
 	pcb->programCounter = programMetadata->instruccion_inicio;
 	pcb->tagIndex = programMetadata->etiquetas;
 	pcb->tagIndexSize = programMetadata->etiquetas_size;
@@ -63,7 +67,6 @@ PCB* new_pcb(int processID) {
 
 	PCB* pcb = malloc(sizeof(PCB));
 	pcb->processId = processID;
-	pcb->stack = list_create();
 	pcb->programCounter = 0;
 
 	return pcb;
