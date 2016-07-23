@@ -8,7 +8,7 @@ int socket_umc;
 //---------------------------------------------- <SEND>
 //Valida con la UMC si es posible almacenar el nuevo programa y lo almacena
 void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char* program){
-
+	log_trace(nucleo_logger, "COMUNICACIÓN: UMC - Enviando nuevo programa ID:%d", pcb->processId);
 	sendMessage(socket_umc, HEADER_INIT_PROGRAMA, 0, 0);
 	sendMessageInt(socket_umc, HEADER_SOLICITAR_PAGINAS, pcb->processId);
 	sendMessageInt(socket_umc, HEADER_SOLICITAR_PAGINAS, pagesCount);
@@ -16,6 +16,7 @@ void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char
 
 	message* message = receiveMessage(socket_umc);
 	if(message->header == HEADER_PAGINAS_DISPONIBLES){
+		log_trace(nucleo_logger, "UMC: Páginas disponibles, Programa aceptado ID: %d", pcb->processId);
 		//Notificar programa aceptado
 		sendMessage(pcb->processId, HEADER_PAGINAS_DISPONIBLES, 0, 0);
 		//Agregar PCB a la lista general
@@ -25,6 +26,7 @@ void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char
 	}
 
 	if(message->header == HEADER_PAGINAS_NO_DISPONIBLES){
+		log_trace(nucleo_logger, "UMC: Páginas no disponibles, Programa rechazado ID: %d", pcb->processId);
 		printf("Código de error: %d \n", message->codError);
 		//Notificar consola programa rechazado
 		sendMessage(pcb->processId, HEADER_PAGINAS_NO_DISPONIBLES, 0, 0);
@@ -35,16 +37,18 @@ void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char
 
 //Envía orden de finalización de programa a UMC
 void umc_endProgram(u_int32_t PID){
+	log_trace(nucleo_logger, "COMUNICACIÓN: UMC - Finalizar programa ID: %d", PID);
 	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, PID);
 }
 
 //Envía el PID del programa a finalizar
 void umc_notificarFinDePrograma(int processID){
-	char* stringPID = string_itoa(processID);		//Convierte el ID a string
-	sendMessage(socket_umc, HEADER_FIN_PROGRAMA, sizeof(stringPID), stringPID);
+	log_trace(nucleo_logger, "COMUNICACIÓN: UMC - Fin de programa ID: %d", processID);
+	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, processID);
 }
 
 void handshake_con_UMC(){
+	log_trace(nucleo_logger, "COMUNICACIÓN: UMC - Handshake realizado");
 	sendMessageInt(socket_umc,HEADER_HANDSHAKE, TIPO_NUCLEO);
 	//Recibir tamaño de página
 	message* pageSizeMessage = receiveMessage(socket_umc);

@@ -15,13 +15,16 @@ void handleConsoleRquests(int consoleSocket){
 
 	if(message->header == HEADER_HANDSHAKE){
 		console_makeHandshake(consoleSocket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: Nueva consola conectada en %d", consoleSocket);
 	}
 
 	if(message->header == HEADER_FIN_PROGRAMA){
+		log_trace(nucleo_logger, "COMUNICACIÓN: Fin de programa recibido desde consola %d", consoleSocket);
 		set_pcb_EXIT(consoleSocket);		//consoleSocket == PID
 	}
 	if(message->header == HEADER_INIT_PROGRAMA){
-		char* programaANSISOP = nucleo_recibirProgramaANSISOP(message);
+		log_trace(nucleo_logger, "COMUNICACIÓN: Nuevo programa recibido de consola %d", consoleSocket);
+		char* programaANSISOP = message->contenido;
 		initNewProgram(message->contenidoSize, programaANSISOP, consoleSocket);
 		free(programaANSISOP);
 		free(message);
@@ -51,7 +54,7 @@ void console_sendResults(int socket, char* result){
 
 //---------------------------------------------- <RECEIVE>
 //Devuelve el programa serializado recibido en un mensaje
-char* nucleo_recibirProgramaANSISOP(message* ANSISOP){
+char* nucleo_obtenerProgramaANSISOP(message* ANSISOP){
 	char* program = malloc(ANSISOP->contenidoSize);
 	memcpy(program, ANSISOP->contenido, ANSISOP->contenidoSize);
 

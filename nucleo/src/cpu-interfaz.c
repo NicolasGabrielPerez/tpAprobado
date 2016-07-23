@@ -24,9 +24,11 @@ void handleCpuRequests(int socket){
 	if(!test_mode){
 		if(mensaje->header == HEADER_HANDSHAKE){
 			handShakeWithCPU(socket);
+			log_trace(nucleo_logger, "COMUNICACIÓN: Nuevo CPU conectado en %d", socket);
 		}
 
 		if(mensaje->header == HEADER_NOTIFICAR_IO){
+			log_trace(nucleo_logger, "COMUNICACIÓN: Solicitud E/S desde CPU %d", socket);
 			t_CPU* cpu = get_CPU_by_socket(socket);						//Obtengo estructura CPU
 			process_call_io(mensaje->contenido, cpu->PID);
 
@@ -37,26 +39,32 @@ void handleCpuRequests(int socket){
 
 		//Recepción de estructura PCB desde CPU => actualiza PCB
 		if(mensaje->header == HEADER_ENVIAR_PCB){
+			log_trace(nucleo_logger, "COMUNICACIÓN: Recibido PCB desde CPU %d", socket);
 			PCB* pcb = deserialize_pcb(mensaje->contenido);
 			nucleo_updatePCB(pcb);
 		}
 
 		if(mensaje->header == HEADER_NOTIFICAR_FIN_QUANTUM){
+			log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de quantum desde CPU %d", socket);
 			t_CPU* cpu = get_CPU_by_socket(socket);
 			nucleo_notificarFinDeQuantum(mensaje, cpu);
 		}
 		if(mensaje->header == HEADER_FIN_PROGRAMA){
+			log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de programa desde CPU %d", socket);
 			t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
 			set_pcb_EXIT(cpu->PID);				//Me encargo de notificar y destruir estructuras correspondientes
 		}
 		if(mensaje->header == HEADER_NOTIFICAR_FIN_RAFAGA){
+			log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de ráfaga desde CPU %d", socket);
 			nucleo_notificarFinDeRafaga(mensaje, socket);
 		}
 		if(mensaje->header == HEADER_NOTIFICAR_WAIT){
+			log_trace(nucleo_logger, "COMUNICACIÓN: WAIT() desde CPU %d", socket);
 			t_CPU* cpu = get_CPU_by_socket(socket);
 			nucleo_wait(mensaje, cpu);
 		}
 		if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
+			log_trace(nucleo_logger, "COMUNICACIÓN: SIGNAL() desde CPU %d", socket);
 			nucleo_signal(mensaje);
 		}
 		/*if(mensaje->header == HEADER_IMPRIMIR){
@@ -64,6 +72,7 @@ void handleCpuRequests(int socket){
 		nucleo_imprimir(mensaje, cpu);
 	}*/
 		if(mensaje->header == HEADER_IMPRIMIR_TEXTO){
+			log_trace(nucleo_logger, "COMUNICACIÓN: Imprimir texto desde CPU %d", socket);
 			t_CPU* cpu = get_CPU_by_socket(socket);
 			nucleo_imprimir_texto(mensaje, cpu);
 		}
@@ -71,11 +80,13 @@ void handleCpuRequests(int socket){
 		//enviarFAIL(socket, HEADER_INVALIDO);
 
 		if(mensaje->header == HEADER_SETEAR_VARIABLE){
+			log_trace(nucleo_logger, "COMUNICACIÓN: Setear variable desde CPU %d", socket);
 			t_globalVar* var = deserialize_globalVar(mensaje->contenido);
 			nucleo_setear_variable(var);
 		}
 
 		if(mensaje->header == HEADER_OBTENER_VARIABLE){
+			log_trace(nucleo_logger, "COMUNICACIÓN: Obtener variable desde CPU %d", socket);
 			t_CPU* cpu = get_CPU_by_socket(socket);
 			nucleo_obtener_variable(mensaje, cpu);
 		}

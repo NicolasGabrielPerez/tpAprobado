@@ -19,7 +19,7 @@
 
 	void handleConsoleRquests(int socket);
 
-	char* nucleo_recibirProgramaANSISOP(message* ANSISOP);
+	char* nucleo_obtenerProgramaANSISOP(message* ANSISOP);
 
 	void console_makeHandshake(int consola_socket);
 

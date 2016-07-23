@@ -67,11 +67,11 @@ char* serializarString(char* posicionDeEscritura, char* value){
 	return posicionDeEscritura + inputSize;
 }
 
-void deleteResponse(response* response){
-	if(response->contenidoSize >0){
-		free(response->contenido);
+void deleteResponse(response* responseResponse){
+	if(responseResponse->contenido >0){
+		free(responseResponse->contenido);
 	}
-	free(response);
+	free(responseResponse);
 }
 
 response* recibirResponse(int socket){

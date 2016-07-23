@@ -147,7 +147,10 @@ int wait(char* id){
 int getProgramPagesCount(char* program){
 	int pagesCount = 0;
 	if(memoryPageSize != 0){
-		pagesCount =  (strlen(program) % memoryPageSize) + stack_size;
+		pagesCount =  (strlen(program) / memoryPageSize) + stack_size;
+		if(strlen(program) % memoryPageSize){
+			pagesCount++;
+		}
 	}
 
 	return pagesCount;
@@ -231,8 +234,8 @@ void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSock
 	int memoryPagesCount;
 	memoryPagesCount = getProgramPagesCount(programSourceCode);
 	create_program_PCB(nuevoPCB, programSourceCode, memoryPagesCount);
-
-	add_pcb_to_general_list(nuevoPCB);
+//TODO:Sacar linea
+	//add_pcb_to_general_list(nuevoPCB);
 
 	//Envío solicitud de páginas a UMC
 	umc_initProgram(memoryPagesCount, nuevoPCB, codeSize, programSourceCode);

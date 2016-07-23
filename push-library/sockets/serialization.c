@@ -22,13 +22,13 @@
 
 
 struct Buffer *new_buffer() {
-    struct Buffer *b = malloc(sizeof(Buffer));
+	struct Buffer *b = malloc(sizeof(Buffer));
 
-    b->data = malloc(INITIAL_SIZE);
-    b->size = INITIAL_SIZE;
-    b->next = 0;
+	b->data = malloc(INITIAL_SIZE);
+	b->size = INITIAL_SIZE;
+	b->next = 0;
 
-    return b;
+	return b;
 }
 
 void buffer_free(Buffer* buffer) {
@@ -79,10 +79,10 @@ char* serializarResponse(response* response, int* responseSize){
 
 //Reserva espacio dinámicamente y aumenta el tamaño del buffer bajo demanda
 void reserve_space(Buffer *buffer, size_t bytesNeeded) {
-    if((buffer->next + bytesNeeded) > buffer->size) {
-    	buffer->data = realloc(buffer->data, buffer->size + bytesNeeded);
-    	buffer->size += bytesNeeded;
-    }
+	if((buffer->next + bytesNeeded) > buffer->size) {
+		buffer->data = realloc(buffer->data, buffer->size + bytesNeeded);
+		buffer->size += bytesNeeded;
+	}
 }
 
 //Concatena string en buffer utilizando PRIMITIVE_SEPARATOR como separador
@@ -92,11 +92,11 @@ void serialize_string(char* string, Buffer *buffer) {
 	string_append(&cadena, string);
 	int stringSize = strlen(cadena);
 
-    reserve_space(buffer, stringSize);
+	reserve_space(buffer, stringSize);
 
-    //memcpy(((char *)buffer->data) + buffer->next, string, stringSize);
-    memcpy(buffer->data + buffer->next, cadena, stringSize);
-    buffer->next += stringSize;
+	//memcpy(((char *)buffer->data) + buffer->next, string, stringSize);
+	memcpy(buffer->data + buffer->next, cadena, stringSize);
+	buffer->next += stringSize;
 }
 
 void serialize_end_of_string(Buffer *buffer){
@@ -110,8 +110,8 @@ void serialize_ending_special_character(char *specialCharacter, Buffer *buffer){
 
 //Concatena integer en buffer utilizando PRIMITIVE_SEPARATOR como separador
 void serialize_int(int integer, Buffer *buffer) {
-    char *integerToString;
-    integerToString = string_itoa(integer);
+	char *integerToString;
+	integerToString = string_itoa(integer);
 
 	serialize_string(integerToString, buffer);
 }
@@ -292,14 +292,18 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	//memoryIndex
 	serialize_int(pcb->memoryIndex, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+
 	//codeIndex
 	serialize_codeIndex(pcb->codeIndex, pcb->instructionsCount, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 	//tagIndexSize
 	serialize_int(pcb->tagIndexSize, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+
 	//tagIndex
-	serialize_string(pcb->tagIndex, buffer);
+	if(pcb->tagIndex != 0){
+		serialize_string(pcb->tagIndex, buffer);
+	}
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 	//stackCount
 	serialize_int(pcb->stackCount, buffer);
