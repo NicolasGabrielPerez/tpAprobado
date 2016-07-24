@@ -181,7 +181,7 @@ int32_t sendMessage(int socket, int header, int contenidoSize, char* contenidoSe
 	int32_t headerSelf;
 	memcpy(&headerSelf, &header, sizeof(int32_t));
 
-	printf("Header a enviar: %d\n", headerSelf);
+	//printf("Header a enviar: %d\n", headerSelf);
 
 	memcpy(headerSerializado, &headerSelf, sizeof(int32_t));
 	int headerResult = enviarOKConContenido(socket, sizeof(int32_t), headerSerializado);
@@ -203,7 +203,7 @@ int32_t sendMessageInt(int socket, int header, int value){
 	int32_t headerSelf;
 	memcpy(&headerSelf, &header, sizeof(int32_t));
 
-	printf("Header a enviar: %d\n", headerSelf);
+	//printf("Header a enviar: %d\n", headerSelf);
 
 	memcpy(headerSerializado, &headerSelf, sizeof(int32_t));
 	int headerResult = enviarOKConContenido(socket, sizeof(int32_t), headerSerializado);
@@ -228,7 +228,7 @@ int32_t sendErrorMessage(int socket, int header, int errorCode){
 	int32_t headerSelf;
 	memcpy(&headerSelf, &header, sizeof(int32_t));
 
-	printf("Header a enviar: %d\n", headerSelf);
+	//printf("Header a enviar: %d\n", headerSelf);
 
 	memcpy(headerSerializado, &headerSelf, sizeof(int32_t));
 	return enviarFAIL(socket,errorCode);
