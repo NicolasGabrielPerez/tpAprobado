@@ -70,7 +70,9 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 //	t_variable* memoryAddr = getMemoryAddr(puntero);
 //	char* buffer = umc_get(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size);
 
-	char* buffer = umc_get_with_page_control(puntero, sizeof(t_valor_variable));
+	t_puntero  memoryAddr = puntero + pcb->guti * PAGE_SIZE;
+
+	char* buffer = umc_get_with_page_control(memoryAddr, sizeof(t_valor_variable));
 
 	int32_t value = atoi(buffer);
 
@@ -89,8 +91,10 @@ void asignar(t_puntero puntero, t_valor_variable variable) {
 
 	//umc_set(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size, param);
 
+	t_puntero  memoryAddr = puntero + pcb->guti * PAGE_SIZE;
+
 	char* param = string_itoa(variable);
-	umc_set_with_page_control(puntero, sizeof(t_valor_variable), param);
+	umc_set_with_page_control(memoryAddr, sizeof(t_valor_variable), param);
 
 	//free(param);
 	//free(memoryAddr);

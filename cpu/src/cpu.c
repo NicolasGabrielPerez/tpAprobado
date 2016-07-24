@@ -87,15 +87,15 @@ void doQuantum(int quantumCount) {
 
 	quantumCount++;
 
+	//Incrementar Program Counter
+	pcb->programCounter++;
+
 	if(quantumCount >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
 		char* result = nucleo_notificarFinDeRafaga(pcb);
 
 		quantumCount = 0;
 	}
-
-	//Incrementar Program Counter
-	pcb->programCounter++;
 
 	return;
 }
