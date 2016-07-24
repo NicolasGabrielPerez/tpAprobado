@@ -17,7 +17,7 @@ int initUmc(t_config* config){
 	}
 
 	char* umcHandshakeMessaje = "Swap Handshake :thumbup:";
-	enviarOKConContenido(umc_socket, strlen(umcHandshakeMessaje), umcHandshakeMessaje);
+	enviarOKConContenido(umc_socket, strlen(umcHandshakeMessaje) + 1, umcHandshakeMessaje);
 
 	return EXIT_SUCCESS;
 }

@@ -26,6 +26,8 @@
 
 	int buscarEnTLB(int nroPagina, int pid);
 
+	void limpiarEntradaTLB(int nroPagina, int pid);
+
 	void flush(int pid);
 
 #endif /* TLB_H_ */

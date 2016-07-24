@@ -153,6 +153,7 @@ void actualizarPaginaVictima(int pid, int nroPagina){
 	}
 	tabla_de_paginas_entry* victimPage = obtenerEntradaDePagina(pid, nroPagina);
 	victimPage->presente = 0;
+	if(TLBEnable) limpiarEntradaTLB(nroPagina, pid);
 }
 
 umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina){

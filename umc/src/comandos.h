@@ -15,6 +15,8 @@
 
 	void flushTlb();
 
+	void dumpTlb();
+
 	void flushMemory(int pid);
 
 #endif /* COMANDOS_UMC_H_ */

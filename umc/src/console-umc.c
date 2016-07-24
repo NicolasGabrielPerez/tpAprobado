@@ -108,6 +108,10 @@ void ejecutarComando(char* command){
 		parsearFlushMemory(command);
 		return;
 	}
+	if(string_starts_with(command, "dump tlb")){
+		dumpTlb();
+		return;
+	}
 
 	printf("Comando invalido\n");
 }
@@ -115,10 +119,11 @@ void ejecutarComando(char* command){
 void* consolaDeComandos(){
 	printf("--------------- Bienvenido a la consola de UMC ---------------\n");
 	printf("Estos son los comandos disponibles:\n");
-	printf("retardo <milisegundos> *Retardo a esperar ante una solicitud\n");
+	printf("retardo <milisegundos> *Retardo ante una solicitud\n");
 	printf("dump <info> <pid> *info: 'table' o 'data'. Pid vacio => todos los procesos.\n");
 	printf("flush tlb *Limpiar toda la tlb\n");
-	printf("flush memory <pid> *Marca como modificadas todas las paginas del pid\n");
+	printf("dump tlb\n");
+	printf("flush memory <pid> *Marca modificadas las paginas del pid\n");
 	printf("----------------------------------------------------------------------------\n");
 
 	int rc;

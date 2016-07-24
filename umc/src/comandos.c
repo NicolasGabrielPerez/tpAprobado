@@ -41,6 +41,7 @@ void printData(tabla_de_paginas* tabla){
 
 			if(entry->presente){
 				char* frame = leerFrame(entry->nroFrame);
+				frame[marco_size] = '0';
 				printFrame(frame);
 			}
 
@@ -79,6 +80,9 @@ void dumpAllData(){
 		tablaActual = list_get(tablasDePaginas, i);
 		printData(tablaActual);
 	}
+	if(i==0){
+		printf("No hay ninguna tabla de paginas\n");
+	}
 }
 
 void dumpData(int pid){
@@ -89,13 +93,44 @@ void dumpData(int pid){
 	printData(tabla);
 }
 
+void printfTLBEntry(tlb_entry* tlbEntry, int i){
+	printf("Index %d | Pid %d | NroPagina %d | NroFrame %d | Ref %s \n", i,
+			tlbEntry->pid, tlbEntry->nroPagina, tlbEntry->nroFrame, tlbEntry->last_use);
+}
+
+void dumpTlb(){
+	if(!TLBEnable){
+		printf("La TLB no esta habilitada\n");
+		return;
+	}
+
+	printf("Mostrando TLB [Max size %d]\n", TLB->size);
+
+	int i;
+	tlb_entry* tlbEntry;
+	for(i=0; i<list_size(TLB->entradas); i++){
+		tlbEntry = list_get(TLB->entradas, i);
+		printfTLBEntry(tlbEntry, i);
+	}
+
+	if(i==0){
+		printf("La TLB no tiene entradas [Hey, por ahora...]\n");
+	}
+}
+
+void tlbEntryDestroyer(void * entry){
+	tlb_entry* tlbEntry = entry;
+	free(tlbEntry->last_use);
+	free(tlbEntry);
+}
+
 void flushTlb(){
 	if(!TLBEnable){
 		printf("La TLB no esta habilitada\n");
 		return;
 	}
 
-	list_clean(TLB->entradas);
+	list_clean_and_destroy_elements(TLB->entradas, tlbEntryDestroyer);
 	log_info(logger, "[TLB] Flush done. Cantidad de entradas actual: %d", sizeof(TLB->entradas));
 }
 

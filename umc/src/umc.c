@@ -305,8 +305,6 @@ int main(void) {
 
 	initSwap(config);
 
-	testFragmentacionExterna();
-
 	pthread_attr_init(&pthread_attr);
 	pthread_attr_setdetachstate(&pthread_attr, PTHREAD_CREATE_DETACHED);
 

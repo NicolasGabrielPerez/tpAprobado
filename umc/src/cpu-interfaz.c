@@ -89,6 +89,7 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 			return;
 		}
 	}
+	//TLB Miss
 
 	demorarSolicitud();
 	umcResult result = getPageEntry(tablaDePaginas, nroPagina);

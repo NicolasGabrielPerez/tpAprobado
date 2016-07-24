@@ -23,13 +23,10 @@ void initTLB(t_config* config){
 	TLB->size = cantidad_entradas_tlb;
 	TLB->entradas = list_create();
 
-	log_info(logger, "[TLB] Creada TLB");
-	log_info(logger, "[TLB] Cantidad de entradas maxima: %d", TLB->size);
-	log_info(logger, "[TLB] Cantidad de entradas actual: %d", list_size(TLB->entradas));
 }
 
 int tlbTieneEntradasLibres(){
-	return TLB->size >= TLB->entradas->elements_count;
+	return TLB->size > TLB->entradas->elements_count;
 }
 
 //En este caso, la TLB tiene una o mas entradas libres
@@ -105,6 +102,18 @@ void destroyTlbEntry(void* entry){
 	tlb_entry* tlbEntry = (tlb_entry*) entry;
 	free(tlbEntry->last_use);
 	free(tlbEntry);
+}
+
+void limpiarEntradaTLB(int nroPagina, int pid){
+	int i;
+	tlb_entry* actual;
+	for(i=0; i< TLB->entradas->elements_count; i++){
+		actual = list_get(TLB->entradas, i);
+		if(actual->pid == pid && actual->nroPagina == nroPagina){
+			list_remove_and_destroy_element(TLB->entradas, i, destroyTlbEntry);
+			return;
+		}
+	};
 }
 
 void flush(int pid){
