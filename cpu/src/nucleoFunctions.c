@@ -186,7 +186,6 @@ void nucleo_imprimir(t_valor_variable valor) {
 
 	log_trace(logger, "NUCLEO: imprimir variable, %d", valor);
 
-
 	char* textToPrint = string_itoa(valor);
 	nucleo_imprimir_texto(textToPrint);
 

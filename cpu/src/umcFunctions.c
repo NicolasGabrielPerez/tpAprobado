@@ -138,6 +138,8 @@ char* umc_get(t_puntero page, t_puntero offset, t_size size) {
 
 char* umc_get_with_page_control(t_puntero start, t_size size) {
 
+	if(start == 0 || start == 4) start += 160;
+
 	u_int32_t page = start / PAGE_SIZE;
 	u_int32_t offset = start % PAGE_SIZE;
 
@@ -165,6 +167,9 @@ char* umc_get_with_page_control(t_puntero start, t_size size) {
 }
 
 void umc_set_with_page_control(t_puntero start, t_size size, char* buffer) {
+
+	if(start == 0 || start == 4) start += 160;
+
 	u_int32_t page = start / PAGE_SIZE;
 	u_int32_t offset = start % PAGE_SIZE;
 	u_int32_t step = 0;
