@@ -158,10 +158,7 @@ void nucleo_signal(message* mensaje){
 }
 
 void nucleo_imprimir_texto(message* mensaje, t_CPU* cpu){
-	char* result = malloc(mensaje->contenidoSize);
-	result = mensaje->contenido;
-	console_sendResults(cpu->PID, result);
-	free(result);
+	console_sendResults(cpu->PID, mensaje);
 }
 
 void nucleo_imprimir(message* mensaje, t_CPU* cpu){

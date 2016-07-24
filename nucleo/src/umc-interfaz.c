@@ -39,12 +39,14 @@ void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char
 void umc_endProgram(u_int32_t PID){
 	log_trace(nucleo_logger, "COMUNICACIÓN: UMC - Finalizar programa ID: %d", PID);
 	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, PID);
+	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, PID);
 }
 
 //Envía el PID del programa a finalizar
 void umc_notificarFinDePrograma(int processID){
 	log_trace(nucleo_logger, "COMUNICACIÓN: UMC - Fin de programa ID: %d", processID);
 	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, processID);
+	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, processID); //Se tiene que enviar dos veces, NO esta repetido.
 }
 
 void handshake_con_UMC(){

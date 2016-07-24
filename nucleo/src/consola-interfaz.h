@@ -15,7 +15,7 @@
 
 	void console_endProgram(int socket);
 
-	void console_sendResults(int socket, char* result);
+	void console_sendResults(int socket, message* result);
 
 	void handleConsoleRquests(int socket);
 

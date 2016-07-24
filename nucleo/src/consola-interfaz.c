@@ -7,6 +7,7 @@ int consola_listener;
 fd_set consola_sockets_set;
 int fd_consola_max;
 
+fd_set read_fds; //set auxiliar
 
 //Recibe mensajes y llama a las funciones correspondientes según el HEADER
 void handleConsoleRquests(int consoleSocket){
@@ -20,6 +21,8 @@ void handleConsoleRquests(int consoleSocket){
 
 	if(message->header == HEADER_FIN_PROGRAMA){
 		log_trace(nucleo_logger, "COMUNICACIÓN: Fin de programa recibido desde consola %d", consoleSocket);
+		FD_CLR(consoleSocket, &read_fds);
+		close(consoleSocket);
 		set_pcb_EXIT(consoleSocket);		//consoleSocket == PID
 	}
 	if(message->header == HEADER_INIT_PROGRAMA){
@@ -41,14 +44,13 @@ void handleConsoleRquests(int consoleSocket){
 //Envía mensaje de finalización de programa
 void console_endProgram(int socket){
 	sendMessage(socket, HEADER_FIN_PROGRAMA, 0, "");
+	FD_CLR(socket, &read_fds);
+	close(socket);
 }
 
 //Envía mensajes a la consola con lo que debe mostrar en pantalla
-void console_sendResults(int socket, char* result){
-	int	contenidoSize = sizeof(result);
-	int header = HEADER_RESULTADOS;
-
-	sendMessage( socket, header, contenidoSize,  result);
+void console_sendResults(int socket, message* result){
+	sendMessage(socket, HEADER_RESULTADOS, result->contenidoSize, result->contenido);
 }
 //---------------------------------------------- </SEND>
 
@@ -110,7 +112,6 @@ void com_manejarConexionesConsolas(){
 }
 
 void* console_comunication_program(){
-	fd_set read_fds; //set auxiliar
 	read_fds = consola_sockets_set;
 
 	while(1){
