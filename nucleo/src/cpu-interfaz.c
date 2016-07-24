@@ -126,7 +126,7 @@ PCB* nucleo_obtener_pcb(message* programBlock){
 }
 
 void nucleo_notificarFinDeQuantum(message* mensaje, t_CPU* cpu){
-	log_trace(nucleo_logger, "PROGRAMA %s: Ejecución de quantum %d ", cpu->PID, mensaje->contenido);
+	log_trace(nucleo_logger, "PROGRAMA %d: Ejecución de quantum %s ", cpu->PID, mensaje->contenido);
 }
 
 void nucleo_notificarFinDeRafaga(message* mensaje, int socket){
