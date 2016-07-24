@@ -751,3 +751,212 @@
 [TRACE] 11:41:45:764 CPU/(4047:4047): Recibida señal SIGUSR1... Saliendo del programa
 [TRACE] 11:42:12:639 CPU/(4083:4083): Iniciada la configuracion
 [TRACE] 11:42:30:771 CPU/(4083:4083): Recibida señal SIGUSR1... Saliendo del programa
+[TRACE] 16:34:11:918 CPU/(4700:4700): Iniciada la configuracion
+[TRACE] 16:34:11:921 CPU/(4700:4700): NUCLEO IP: 127.0.0.1 PUERTO: 8003
+
+[TRACE] 16:34:11:922 CPU/(4700:4700): Iniciado socket: Nucleo
+[TRACE] 16:34:11:922 CPU/(4700:4700): UMC IP: 192.168.0.101 PUERTO: 8009
+
+[TRACE] 16:34:11:945 CPU/(4700:4700): Tamaño de Página: 8
+[TRACE] 16:34:11:945 CPU/(4700:4700): NUCLEO: recibiendo PCB
+[TRACE] 16:34:11:946 CPU/(4700:4700): UMC: Cambio proceso activo: 7
+[TRACE] 16:34:11:992 CPU/(4700:4700): Recibido el PCB, ejecutando...
+[TRACE] 16:34:11:992 CPU/(4700:4700): UMC: get (Page: 3, Offset: 1, Size: 7)
+[TRACE] 16:34:12:83 CPU/(4700:4700): UMC: get (Page: 4, Offset: 0, Size: 8)
+[TRACE] 16:34:12:143 CPU/(4700:4700): UMC: get (Page: 5, Offset: 0, Size: 1)
+[TRACE] 16:34:12:194 CPU/(4700:4700): Ejecutando quantum: 0
+[TRACE] 16:34:12:194 CPU/(4700:4700): Ejecutando instruccion: 	variables a, b
+
+[TRACE] 16:34:12:194 CPU/(4700:4700): ANSISOP: definirVariable, a
+[TRACE] 16:34:12:194 CPU/(4700:4700): ANSISOP: definirVariable, b
+[TRACE] 16:34:12:194 CPU/(4700:4700): NUCLEO: FIN QUANTUM, 0
+[TRACE] 16:34:12:194 CPU/(4700:4700): UMC: get (Page: 5, Offset: 1, Size: 7)
+[TRACE] 16:34:12:203 CPU/(4700:4700): Ejecutando quantum: 1
+[TRACE] 16:34:12:203 CPU/(4700:4700): Ejecutando instruccion: 	a = 3
+
+[TRACE] 16:34:12:203 CPU/(4700:4700): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 16:34:12:203 CPU/(4700:4700): ANSISOP: asignar Puntero: 0 Valor: 3
+[TRACE] 16:34:12:203 CPU/(4700:4700): UMC: set (Page: 0, Offset: 0, Size: 8, Buffer: 3)
+[TRACE] 16:34:12:300 CPU/(4700:4700): UMC: set (Page: 1, Offset: 0, Size: 8, Buffer: :203)
+[TRACE] 16:34:12:376 CPU/(4700:4700): NUCLEO: FIN QUANTUM, 1
+[TRACE] 16:34:12:376 CPU/(4700:4700): UMC: get (Page: 6, Offset: 0, Size: 7)
+[TRACE] 16:34:12:469 CPU/(4700:4700): Ejecutando quantum: 2
+[TRACE] 16:34:12:469 CPU/(4700:4700): Ejecutando instruccion: 	b = 5
+
+[TRACE] 16:34:12:469 CPU/(4700:4700): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 16:34:12:469 CPU/(4700:4700): ANSISOP: asignar Puntero: 4 Valor: 5
+[TRACE] 16:34:12:469 CPU/(4700:4700): UMC: set (Page: 0, Offset: 4, Size: 4, Buffer: 5)
+[TRACE] 16:34:12:559 CPU/(4700:4700): UMC: set (Page: 1, Offset: 0, Size: 8, Buffer: `4q�:469)
+[TRACE] 16:34:12:607 CPU/(4700:4700): UMC: set (Page: 2, Offset: 0, Size: 4, Buffer: )
+[ERROR] 16:35:57:442 CPU/(4700:4700): Error insertando memoria: RESPONSE
+[TRACE] 16:35:57:442 CPU/(4700:4700): NUCLEO: FIN QUANTUM, 2
+[ERROR] 16:35:57:442 CPU/(4700:4700): Error enviando Fin de Quantum
+[TRACE] 16:35:57:442 CPU/(4700:4700): NUCLEO: fin de rafaga
+[TRACE] 16:49:52:822 CPU/(5517:5517): Iniciada la configuracion
+[TRACE] 16:49:52:825 CPU/(5517:5517): NUCLEO IP: 127.0.0.1 PUERTO: 8003
+
+[TRACE] 16:49:52:826 CPU/(5517:5517): Iniciado socket: Nucleo
+[TRACE] 16:49:52:826 CPU/(5517:5517): UMC IP: 192.168.0.101 PUERTO: 8009
+
+[TRACE] 16:49:52:839 CPU/(5517:5517): Tamaño de Página: 8
+[TRACE] 16:49:52:839 CPU/(5517:5517): NUCLEO: recibiendo PCB
+[TRACE] 16:49:52:839 CPU/(5517:5517): UMC: Cambio proceso activo: 7
+[TRACE] 16:49:52:885 CPU/(5517:5517): Recibido el PCB, ejecutando...
+[TRACE] 16:49:52:885 CPU/(5517:5517): UMC: get (Page: 3, Offset: 1, Size: 7)
+[TRACE] 16:49:52:978 CPU/(5517:5517): UMC: get (Page: 4, Offset: 0, Size: 8)
+[TRACE] 16:49:53:28 CPU/(5517:5517): UMC: get (Page: 5, Offset: 0, Size: 1)
+[TRACE] 16:49:53:75 CPU/(5517:5517): Ejecutando quantum: 0
+[TRACE] 16:49:53:75 CPU/(5517:5517): Ejecutando instruccion: 	variables a, b
+
+[TRACE] 16:49:53:75 CPU/(5517:5517): ANSISOP: definirVariable, a
+[TRACE] 16:49:53:75 CPU/(5517:5517): ANSISOP: definirVariable, b
+[TRACE] 16:49:53:75 CPU/(5517:5517): NUCLEO: FIN QUANTUM, 0
+[TRACE] 16:49:53:75 CPU/(5517:5517): UMC: get (Page: 5, Offset: 1, Size: 7)
+[TRACE] 16:49:53:83 CPU/(5517:5517): Ejecutando quantum: 1
+[TRACE] 16:49:53:83 CPU/(5517:5517): Ejecutando instruccion: 	a = 3
+
+[TRACE] 16:49:53:83 CPU/(5517:5517): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 16:49:53:83 CPU/(5517:5517): ANSISOP: asignar Puntero: 0 Valor: 3
+[TRACE] 16:49:53:83 CPU/(5517:5517): UMC: set (Page: 0, Offset: 0, Size: 4, Buffer: 3)
+[TRACE] 16:49:53:175 CPU/(5517:5517): NUCLEO: FIN QUANTUM, 1
+[TRACE] 16:49:53:175 CPU/(5517:5517): UMC: get (Page: 6, Offset: 0, Size: 7)
+[TRACE] 16:49:53:223 CPU/(5517:5517): Ejecutando quantum: 2
+[TRACE] 16:49:53:223 CPU/(5517:5517): Ejecutando instruccion: 	b = 5
+
+[TRACE] 16:49:53:223 CPU/(5517:5517): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 16:49:53:223 CPU/(5517:5517): ANSISOP: asignar Puntero: 4 Valor: 5
+[TRACE] 16:49:53:223 CPU/(5517:5517): UMC: set (Page: 0, Offset: 4, Size: 4, Buffer: 5)
+[TRACE] 16:49:53:230 CPU/(5517:5517): NUCLEO: FIN QUANTUM, 2
+[TRACE] 16:49:53:230 CPU/(5517:5517): NUCLEO: fin de rafaga
+[TRACE] 16:51:31:258 CPU/(5620:5620): Iniciada la configuracion
+[TRACE] 16:51:31:258 CPU/(5620:5620): NUCLEO IP: 127.0.0.1 PUERTO: 8003
+
+[TRACE] 16:51:31:259 CPU/(5620:5620): Iniciado socket: Nucleo
+[TRACE] 16:51:31:259 CPU/(5620:5620): UMC IP: 192.168.0.101 PUERTO: 8009
+
+[TRACE] 16:51:31:290 CPU/(5620:5620): Tamaño de Página: 8
+[TRACE] 16:51:31:290 CPU/(5620:5620): NUCLEO: recibiendo PCB
+[TRACE] 16:51:31:290 CPU/(5620:5620): UMC: Cambio proceso activo: 7
+[TRACE] 16:51:31:336 CPU/(5620:5620): Recibido el PCB, ejecutando...
+[TRACE] 16:51:31:336 CPU/(5620:5620): UMC: get (Page: 3, Offset: 1, Size: 7)
+[TRACE] 16:51:31:425 CPU/(5620:5620): UMC: get (Page: 4, Offset: 0, Size: 8)
+[TRACE] 16:51:31:477 CPU/(5620:5620): UMC: get (Page: 5, Offset: 0, Size: 1)
+[TRACE] 16:51:31:533 CPU/(5620:5620): Ejecutando quantum: 0
+[TRACE] 16:51:31:533 CPU/(5620:5620): Ejecutando instruccion: 	variables a, b
+
+[TRACE] 16:51:31:533 CPU/(5620:5620): ANSISOP: definirVariable, a
+[TRACE] 16:51:31:533 CPU/(5620:5620): ANSISOP: definirVariable, b
+[TRACE] 16:51:31:533 CPU/(5620:5620): NUCLEO: FIN QUANTUM, 0
+[TRACE] 16:51:31:533 CPU/(5620:5620): UMC: get (Page: 5, Offset: 1, Size: 7)
+[TRACE] 16:51:31:548 CPU/(5620:5620): Ejecutando quantum: 1
+[TRACE] 16:51:31:548 CPU/(5620:5620): Ejecutando instruccion: 	a = 3
+
+[TRACE] 16:51:31:548 CPU/(5620:5620): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 16:51:31:548 CPU/(5620:5620): ANSISOP: asignar Puntero: 0 Valor: 3
+[TRACE] 16:51:31:548 CPU/(5620:5620): UMC: set (Page: 0, Offset: 0, Size: 4, Buffer: 3)
+[TRACE] 16:51:31:636 CPU/(5620:5620): NUCLEO: FIN QUANTUM, 1
+[TRACE] 16:51:31:637 CPU/(5620:5620): UMC: get (Page: 6, Offset: 0, Size: 7)
+[TRACE] 16:51:31:693 CPU/(5620:5620): Ejecutando quantum: 2
+[TRACE] 16:51:31:693 CPU/(5620:5620): Ejecutando instruccion: 	b = 5
+
+[TRACE] 16:51:31:693 CPU/(5620:5620): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 16:51:31:693 CPU/(5620:5620): ANSISOP: asignar Puntero: 4 Valor: 5
+[TRACE] 16:51:31:693 CPU/(5620:5620): UMC: set (Page: 0, Offset: 4, Size: 4, Buffer: 5)
+[TRACE] 16:51:31:705 CPU/(5620:5620): NUCLEO: FIN QUANTUM, 2
+[TRACE] 16:51:31:705 CPU/(5620:5620): NUCLEO: fin de rafaga
+[TRACE] 16:55:29:443 CPU/(5714:5714): Iniciada la configuracion
+[TRACE] 16:55:29:443 CPU/(5714:5714): NUCLEO IP: 127.0.0.1 PUERTO: 8003
+
+[TRACE] 16:55:29:444 CPU/(5714:5714): Iniciado socket: Nucleo
+[TRACE] 16:55:29:444 CPU/(5714:5714): UMC IP: 192.168.0.101 PUERTO: 8009
+
+[TRACE] 16:55:29:461 CPU/(5714:5714): Tamaño de Página: 8
+[TRACE] 16:55:29:461 CPU/(5714:5714): NUCLEO: recibiendo PCB
+[TRACE] 16:55:29:461 CPU/(5714:5714): UMC: Cambio proceso activo: 7
+[TRACE] 16:55:29:505 CPU/(5714:5714): Recibido el PCB, ejecutando...
+[TRACE] 16:55:29:505 CPU/(5714:5714): UMC: get (Page: 3, Offset: 1, Size: 7)
+[TRACE] 16:55:29:595 CPU/(5714:5714): UMC: get (Page: 4, Offset: 0, Size: 8)
+[TRACE] 16:55:29:645 CPU/(5714:5714): UMC: get (Page: 5, Offset: 0, Size: 1)
+[TRACE] 16:55:29:694 CPU/(5714:5714): Ejecutando quantum: 0
+[TRACE] 16:55:29:694 CPU/(5714:5714): Ejecutando instruccion: 	variables a, b
+
+[TRACE] 16:55:29:694 CPU/(5714:5714): ANSISOP: definirVariable, a
+[TRACE] 16:55:29:694 CPU/(5714:5714): ANSISOP: definirVariable, b
+[TRACE] 16:55:29:694 CPU/(5714:5714): NUCLEO: FIN QUANTUM, 0
+[TRACE] 16:55:29:694 CPU/(5714:5714): UMC: get (Page: 5, Offset: 1, Size: 7)
+[TRACE] 16:55:29:700 CPU/(5714:5714): Ejecutando quantum: 1
+[TRACE] 16:55:29:700 CPU/(5714:5714): Ejecutando instruccion: 	a = 3
+
+[TRACE] 16:55:29:700 CPU/(5714:5714): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 16:55:29:700 CPU/(5714:5714): ANSISOP: asignar Puntero: 0 Valor: 3
+[TRACE] 16:55:29:700 CPU/(5714:5714): UMC: set (Page: 0, Offset: 0, Size: 4, Buffer: 3)
+[TRACE] 16:55:29:786 CPU/(5714:5714): NUCLEO: FIN QUANTUM, 1
+[TRACE] 16:55:29:787 CPU/(5714:5714): UMC: get (Page: 6, Offset: 0, Size: 7)
+[TRACE] 16:55:29:834 CPU/(5714:5714): Ejecutando quantum: 2
+[TRACE] 16:55:29:834 CPU/(5714:5714): Ejecutando instruccion: 	b = 5
+
+[TRACE] 16:55:29:834 CPU/(5714:5714): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 16:55:29:834 CPU/(5714:5714): ANSISOP: asignar Puntero: 4 Valor: 5
+[TRACE] 16:55:29:834 CPU/(5714:5714): UMC: set (Page: 0, Offset: 4, Size: 4, Buffer: 5)
+[TRACE] 16:55:29:846 CPU/(5714:5714): NUCLEO: FIN QUANTUM, 2
+[TRACE] 16:55:29:846 CPU/(5714:5714): NUCLEO: fin de rafaga
+[TRACE] 17:14:38:785 CPU/(6379:6379): Iniciada la configuracion
+[TRACE] 17:14:38:786 CPU/(6379:6379): NUCLEO IP: 127.0.0.1 PUERTO: 8003
+
+[TRACE] 17:14:38:788 CPU/(6379:6379): Iniciado socket: Nucleo
+[TRACE] 17:14:38:788 CPU/(6379:6379): UMC IP: 192.168.0.101 PUERTO: 8009
+
+[TRACE] 17:14:38:815 CPU/(6379:6379): Tamaño de Página: 8
+[TRACE] 17:14:38:815 CPU/(6379:6379): NUCLEO: recibiendo PCB
+[TRACE] 17:14:38:815 CPU/(6379:6379): UMC: Cambio proceso activo: 7
+[TRACE] 17:14:38:858 CPU/(6379:6379): Recibido el PCB, ejecutando...
+[TRACE] 17:14:38:858 CPU/(6379:6379): UMC: get (Page: 3, Offset: 1, Size: 7)
+[TRACE] 17:14:38:948 CPU/(6379:6379): UMC: get (Page: 4, Offset: 0, Size: 8)
+[TRACE] 17:14:39:7 CPU/(6379:6379): UMC: get (Page: 5, Offset: 0, Size: 1)
+[TRACE] 17:14:39:107 CPU/(6379:6379): Ejecutando quantum: 0
+[TRACE] 17:14:39:107 CPU/(6379:6379): Ejecutando instruccion: 	variables a, b
+
+[TRACE] 17:14:39:107 CPU/(6379:6379): ANSISOP: definirVariable, a
+[TRACE] 17:14:39:107 CPU/(6379:6379): ANSISOP: definirVariable, b
+[TRACE] 17:14:39:107 CPU/(6379:6379): NUCLEO: FIN QUANTUM, 0
+[TRACE] 17:14:39:107 CPU/(6379:6379): UMC: get (Page: 5, Offset: 1, Size: 7)
+[TRACE] 17:14:39:116 CPU/(6379:6379): Ejecutando quantum: 1
+[TRACE] 17:14:39:116 CPU/(6379:6379): Ejecutando instruccion: 	a = 3
+
+[TRACE] 17:14:39:116 CPU/(6379:6379): ANSISOP: obtenerPosicionVariable, a
+[TRACE] 17:14:39:116 CPU/(6379:6379): ANSISOP: asignar Puntero: 0 Valor: 3
+[TRACE] 17:14:39:116 CPU/(6379:6379): UMC: set (Page: 0, Offset: 0, Size: 4, Buffer: 3)
+[TRACE] 17:14:39:219 CPU/(6379:6379): NUCLEO: FIN QUANTUM, 1
+[TRACE] 17:14:39:219 CPU/(6379:6379): UMC: get (Page: 6, Offset: 0, Size: 7)
+[TRACE] 17:14:39:280 CPU/(6379:6379): Ejecutando quantum: 2
+[TRACE] 17:14:39:280 CPU/(6379:6379): Ejecutando instruccion: 	b = 5
+
+[TRACE] 17:14:39:280 CPU/(6379:6379): ANSISOP: obtenerPosicionVariable, b
+[TRACE] 17:14:39:280 CPU/(6379:6379): ANSISOP: asignar Puntero: 4 Valor: 5
+[TRACE] 17:14:39:280 CPU/(6379:6379): UMC: set (Page: 0, Offset: 4, Size: 4, Buffer: 5)
+[TRACE] 17:14:39:287 CPU/(6379:6379): NUCLEO: FIN QUANTUM, 2
+[TRACE] 17:14:39:287 CPU/(6379:6379): NUCLEO: fin de rafaga
+[TRACE] 17:15:53:20 CPU/(6458:6458): Iniciada la configuracion
+[TRACE] 17:15:53:20 CPU/(6458:6458): NUCLEO IP: 127.0.0.1 PUERTO: 8003
+
+[TRACE] 17:15:53:21 CPU/(6458:6458): Iniciado socket: Nucleo
+[TRACE] 17:15:53:21 CPU/(6458:6458): UMC IP: 192.168.0.101 PUERTO: 8009
+
+[TRACE] 17:15:53:38 CPU/(6458:6458): Tamaño de Página: 8
+[TRACE] 17:15:53:38 CPU/(6458:6458): NUCLEO: recibiendo PCB
+[TRACE] 17:17:31:812 CPU/(6544:6544): Iniciada la configuracion
+[TRACE] 17:17:31:812 CPU/(6544:6544): NUCLEO IP: 127.0.0.1 PUERTO: 8003
+
+[TRACE] 17:17:31:813 CPU/(6544:6544): Iniciado socket: Nucleo
+[TRACE] 17:17:31:813 CPU/(6544:6544): UMC IP: 192.168.0.101 PUERTO: 8009
+
+[TRACE] 17:17:46:449 CPU/(6544:6544): Tamaño de Página: 8
+[TRACE] 17:17:46:449 CPU/(6544:6544): NUCLEO: recibiendo PCB
+[TRACE] 17:29:27:211 CPU/(7217:7217): Iniciada la configuracion
+[TRACE] 17:29:27:211 CPU/(7217:7217): NUCLEO IP: 127.0.0.1 PUERTO: 8003
+
+[TRACE] 17:29:27:212 CPU/(7217:7217): Iniciado socket: Nucleo
+[TRACE] 17:29:27:212 CPU/(7217:7217): UMC IP: 192.168.0.101 PUERTO: 8009
+
+[TRACE] 17:29:40:409 CPU/(7217:7217): Tamaño de Página: 8
+[TRACE] 17:29:40:409 CPU/(7217:7217): NUCLEO: recibiendo PCB

@@ -36,6 +36,7 @@ u_int32_t socketNucleo = 0;
 u_int32_t socketUmc = 0;
 
 bool hasToExit = false;
+bool hasToReturn = false;
 
 AnSISOP_funciones functions = {
 	.AnSISOP_definirVariable	= definirVariable,
@@ -112,6 +113,11 @@ void receiveInstructions(PCB* pcb, int quantumCount) {
 
 		doQuantum(quantumCounter);
 
+		if(hasToReturn) {
+			hasToReturn = false;
+			return;
+		}
+
 		quantumCounter++;
 	}
 }
@@ -151,15 +157,6 @@ int main(int argc, char **argv) {
 
 	log_trace(logger, "Iniciada la configuracion");
 
-
-	//TEST
-	PAGE_SIZE = 3;
-	t_puntero start = 25;
-	t_puntero size = 16;
-	log_trace(logger, "Iniciado test con PAGE_SIZE: %d, START: %d, SIZE: %d", PAGE_SIZE, start, size);
-	umc_set_with_page_control(25, 16, "1234567890abcdef");
-	umc_get_with_page_control(25, 16);
-
 	bool success;
 
 	success = nucleo_init(config);
@@ -172,12 +169,20 @@ int main(int argc, char **argv) {
 		exitProgram();
 	}
 
+	//TEST
+	//PAGE_SIZE = 1;
+//	t_puntero start = 45;
+//	t_puntero size = 16;
+//	log_trace(logger, "Iniciado test con PAGE_SIZE: %d, START: %d, SIZE: %d", PAGE_SIZE, start, size);
+//	umc_process_active(1);
+//	umc_set_with_page_control(start, size, "1234567890abcdef");
+//	char* result = umc_get_with_page_control(start, size);
+
+
 	createSIGUSR1Thread();
 
 	while(hasToExit == false) {
-		//pcb = nucleo_recibir_pcb();
-		sleep(1);
-		printf("Loop\n");
+		pcb = nucleo_recibir_pcb();
 		if(pcb == 0) continue;
 		umc_process_active(pcb->processId);
 		receiveInstructions(pcb, QUANTUM);

@@ -37,7 +37,6 @@ void enviarPCB(){
 	char* pcbzerial = serialize_pcb(pcb, buffer);
 
 	int size = sizeof(pcbzerial);
-	buffer_free( buffer);
 	sendMessage(socket_nucleo, HEADER_ENVIAR_PCB, size , pcbzerial);
 
 	buffer_free(buffer);

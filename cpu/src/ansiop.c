@@ -67,12 +67,14 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 	log_trace(logger, "ANSISOP: dereferenciar, %d", puntero);
 
-	t_variable* memoryAddr = getMemoryAddr(puntero);
-	char* buffer = umc_get(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size);
+//	t_variable* memoryAddr = getMemoryAddr(puntero);
+//	char* buffer = umc_get(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size);
+
+	char* buffer = umc_get_with_page_control(puntero, sizeof(t_valor_variable));
 
 	int32_t value = atoi(buffer);
 
-	free(memoryAddr);
+	//free(memoryAddr);
 
 	return value;
 }
@@ -82,12 +84,16 @@ void asignar(t_puntero puntero, t_valor_variable variable) {
 
 	log_trace(logger, "ANSISOP: asignar Puntero: %d Valor: %d", puntero, variable);
 
-	t_variable* memoryAddr = getMemoryAddr(puntero);
+	//t_variable* memoryAddr = getMemoryAddr(puntero);
+
+
+	//umc_set(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size, param);
 
 	char* param = string_itoa(variable);
-	umc_set(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size, param);
-	free(param);
-	free(memoryAddr);
+	umc_set_with_page_control(puntero, sizeof(t_valor_variable), param);
+
+	//free(param);
+	//free(memoryAddr);
 }
 
 t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
@@ -169,6 +175,7 @@ void finalizar() {
 	//TODO: Testing
 
 	nucleo_notificarFinDePrograma(pcb);
+	hasToReturn = true;
 }
 
 void retornar(t_valor_variable valor) {
