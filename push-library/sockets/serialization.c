@@ -327,8 +327,10 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
 
+	//return (char*)buffer->data;
 
-	return (char*)buffer->data;
+	char* data = string_from_format("%s", buffer->data);
+	return data;
 }
 
 PCB* deserialize_pcb(char* serializedPCB){
