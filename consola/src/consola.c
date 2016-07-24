@@ -34,17 +34,17 @@ void* espera_resultados(){
 
 
 		if (nucleoResponse->header == HEADER_FIN_PROGRAMA) {
-			printf("FIN DE PROGRAMA");
+			printf("FIN DE PROGRAMA \n");
 			fin_program = 0;
 			FEOP = 0;
 		}
 		if (nucleoResponse->header == HEADER_PAGINAS_NO_DISPONIBLES) {
-					printf("NO HAY MEMORIA DISPONIBLE");
+					printf("NO HAY MEMORIA DISPONIBLE \n");
 					fin_program = 0;
 					FEOP = 0;
 				}
 		if (nucleoResponse->header == HEADER_PAGINAS_DISPONIBLES) {
-					printf("NO INICIADO");
+					printf("NO INICIADO \n");
 
 				}
 		if (nucleoResponse->header == HEADER_RESULTADOS){
@@ -98,9 +98,9 @@ int main(int argc, char **argv) {
 
 	message* message = receiveMessage(socket_nucleo);
 	if(message->header == HEADER_HANDSHAKE) {
-		printf("Handshake success");
+		printf("Handshake success\n");
 	} else {
-		printf("Error al iniciar socket nucleo");
+		printf("Error al iniciar socket nucleo\n");
 		return EXIT_FAILURE;
 	}
 	free(message);
@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
 	espera_resultados(socket_nucleo);
 
 
-	puts("Terminé felizmente");
+	puts("Terminé felizmente\n");
 
 	return EXIT_SUCCESS;
 }
