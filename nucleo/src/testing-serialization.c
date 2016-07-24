@@ -12,24 +12,31 @@ pthread_attr_t nucleo_attr;
 t_list* General_Process_List;
 
 int auxCounter;
-char *programa1 = "function triple\n"
-			"variables f\n"
-			"f = $0 + $0 + $0\n"
-			"return f\n"
-			"end\n"
+char* programa1 = "function triple\n"
+		"variables f\n"
+		"f = $0 + $0 + $0\n"
+		"return f\n"
+		"end\n"
 
-			"begin \n"
-			"variables a,g \n"
-			"a = 1\n"
-			"g <- doble a\n"
-			"print g\n"
-			"end\n"
+		"begin \n"
+		"variables a,g \n"
+		"a = 1\n"
+		"g <- doble a\n"
+		"print g\n"
+		"end\n"
 
-			"function doble\n"
-			"variables f\n"
-			"f = $0 + $0\n"
-			"return f\n"
-			"end";
+		"function doble\n"
+		"variables f\n"
+		"f = $0 + $0\n"
+		"return f\n"
+		"end";
+
+char* programa2 = "begin \n"
+		"variables a,g \n"
+		"a = 1\n"
+		"g <- a\n"
+		"print g\n"
+		"end\n";
 
 void print_program_metadata(t_metadata_program *programMetadata) {
 	puts("++++++++++++Program Metadada++++++++++++ \n");
@@ -205,7 +212,7 @@ void test_serialization(){
 		codeIndex[i].offset = atoi(deserializedInstruction[1]);
 		printf("--- Índice de código n° %d: %s \n", i, deserializedList[i]);
 	}
-	*/
+	 */
 
 	free(programMetadata);
 
@@ -261,4 +268,85 @@ void test_cpu_communication(){
 	//Creo hilos
 
 	//Envío de mensajes
+}
+
+void test_PCB_serialization(){
+	PCB* pcb1 = new_pcb(0);
+	create_program_PCB(pcb1, programa1, 45);
+
+	Buffer* buffer = new_buffer();
+
+	char* serializedPCB = serialize_pcb(pcb1, buffer);
+	printf("Caca \n");
+	printf("cadena serializada: %s \n", serializedPCB);
+
+	PCB* pcb2 = deserialize_pcb(serializedPCB);
+	/*
+	printf("cadena serializada: %s", serializedPCB);
+	printf("Longitud de cadena serializada: %d",strlen(serializedPCB));
+
+	char** serializedComponents = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
+
+	char** serializedComponents1 = malloc(strlen(serializedPCB));
+	serializedComponents1 = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
+*/
+
+	//char* serializedPCB = malloc(strlen(serialize_pcb(pcb1, buffer)) + 1);
+	//serializedPCB = serialize_pcb(pcb1, buffer);
+	//string_append(serializedPCB, '\0');
+
+
+
+	puts("Inicio de comparación");
+	if(pcb1->processId != pcb2->processId){
+		printf("ERROR: PID 1 = %d | PID 2 = %d", pcb1->processId, pcb2->processId);
+	}
+
+	if(pcb1->codePagesCount != pcb2->codePagesCount){
+		printf("ERROR: codePagesCount 1 = %d | codePagesCount 2 = %d", pcb1->codePagesCount, pcb2->codePagesCount);
+	}
+
+	if(pcb1->guti != pcb2->guti){
+		printf("ERROR: guti 1 = %d | guti 2 = %d", pcb1->guti, pcb2->guti);
+	}
+
+	if(pcb1->instructionsCount != pcb2->instructionsCount){
+		printf("ERROR: instructionsCount 1 = %d | instructionsCount 2 = %d", pcb1->instructionsCount, pcb2->instructionsCount);
+	}
+
+	if(pcb1->memoryIndex != pcb2->memoryIndex){
+		printf("ERROR: memoryIndex 1 = %d | memoryIndex 2 = %d", pcb1->memoryIndex, pcb2->memoryIndex);
+	}
+
+	if(pcb1->tagIndexSize != pcb2->tagIndexSize){
+		printf("ERROR: tagIndexSize 1 = %d | tagIndexSize 2 = %d", pcb1->tagIndexSize, pcb2->tagIndexSize);
+	}
+
+	if(pcb1->stackCount != pcb2->stackCount){
+		printf("ERROR: stackCount 1 = %d | stackCount 2 = %d", pcb1->stackCount, pcb2->stackCount);
+	}
+	if(pcb1->programCounter != pcb2->programCounter){
+		printf("ERROR: programCounter 1 = %d | programCounter 2 = %d", pcb1->programCounter, pcb2->programCounter);
+	}
+	if(list_size(pcb1->stack) != list_size(pcb2->stack)){
+		printf("ERROR: Stack size 1 = %d | Stack size 2 = %d", list_size(pcb1->stack), list_size(pcb2->stack));
+	}
+
+	int i;
+		for( i = 0 ; i < pcb2->instructionsCount ; i++ ){
+			if(pcb1->codeIndex[i].start != pcb2->codeIndex[i].start){
+				printf("ERROR: codeIndex1, inst %d start = %d | codeIndex2, inst %d = %d", i, pcb1->codeIndex[i].start, i, pcb2->codeIndex[i].start);
+			}
+
+			if(pcb1->codeIndex[i].offset != pcb2->codeIndex[i].offset){
+				printf("ERROR: codeIndex1, inst %d offset = %d | codeIndex2, inst %d = %d", i, pcb1->codeIndex[i].offset, i, pcb2->codeIndex[i].offset);
+			}
+		}
+
+	//if(strcmp(pcb1->tagIndex,pcb2->tagIndex)){
+	//	printf("ERROR: tagIndex 1 = %s | tagIndex 2 = %s", pcb1->tagIndex, pcb2->tagIndex);
+	//}
+
+	puts("Fin de comparación");
+
 }

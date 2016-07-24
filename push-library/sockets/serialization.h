@@ -18,6 +18,8 @@
 #define STACKCONTENT_SEPARATOR "°"
 #define STACK_SEPARATOR "¬"
 
+#define EMPTYVALUE_IDENTIFIER "_"
+
 	typedef struct Buffer {
 		void *data;
 		int next;

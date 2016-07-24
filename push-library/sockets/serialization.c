@@ -302,8 +302,11 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
 	//tagIndex
-	if(pcb->tagIndex != 0){
+	if(pcb->tagIndexSize > 0){
 		serialize_string(pcb->tagIndex, buffer);
+	}
+	else{
+		serialize_string(EMPTYVALUE_IDENTIFIER, buffer);
 	}
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
@@ -315,7 +318,12 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	serialize_int(pcb->stackCount, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 	//stack
-	serialize_stackIndex(pcb->stack, pcb->stackCount, buffer);
+	if(pcb->stackCount > 0){
+		serialize_stackIndex(pcb->stack, pcb->stackCount, buffer);
+	}
+	else{
+		serialize_string(EMPTYVALUE_IDENTIFIER, buffer);
+	}
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
 
@@ -325,7 +333,8 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 
 PCB* deserialize_pcb(char* serializedPCB){
 	PCB* pcb = new_pcb(0);
-	char** serializedComponents = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
+	char** serializedComponents = malloc(strlen(serializedPCB));
+	serializedComponents = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
 
 	pcb->processId = atoi(serializedComponents[0]);						//PID
 	pcb->programCounter = atoi(serializedComponents[1]);				//programCounter
@@ -334,11 +343,23 @@ PCB* deserialize_pcb(char* serializedPCB){
 	pcb->memoryIndex = atoi(serializedComponents[4]);					//memoryIndex
 	pcb->codeIndex = deserialize_codeIndex(serializedComponents[5], pcb->instructionsCount);	//codeIndex
 	pcb->tagIndexSize = atoi(serializedComponents[6]);					//tagIndexSize
-	pcb->tagIndex = serializedComponents[7];							//tagIndex
+	if(strcmp(serializedComponents[7], "_")){
+		pcb->tagIndex = serializedComponents[7];							//tagIndex
+	}
+	else{
+		pcb->tagIndex = string_new();
+	}
+
 	pcb->guti = atoi(serializedComponents[8]);
 	pcb->stackCount = atoi(serializedComponents[9]);					//stackCount
 
-	pcb->stack = deserialize_stack(serializedComponents[10], pcb->stackCount);
+	if(strcmp(serializedComponents[10], "_")){
+		pcb->stack = deserialize_stack(serializedComponents[10], pcb->stackCount);
+	}
+	else{
+		pcb->stack = list_create();
+	}
+
 
 
 	return pcb;

@@ -12,12 +12,14 @@ t_log* nucleo_logger;
 
 int main(void) {
 
+	//test_PCB_serialization();
 	//test_planification();
 	//test_serialization();
 
 	///*
 	t_config* config = getConfig("nucleo.config");
 
+	//*
 	nucleo_logger = log_create("nucleo_log.txt", "Núcleo", true, LOG_LEVEL_TRACE);
 
 	initNucleo(config); //lee valores de quantum y io
@@ -46,5 +48,6 @@ int main(void) {
 			}
 		}*/
 	}
+	//*/
 	return EXIT_SUCCESS;
 }
