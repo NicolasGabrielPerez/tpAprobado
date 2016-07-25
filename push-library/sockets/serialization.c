@@ -215,12 +215,13 @@ void serialize_stackContent(t_stackContent* content, Buffer* buffer){
 void serialize_stackIndex(t_list* stack,int stackCount, Buffer* buffer){
 	//Recorrer lista serializando de a uno
 	int i;
-	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
+	t_stackContent* stackContent;
 	for (i = 0 ; i < stackCount ; i++){
 		stackContent = list_get(stack, i);
 		serialize_stackContent(stackContent, buffer);
 		serialize_ending_special_character(STACK_SEPARATOR, buffer);
 	}
+	serialize_ending_special_character("\0", buffer);
 }
 
 t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructionsCount) {
@@ -246,6 +247,7 @@ t_list* deserialize_stack(char* serializedStack, int stackCount){
 
 	if(stackCount == 0) return stack;
 
+	printf("%s\n", serializedStack);
 	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
 	char** deserializedList = string_split(serializedStack, STACK_SEPARATOR);
 	char** deserializedElement;
@@ -276,6 +278,24 @@ int32_t convertToInt32(char* buffer){
 	memcpy(number, buffer, sizeof(int32_t));
 	return *number;
 }
+
+//u_int32_t processId;					//Identificador único del proceso
+//u_int32_t programCounter;				//Nro. de la próxima instrucción a ejecutar
+//u_int32_t codePagesCount;				//Cantidad de páginas de memoria asignadas al código
+//t_intructions* codeIndex;		//Índice de código
+//t_size instructionsCount;		//Cantidad de instrucciones del programa
+//char* tagIndex;					//Índice de etiquetas, concatenado en una única cadena
+//u_int32_t tagIndexSize;			// Tamaño del mapa serializado de etiquetas
+//t_list* stack;
+//u_int32_t stackCount;
+//t_puntero memoryIndex;
+//u_int32_t guti;
+//
+//char* serializarPCB(PCB* pcb){
+//	char* serialized = malloc((sizeof(int32_t) * 10) + sizeof(char*));
+//	serializeI
+//
+//}
 
 char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	//PID
