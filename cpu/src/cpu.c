@@ -71,7 +71,7 @@ void sigusr1_handler(int signum) {
 
 
 //Devuelve un booleano si tiene que salir del programa.
-void doQuantum(int quantumCount) {
+void doQuantum(int quantumCount, PCB* pcb) {
 	u_int32_t i = pcb->programCounter;
 	u_int32_t start = pcb->codeIndex[i].start;
 	u_int32_t size = pcb->codeIndex[i].offset;
@@ -92,7 +92,7 @@ void doQuantum(int quantumCount) {
 
 	if(quantumCount >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
-		char* result = nucleo_notificarFinDeRafaga(pcb);
+		nucleo_notificarFinDeRafaga(pcb);
 
 		quantumCount = 0;
 	}
@@ -107,11 +107,11 @@ void receiveInstructions(PCB* pcb, int quantumCount) {
 
 	int quantumCounter = 0;
 
-	while(quantumCounter <= quantumCount) {
+	while(quantumCounter < quantumCount) {
 		//TODO: A revisar
 		if(pcb == 0) return;
 
-		doQuantum(quantumCounter);
+		doQuantum(quantumCounter, pcb);
 
 		if(hasToReturn) {
 			hasToReturn = false;
@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 //	char* result = umc_get_with_page_control(start, size);
 
 
-	createSIGUSR1Thread();
+	//createSIGUSR1Thread();
 
 	while(hasToExit == false) {
 		pcb = nucleo_recibir_pcb();

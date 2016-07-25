@@ -31,7 +31,7 @@ int socket_nucleo;
 
 void enviarPCB(){
 
-	pcb->stackCount = list_size(pcb->stack) - 1;
+	pcb->stackCount = list_size(pcb->stack);
 
 	Buffer *buffer = new_buffer();
 	char* pcbzerial = serialize_pcb(pcb, buffer);
@@ -136,7 +136,7 @@ void nucleo_notificarFinDePrograma() {
 	//No enviar PCB
 }
 
-char* nucleo_notificarFinDeRafaga() {//final
+void nucleo_notificarFinDeRafaga() {//final
 
 	log_trace(logger, "NUCLEO: fin de rafaga");
 
@@ -148,9 +148,7 @@ char* nucleo_notificarFinDeRafaga() {//final
 	enviarPCB(pcb);
 	pcb = 0;
 
-	message* message = receiveMessage(socket_nucleo);
-
-	return message->contenido;
+	//message* message = receiveMessage(socket_nucleo);
 }
 
 void nucleo_wait(t_nombre_semaforo semaforo) {//final
