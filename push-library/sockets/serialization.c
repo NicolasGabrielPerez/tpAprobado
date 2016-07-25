@@ -163,6 +163,11 @@ void serialize_dictionary(t_dictionary* dictionary, Buffer* buffer){
 
 //Concatena una estructura de tipo variable
 void serialize_variable(t_variable* variable, Buffer* buffer){
+
+	if(strlen(variable->id) == 0) {
+		string_append(&variable->id, EMPTYVALUE_IDENTIFIER);
+	}
+
 	serialize_string(variable->id, buffer);
 	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
 
@@ -180,7 +185,13 @@ t_variable* deserialize_variable(char* serializedVariable){
 	t_variable* variable = malloc(sizeof(t_variable));
 	char** deserializedVariable = string_split(serializedVariable, VARIABLE_SEPARATOR);
 
-	variable->id = atoi(deserializedVariable[0]);
+	variable->id = deserializedVariable[0];
+	if(strlen(variable->id) == 0) {
+		if(strcmp(variable->id, EMPTYVALUE_IDENTIFIER)) {
+
+		}
+	}
+
 	variable->pageNumber = atoi(deserializedVariable[1]);
 	variable->offset = atoi(deserializedVariable[2]);
 	variable->size = atoi(deserializedVariable[3]);
@@ -221,7 +232,6 @@ void serialize_stackIndex(t_list* stack,int stackCount, Buffer* buffer){
 		serialize_stackContent(stackContent, buffer);
 		serialize_ending_special_character(STACK_SEPARATOR, buffer);
 	}
-
 }
 
 t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructionsCount) {
@@ -350,7 +360,7 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 
 	char* data = string_from_format("%s", buffer->data);
 	return data;
-}
+	}
 
 PCB* deserialize_pcb(char* serializedPCB){
 	PCB* pcb = new_pcb(0);
