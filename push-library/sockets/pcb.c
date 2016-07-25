@@ -88,6 +88,11 @@ void free_stackContent(t_stackContent* stackContent) {
 
 	dictionary_destroy_and_destroy_elements(stackContent->arguments, free);
 	dictionary_destroy_and_destroy_elements(stackContent->variables, free);
+
+	t_variable* var = stackContent->returnVariable;
+
+	free(var->id);
+	free(var);
 	free(stackContent);
 }
 
@@ -107,6 +112,15 @@ t_stackContent* init_stackContent() {
 	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
 	stackContent->arguments = dictionary_create();
 	stackContent->variables = dictionary_create();
+
+	t_variable* var = malloc(sizeof(t_variable));
+	var->id = string_new();
+	var->offset = 0;
+	var->pageNumber = 0;
+	var->size = 0;
+
+	stackContent->returnVariable = var;
+	stackContent->returnAddress = 0;
 
 	return stackContent;
 }
