@@ -27,16 +27,14 @@ extern t_list* General_Process_List;
 //--------------------------Structs
 typedef struct Variable{
 	char* id;
-	t_puntero pageNumber;
-	t_puntero offset;
-	t_size size;
+	t_puntero position;
 } t_variable;
 
 typedef struct stackContent {
 	t_dictionary* arguments;
 	t_dictionary* variables;
 	t_puntero returnAddress;
-	t_variable* returnVariable;
+	u_int32_t returnVariable;
 } t_stackContent;
 
 typedef struct indexTag {

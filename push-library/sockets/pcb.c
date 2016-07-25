@@ -115,9 +115,7 @@ t_stackContent* init_stackContent() {
 
 	t_variable* var = malloc(sizeof(t_variable));
 	var->id = string_new();
-	var->offset = 0;
-	var->pageNumber = 0;
-	var->size = 0;
+	var->position = 0;
 
 	stackContent->returnVariable = var;
 	stackContent->returnAddress = 0;

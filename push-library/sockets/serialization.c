@@ -171,47 +171,48 @@ void serialize_variable(t_variable* variable, Buffer* buffer){
 	serialize_string(variable->id, buffer);
 	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
 
-	serialize_int(variable->pageNumber, buffer);
-	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
-
-	serialize_int(variable->offset, buffer);
-	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
-
-	serialize_int(variable->size, buffer);
+	serialize_int(variable->position, buffer);
 	serialize_ending_special_character(VARIABLE_SEPARATOR, buffer);
 }
+
 
 t_variable* deserialize_variable(char* serializedVariable){
 	t_variable* variable = malloc(sizeof(t_variable));
 	char** deserializedVariable = string_split(serializedVariable, VARIABLE_SEPARATOR);
 
-	variable->id = deserializedVariable[0];
-	if(strlen(variable->id) == 0) {
-		if(strcmp(variable->id, EMPTYVALUE_IDENTIFIER)) {
-
-		}
+	if(strcmp(deserializedVariable[0], EMPTYVALUE_IDENTIFIER)) {
+		variable->id = deserializedVariable[0];
 	}
 
-	variable->pageNumber = atoi(deserializedVariable[1]);
-	variable->offset = atoi(deserializedVariable[2]);
-	variable->size = atoi(deserializedVariable[3]);
 
+	variable->position = atoi(deserializedVariable[1]);
 	return variable;
 }
 //Serializa un elemento del Stack
 void serialize_stackContent(t_stackContent* content, Buffer* buffer){
+
 	//Serializar cantidad de elementos en el diccionario
 	serialize_int(dictionary_size(content->arguments), buffer);
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 	//serializar diccionario => arguments
-	serialize_dictionary(content->arguments, buffer);
+	if(dictionary_size(content->arguments) > 0){
+		serialize_dictionary(content->arguments, buffer);
+	}
+	else{
+		serialize_string(EMPTYVALUE_IDENTIFIER, buffer);
+	}
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 
 	//Serializar cantidad de elementos en el diccionario
 	serialize_int(dictionary_size(content->variables), buffer);
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 	//serializar diccionario => variables
-	serialize_dictionary(content->variables, buffer);
+	if(dictionary_size(content->variables) > 0){
+		serialize_dictionary(content->variables, buffer);
+	}
+	else{
+		serialize_string(EMPTYVALUE_IDENTIFIER, buffer);
+	}
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 
 	//serializar t_puntero => returnAdress
@@ -219,7 +220,7 @@ void serialize_stackContent(t_stackContent* content, Buffer* buffer){
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 
 	//serializar t_variable => returnVariable
-	serialize_variable(content->returnVariable, buffer);
+	serialize_int(content->returnVariable, buffer);
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 }
 
@@ -267,14 +268,25 @@ t_list* deserialize_stack(char* serializedStack, int stackCount){
 		deserializedElement = string_split(deserializedList[i], STACKCONTENT_SEPARATOR);
 
 		auxCounter = atoi(deserializedElement[0]);
-		stackContent->arguments = deserialize_dictionary(deserializedElement[1], auxCounter);
+		if(auxCounter > 0){
+			stackContent->arguments = deserialize_dictionary(deserializedElement[1], auxCounter);
+		}
+		else{
+			stackContent->arguments = dictionary_create();
+		}
 
 		auxCounter = atoi(deserializedElement[2]);
-		stackContent->variables = deserialize_dictionary(deserializedElement[3], auxCounter);
+
+		if(auxCounter > 0){
+			stackContent->variables = deserialize_dictionary(deserializedElement[3], auxCounter);
+		}
+		else{
+			stackContent->variables = dictionary_create();
+		}
 
 		stackContent->returnAddress = atoi(deserializedElement[4]);
 
-		stackContent->returnVariable = deserialize_variable(deserializedElement[5]);
+		stackContent->returnVariable = atoi(deserializedElement[5]);
 
 		list_add(stack, stackContent);
 	}
@@ -360,7 +372,7 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 
 	char* data = string_from_format("%s", buffer->data);
 	return data;
-	}
+}
 
 PCB* deserialize_pcb(char* serializedPCB){
 	PCB* pcb = new_pcb(0);
