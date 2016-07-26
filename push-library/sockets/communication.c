@@ -156,6 +156,7 @@ message* receiveMessage(int socket){
 	response* responseHeader = recibirResponse(socket);
 	if(!responseHeader->ok){
 		message->codError = responseHeader->codError;
+		deleteResponse(responseHeader);
 		return message;
 	}
 	message->header = convertToInt32(responseHeader->contenido);

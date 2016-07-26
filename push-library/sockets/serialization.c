@@ -154,7 +154,13 @@ t_dictionary* deserialize_dictionary(char* serializedDictionary, int elementsCou
 	for( i = 0 ; i < elementsCount ; i++ ){
 		deserializedElement = string_split(deserializedList[i], PRIMITIVE_SEPARATOR);
 		dictionary_put(resultDictionary, deserializedElement[0], deserializedElement[1]);
+
+		free(deserializedList[i]);
+		free(deserializedElement[0]);
+		free(deserializedElement[1]);
+		free(deserializedElement);
 	}
+	free(deserializedList);
 	return resultDictionary;
 }
 
@@ -297,7 +303,14 @@ t_list* deserialize_stack(char* serializedStack, int stackCount){
 		stackContent->returnVariable = atoi(deserializedElement[5]);
 
 		list_add(stack, stackContent);
+
+		free(deserializedList[i]);
+
+		int j = 0;
+		for(j = 0; j <= 5; j++) free(deserializedElement[j]);
+		free(deserializedElement);
 	}
+	free(deserializedList);
 
 	return stack;
 }
@@ -438,6 +451,10 @@ t_globalVar* deserialize_globalVar(char* serializedVar){
 
 	var->varName = deserializedElement[0];
 	var->value = atoi(deserializedElement[1]);
+
+	free(deserializedElement[0]);
+	free(deserializedElement[1]);
+	free(deserializedElement);
 
 	return var;
 }

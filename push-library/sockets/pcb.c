@@ -47,14 +47,12 @@ int get_next_Process_ID(){
 }
 
 void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
-	t_metadata_program *programMetadata = malloc(sizeof(t_metadata_program));
-	programMetadata = metadata_desde_literal(program);
+	t_metadata_program *programMetadata = metadata_desde_literal(program);
 
 	pcb->stack = list_create();
 	pcb->programCounter = programMetadata->instruccion_inicio;
 	pcb->tagIndexSize = programMetadata->etiquetas_size;
 
-	pcb->tagIndex = malloc(pcb->tagIndexSize);
 	pcb->tagIndex = programMetadata->etiquetas;
 
 	pcb->instructionsCount = programMetadata->instrucciones_size;
@@ -71,6 +69,8 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	else{
 		pcb->guti = 0;
 	}
+
+	metadata_destruir(programMetadata);
 }
 
 
