@@ -318,10 +318,8 @@ t_list* deserialize_stack(char* serializedStack, int stackCount){
 int32_t convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
-	free(buffer);
 
 	int32_t numberToReturn = *number;
-	free(number);
 	return numberToReturn;
 }
 

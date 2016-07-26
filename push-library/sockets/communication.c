@@ -165,7 +165,7 @@ message* receiveMessage(int socket){
 	response* responseHeader = recibirResponse(socket);
 	if(!responseHeader->ok){
 		message->codError = responseHeader->codError;
-		deleteResponse(responseHeader);
+		//deleteResponse(responseHeader);
 		return message;
 	}
 	message->header = convertToInt32(responseHeader->contenido);
@@ -173,7 +173,7 @@ message* receiveMessage(int socket){
 
 	//PAYLOAD
 	response* responsePayload = recibirResponse(socket);
-	message->contenido = string_from_format("%s", responsePayload->contenido);
+	message->contenido = responsePayload->contenido;
 	message->contenidoSize = responsePayload->contenidoSize;
 	if(!responsePayload->ok){
 		message->codError = responsePayload->codError;
@@ -181,7 +181,7 @@ message* receiveMessage(int socket){
 		return message;
 	}
 
-	if(responsePayload->contenidoSize >0) free(responsePayload->contenido);
+	//if(responsePayload->contenidoSize >0) free(responsePayload->contenido);
 	free(responsePayload);
 
 	return message;
