@@ -453,7 +453,7 @@ t_globalVar* deserialize_globalVar(char* serializedVar){
 	t_globalVar* var = malloc(sizeof(t_globalVar));
 	char** deserializedElement = string_split(serializedVar, PRIMITIVE_SEPARATOR);
 
-	var->varName = deserializedElement[0];
+	var->varName = string_from_format("%s", deserializedElement[0]);
 	var->value = atoi(deserializedElement[1]);
 
 	free(deserializedElement[0]);
