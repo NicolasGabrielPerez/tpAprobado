@@ -37,8 +37,8 @@ void handleConsoleRquests(int consoleSocket){
 		enviarFAIL(consoleSocket, HEADER_INVALIDO);
 	}*/
 
-	if(message->contenidoSize > 0) free(message->contenido);
-	free(message);
+	//if(message->contenidoSize > 0) free(message->contenido);
+	//free(message);
 }
 
 //---------------------------------------------- <SEND>
@@ -136,7 +136,6 @@ void* console_comunication_program(){
 int convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
-	free(buffer);
 
 	int32_t numberToReturn = *number;
 	free(number);
