@@ -51,7 +51,6 @@ void* espera_resultados(){
 			free(mensaje);
 		}
 
-		if(nucleoResponse->contenidoSize > 0) free(nucleoResponse->contenido);
 		free(nucleoResponse);
 	}
 }
@@ -108,9 +107,6 @@ int main(int argc, char **argv) {
 	//inicio interprete
 	char* file;
 	FILE *fp;
-
-
-	printf("File %s \n", argv[1]);
 
 	//int  length =string_length(argv[1]);
 	file =argv[1];
