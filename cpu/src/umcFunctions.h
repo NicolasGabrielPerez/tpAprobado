@@ -21,6 +21,8 @@
 
 u_int32_t PAGE_SIZE;
 
+
+
 bool umc_init(t_config* config);
 void umc_delete();
 

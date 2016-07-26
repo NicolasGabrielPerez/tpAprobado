@@ -60,6 +60,8 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 	char* buffer = umc_get_with_page_control(memoryAddr, sizeof(t_valor_variable));
 
+	if(buffer == 0) return 0;
+
 	int32_t value = atoi(buffer);
 
 	free(buffer);

@@ -107,6 +107,12 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok == 0) {
 		log_error(logger, "Error insertando memoria: RESPONSE");
+
+		if(respuesta->codError == PAGINA_NO_EXISTE) {
+			log_error(logger, "Página %d no existe o inaccesible", page);
+
+			hasToFinishProgram = true;
+		}
 	}
 
 	free(respuesta);
@@ -131,6 +137,14 @@ char* umc_get(t_puntero page, t_puntero offset, t_size size) {
 	response* respuesta = recibirResponse(socket_umc);
 	if(respuesta->ok == 0) {
 		log_error(logger, "Error obteniendo memoria: RESPONSE");
+
+		if(respuesta->codError == PAGINA_NO_EXISTE) {
+			log_error(logger, "Página %d no existe o inaccesible", page);
+
+			hasToFinishProgram = true;
+			return 0;
+		}
+
 	}
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
@@ -149,6 +163,9 @@ char* umc_get_with_page_control(t_puntero start, t_size size) {
 	char* content = string_new();
 	while(size > PAGE_SIZE){
 		char* instructionPage = umc_get(page, offset, PAGE_SIZE - offset);
+
+		if(instructionPage == 0) return 0;
+
 		instructionPage[PAGE_SIZE - offset] = '\0';
 
 		string_append(&content, instructionPage);
@@ -162,6 +179,9 @@ char* umc_get_with_page_control(t_puntero start, t_size size) {
 	}
 
 	char* instructionPage = umc_get(page, offset, size);
+
+	if(instructionPage == 0) return 0;
+
 	instructionPage[size] = '\0';
 	string_append(&content, instructionPage);
 	free(instructionPage);

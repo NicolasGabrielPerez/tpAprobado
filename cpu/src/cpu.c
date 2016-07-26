@@ -35,8 +35,9 @@ u_int32_t QUANTUM = 3;
 u_int32_t socketNucleo = 0;
 u_int32_t socketUmc = 0;
 
-bool hasToExit = false;
+bool hasToExitCPU = false;
 bool hasToReturn = false;
+bool hasToFinishProgram = false;
 
 AnSISOP_funciones functions = {
 	.AnSISOP_definirVariable	= definirVariable,
@@ -65,12 +66,11 @@ void sigusr1_handler(int signum) {
     if (signum == SIGUSR1)
     {
     	log_trace(logger, string_from_format("Recibida señal SIGUSR1... Saliendo del programa"));
-        hasToExit = true;
+        hasToExitCPU = true;
     }
 }
 
 
-//Devuelve un booleano si tiene que salir del programa.
 void doQuantum(int quantumCount, PCB* pcb) {
 	u_int32_t i = pcb->programCounter;
 	u_int32_t start = pcb->codeIndex[i].start;
@@ -96,6 +96,15 @@ void doQuantum(int quantumCount, PCB* pcb) {
 	//Incrementar Program Counter
 	pcb->programCounter++;
 
+	if(hasToFinishProgram) {
+		nucleo_imprimir_texto("Finalizando programa debido a un acceso no valido a memoria");
+		nucleo_notificarFinDePrograma();
+
+		hasToReturn = true;
+		return;
+	}
+
+
 	if(quantumCount >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
 		nucleo_notificarFinDeRafaga(pcb);
@@ -120,6 +129,7 @@ void receiveInstructions(PCB* pcb, int quantumCount) {
 
 		if(hasToReturn) {
 			hasToReturn = false;
+			hasToFinishProgram = false;
 			return;
 		}
 
@@ -176,7 +186,7 @@ int main(int argc, char **argv) {
 
 	createSIGUSR1Thread();
 
-	while(hasToExit == false) {
+	while(hasToExitCPU == false) {
 		pcb = nucleo_recibir_pcb();
 		if(pcb == 0) continue;
 		umc_process_active(pcb->processId);
