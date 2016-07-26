@@ -33,6 +33,9 @@ void umc_initProgram(u_int32_t pagesCount, PCB* pcb, u_int32_t programSize, char
 		//Matar PCB
 		free_pcb(pcb);
 	}
+
+	if(message->contenidoSize > 0) free(message->contenido);
+	free(message);
 }
 
 //Envía orden de finalización de programa a UMC

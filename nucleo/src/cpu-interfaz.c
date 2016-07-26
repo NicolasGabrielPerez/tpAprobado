@@ -11,8 +11,7 @@ int test_mode;
 
 void handleCpuRequests(int socket){
 
-	message* mensaje;
-	mensaje = receiveMessage(socket);
+	message* mensaje = receiveMessage(socket);
 
 	if(mensaje->codError == SOCKET_DESCONECTADO){
 		log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
@@ -94,6 +93,9 @@ void handleCpuRequests(int socket){
 	else{	//Modo Test
 		log_trace(nucleo_logger, "COMMUNICATION TEST: ID Mensaje %d , Contenido: %s", mensaje->header, mensaje->contenido);
 	}
+
+	if(mensaje->contenidoSize > 0) free(mensaje->contenido);
+	free(mensaje);
 }
 
 //---------------------------------------------- <SEND>
@@ -108,6 +110,7 @@ void cpu_sendPCB(PCB* pcb, int cpu_socket){
 
 	sendMessage(cpu_socket, HEADER_ENVIAR_PCB, size, serialized_pcb);
 	cpu_sendQuantum(cpu_socket);
+	free(serialized_pcb);
 }
 
 void cpu_sendQuantum(int cpu_socket){
@@ -136,6 +139,9 @@ void nucleo_notificarFinDeRafaga(message* mensaje, int socket){
 	nucleo_updatePCB(pcb);
 	t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
 	change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
+
+	if(mensaje->contenidoSize > 0) free(mensaje->contenido);
+	free(mensaje);
 }
 
 void nucleo_notificarFinDePrograma(message* mensaje){//FINALIZADA
@@ -178,6 +184,8 @@ void nucleo_obtener_variable(message* mensaje, t_CPU* cpu){
 
 void nucleo_setear_variable(t_globalVar* var){
 	set_var_value(var->varName, var->value);
+	free(var->varName);
+	free(var);
 }
 //---------------------------------------------- </RECEIVE>
 

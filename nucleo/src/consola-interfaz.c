@@ -11,8 +11,7 @@ fd_set read_fds; //set auxiliar
 
 //Recibe mensajes y llama a las funciones correspondientes según el HEADER
 void handleConsoleRquests(int consoleSocket){
-	message* message;
-	message = receiveMessage(consoleSocket);
+	message* message = receiveMessage(consoleSocket);
 
 	if(message->header == HEADER_HANDSHAKE){
 		console_makeHandshake(consoleSocket);
@@ -38,6 +37,8 @@ void handleConsoleRquests(int consoleSocket){
 		enviarFAIL(consoleSocket, HEADER_INVALIDO);
 	}*/
 
+	if(message->contenidoSize > 0) free(message->contenido);
+	free(message);
 }
 
 //---------------------------------------------- <SEND>
@@ -135,5 +136,9 @@ void* console_comunication_program(){
 int convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
-	return *number;
+	free(buffer);
+
+	int32_t numberToReturn = *number;
+	free(number);
+	return numberToReturn;
 }
