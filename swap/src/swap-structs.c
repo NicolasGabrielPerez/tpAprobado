@@ -87,9 +87,17 @@ char* generarComandoDD(char* particionFileName, int paginaSize, int cantPaginas)
 	string_append(&command, "dd if=/dev/zero of=");
 	string_append(&command, particionFileName);
 	string_append(&command, " bs=");
-	string_append(&command, string_itoa(paginaSize));
+
+	char* pageSize = string_itoa(paginaSize);
+	string_append(&command, pageSize);
+
 	string_append(&command, " count=");
-	string_append(&command, string_itoa(cantPaginas));
+
+	char* pageString = string_itoa(cantPaginas);
+	string_append(&command, pageString);
+
+	free(pageSize);
+	free(pageString);
 	return command;
 }
 
@@ -140,7 +148,8 @@ int pruebaCrearArchivo(){
 
 int crearParticion(){
 	//Crear archivo
-	int result = system(generarComandoDD(particionFileName, paginaSize, cantPaginasSwap));
+	char* command = generarComandoDD(particionFileName, paginaSize, cantPaginasSwap);
+	int result = system(command);
 	if(result == -1){
 		printf("Fallo al crear particion\n");
 		return EXIT_FAILURE;
@@ -156,6 +165,9 @@ int crearParticion(){
 	}
 	fseek(file, 0, SEEK_SET);
 	swapAdmin->particion = file;
+
+	free(particionFileName);
+	free(command);
 
 	return EXIT_SUCCESS;
 }

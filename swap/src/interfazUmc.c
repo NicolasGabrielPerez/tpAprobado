@@ -61,6 +61,8 @@ void recibirInitPrograma(){
 
 	enviarOKSinContenido(umc_socket);
 
+	free(codFuente);
+
 	log_info(logger, "Enviada respuesta. Pid %d iniciado", pid);
 }
 
@@ -80,6 +82,8 @@ void recibirPedidoPagina(){
 
 	response* paginaResult = getPagina(nroPagina, pid);
 	enviarResultado(paginaResult, umc_socket);
+
+	deleteResponse(paginaResult);
 }
 
 void recibirEscrituraPagina(){
