@@ -109,9 +109,12 @@ int main(int argc, char **argv) {
 	char* file;
 	FILE *fp;
 
+
+	printf("File %s \n", argv[1]);
+
 	//int  length =string_length(argv[1]);
-//	file =argv[1];
-	file = "/home/utnso/Descargas/scripts-ansisop-master/scripts/completo.ansisop";
+	file =argv[1];
+	//file = "/home/utnso/Descargas/scripts-ansisop-master/scripts/completo.ansisop";
 
 	fp = fopen ( file , "rb+" );
 	if (fp==NULL) {fputs ("File error",stderr); exit (1);}
