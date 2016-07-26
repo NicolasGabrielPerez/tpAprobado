@@ -174,17 +174,7 @@ int main(int argc, char **argv) {
 		exitProgram();
 	}
 
-	//TEST
-	//PAGE_SIZE = 1;
-//	t_puntero start = 45;
-//	t_puntero size = 16;
-//	log_trace(logger, "Iniciado test con PAGE_SIZE: %d, START: %d, SIZE: %d", PAGE_SIZE, start, size);
-//	umc_process_active(1);
-//	umc_set_with_page_control(start, size, "1234567890abcdef");
-//	char* result = umc_get_with_page_control(start, size);
-
-
-	//createSIGUSR1Thread();
+	createSIGUSR1Thread();
 
 	while(hasToExit == false) {
 		pcb = nucleo_recibir_pcb();
