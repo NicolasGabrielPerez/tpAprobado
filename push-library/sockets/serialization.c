@@ -394,11 +394,17 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	//return (char*)buffer->data;
 
 	char* data = string_from_format("%s", buffer->data);
+
+	printf("Serializando PCB: %s", data);
+
 	buffer_free(buffer);
 	return data;
 }
 
 PCB* deserialize_pcb(char* serializedPCB){
+
+	printf("Deserializando PCB: %s", serializedPCB);
+
 	PCB* pcb = new_pcb(0);
 	char** serializedComponents = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
 

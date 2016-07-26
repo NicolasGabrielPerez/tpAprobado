@@ -70,8 +70,6 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	else{
 		pcb->guti = 0;
 	}
-
-	metadata_destruir(programMetadata);
 }
 
 
