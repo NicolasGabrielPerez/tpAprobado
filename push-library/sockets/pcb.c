@@ -53,7 +53,8 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	pcb->programCounter = programMetadata->instruccion_inicio;
 	pcb->tagIndexSize = programMetadata->etiquetas_size;
 
-	pcb->tagIndex = programMetadata->etiquetas;
+	pcb->tagIndex = malloc(pcb->tagIndexSize);
+	pcb->tagIndex = memcpy(pcb->tagIndex, programMetadata->etiquetas, programMetadata->etiquetas_size);
 
 	pcb->instructionsCount = programMetadata->instrucciones_size;
 	pcb->codeIndex = programMetadata->instrucciones_serializado;

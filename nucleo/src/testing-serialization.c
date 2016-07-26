@@ -295,7 +295,19 @@ void test_PCB_serialization(){
 	//serializedPCB = serialize_pcb(pcb1, buffer);
 	//string_append(serializedPCB, '\0');
 
+	puts("TEST - Tag index\n");
+	t_puntero_instruccion puntero = metadata_buscar_etiqueta("triple", pcb1->tagIndex, pcb1->tagIndexSize);
+	printf("Posición de puntero: %d\n",	puntero);
 
+	puntero = metadata_buscar_etiqueta("doble", pcb1->tagIndex, pcb1->tagIndexSize);
+	printf("Posición de puntero: %d\n",	puntero);
+
+	puts("PCB Serializado\n");
+	puntero = metadata_buscar_etiqueta("triple", pcb2->tagIndex, pcb2->tagIndexSize);
+	printf("Posición de puntero 2: %d\n",	puntero);
+
+	puntero = metadata_buscar_etiqueta("doble", pcb1->tagIndex, pcb2->tagIndexSize);
+	printf("Posición de puntero 2: %d\n",	puntero);
 
 	puts("Inicio de comparación");
 	if(pcb1->processId != pcb2->processId){

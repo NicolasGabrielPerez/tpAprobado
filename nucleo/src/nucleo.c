@@ -28,7 +28,6 @@ int main(void) {
 	conectarConUMC(config); //conecta con UMC y hace handshake
 
 
-
 	init_threads_config(nucleo_attr);
 	init_cpu_communication_thread(nucleo_attr);
 	init_console_communication_thread(nucleo_attr);
