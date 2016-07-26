@@ -112,6 +112,7 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 	umcResult result = getPageEntry(tablaDePaginas, nroPagina);
 	if(!result.ok){
 		enviarFAIL(cpu_socket, result.codError);
+		return;
 	}
 
 	//Actualizar TLB
