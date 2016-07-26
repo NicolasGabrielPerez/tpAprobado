@@ -108,7 +108,6 @@ void receiveInstructions(PCB* pcb, int quantumCount) {
 	int quantumCounter = 0;
 
 	while(quantumCounter < quantumCount) {
-		//TODO: A revisar
 		if(pcb == 0) return;
 
 		doQuantum(quantumCounter, pcb);

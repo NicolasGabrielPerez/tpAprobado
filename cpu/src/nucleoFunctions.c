@@ -136,9 +136,10 @@ void nucleo_notificarFinDePrograma() {
 	//No enviar PCB
 }
 
+u_int32_t rafagaCounter = 1;
 void nucleo_notificarFinDeRafaga() {//final
 
-	log_trace(logger, "NUCLEO: fin de rafaga");
+	log_trace(logger, "NUCLEO: fin de rafaga %d", rafagaCounter);
 
 	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_FIN_RAFAGA,0,0) == -1) {
 		 log_error(logger, "Error enviando Fin de Rafaga");
@@ -148,6 +149,7 @@ void nucleo_notificarFinDeRafaga() {//final
 	enviarPCB(pcb);
 	pcb = 0;
 
+	rafagaCounter++;
 	//message* message = receiveMessage(socket_nucleo);
 }
 
@@ -203,21 +205,33 @@ t_valor_variable nucleo_variable_compartida_obtener(t_nombre_compartida variable
 
 	log_trace(logger, "NUCLEO: obtener variable compartida, %s", variable);
 
+	int len = string_length(variable);
+	if(variable[len - 1] == '\n') {
+		variable[len - 1] = '\0';
+	}
+
 	//Enviar el nombre de la variable.
 	//Recibir el valor.
 
-	if (sendMessage(socket_nucleo, HEADER_OBTENER_VARIABLE, sizeof(t_nombre_compartida), variable) == -1) {
+	if (sendMessage(socket_nucleo, HEADER_OBTENER_VARIABLE, sizeof(char) * string_length(variable) + 1, variable) == -1) {
 		log_error(logger, "Error obteniendo variable compartida");
 	}
 
 	message* message = receiveMessage(socket_nucleo);
-	t_valor_variable valor = atoi(message->contenido);
+	t_valor_variable valor = convertToInt32(message->contenido);
 
 	return valor;
 }
 
 void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_variable valor){
 	log_trace(logger, "NUCLEO: asignar variable compartida, %s %d", variable, valor);
+
+
+	int len = string_length(variable);
+	if(variable[len - 1] == '\n') {
+		variable[len - 1] = '\0';
+	}
+
 
 	//usar globalVar en serialization.h para enviar la variable y el valor.
 	//Serializar
@@ -229,7 +243,7 @@ void nucleo_variable_compartida_asignar(t_nombre_compartida variable, t_valor_va
 
 	char* data = serialize_globalVar(var, buffer);
 
-	if (sendMessage(socket_nucleo, HEADER_SETEAR_VARIABLE, sizeof(char) * string_length(data), data) == -1) {
+	if (sendMessage(socket_nucleo, HEADER_SETEAR_VARIABLE, sizeof(char) * string_length(data) + 1, data) == -1) {
 		log_error(logger, "Error enviando variable compartida");
 	}
 
