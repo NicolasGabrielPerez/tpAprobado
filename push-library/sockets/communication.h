@@ -62,6 +62,8 @@
 		int32_t codError; // if(-1) ok
 	} message;
 
+
+	void deleteMessage(message* message);
 	message* receiveMessage(int socket);
 
 	int32_t sendMessage(int socket, int header, int contenidoSize, char* contenidoSerializado);

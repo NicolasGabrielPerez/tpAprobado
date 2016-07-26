@@ -74,21 +74,30 @@ void deleteResponse(response* responseResponse){
 	free(responseResponse);
 }
 
+void deleteMessage(message* message) {
+	if(message->contenidoSize > 0) free(message->contenido);
+	free(message);
+}
+
 response* recibirResponse(int socket){
 	response* respuesta = malloc(sizeof(response));
 
 	if (recv(socket, &respuesta->ok, sizeof(int32_t), 0) <=0 ) {
+		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if (recv(socket, &respuesta->codError, sizeof(int32_t), 0) <=0) {
+		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if (recv(socket, &respuesta->contenidoSize, sizeof(int32_t), 0) <=0) {
+		free(respuesta);
 		return createFAILResponse(SOCKET_DESCONECTADO);
 	}
 	if(respuesta->contenidoSize >0){
 		respuesta->contenido = malloc(respuesta->contenidoSize + 1);
 		if (recv(socket, respuesta->contenido, respuesta->contenidoSize, 0) <=0) {
+			free(respuesta);
 			return createFAILResponse(SOCKET_DESCONECTADO);
 		}
 	} else{
@@ -164,7 +173,7 @@ message* receiveMessage(int socket){
 
 	//PAYLOAD
 	response* responsePayload = recibirResponse(socket);
-	message->contenido = responsePayload->contenido;
+	message->contenido = string_from_format("%s", responsePayload->contenido);
 	message->contenidoSize = responsePayload->contenidoSize;
 	if(!responsePayload->ok){
 		message->codError = responsePayload->codError;
