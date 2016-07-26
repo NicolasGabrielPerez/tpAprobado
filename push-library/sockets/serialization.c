@@ -418,7 +418,7 @@ PCB* deserialize_pcb(char* serializedPCB){
 	pcb->codeIndex = deserialize_codeIndex(serializedComponents[5], pcb->instructionsCount);	//codeIndex
 	pcb->tagIndexSize = atoi(serializedComponents[6]);					//tagIndexSize
 	if(strcmp(serializedComponents[7], "_")){
-		pcb->tagIndex = serializedComponents[7];							//tagIndex
+		pcb->tagIndex = string_from_format("%s", serializedComponents[7]);							//tagIndex
 	}
 	else{
 		pcb->tagIndex = string_new();
