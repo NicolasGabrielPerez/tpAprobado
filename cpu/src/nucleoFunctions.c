@@ -84,10 +84,11 @@ PCB* nucleo_recibir_pcb() {
 	if(message->codError == SOCKET_DESCONECTADO) {
 		return 0;
 	}
-	if(message->contenidoSize >0) free(message->contenido);
-	free(message);
 
 	PCB* pcb = deserialize_pcb(message->contenido);
+
+	if(message->contenidoSize >0) free(message->contenido);
+		free(message);
 
 	//Recibir quantum count
 	message = receiveMessage(socket_nucleo);
