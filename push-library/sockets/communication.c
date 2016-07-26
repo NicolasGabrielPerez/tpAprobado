@@ -171,6 +171,9 @@ message* receiveMessage(int socket){
 		return message;
 	}
 
+	if(responsePayload->contenidoSize >0) free(responsePayload->contenido);
+	free(responsePayload);
+
 	return message;
 }
 
@@ -217,8 +220,12 @@ int32_t sendMessageInt(int socket, int header, int value){
 	char* serializedValue = malloc(sizeof(int32_t));
 	serializarInt(serializedValue, &value);
 
+	free(headerSerializado);
+
 	//PAYLOAD
-	return enviarOKConContenido(socket, sizeof(int32_t), serializedValue);
+	int result = enviarOKConContenido(socket, sizeof(int32_t), serializedValue);
+	free(serializedValue);
+	return result;
 }
 
 int32_t sendErrorMessage(int socket, int header, int errorCode){

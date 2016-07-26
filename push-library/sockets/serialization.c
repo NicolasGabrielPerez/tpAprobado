@@ -97,6 +97,7 @@ void serialize_string(char* string, Buffer *buffer) {
 	//memcpy(((char *)buffer->data) + buffer->next, string, stringSize);
 	memcpy(buffer->data + buffer->next, cadena, stringSize);
 	buffer->next += stringSize;
+	free(cadena);
 }
 
 void serialize_end_of_string(Buffer *buffer){
@@ -114,6 +115,7 @@ void serialize_int(int integer, Buffer *buffer) {
 	integerToString = string_itoa(integer);
 
 	serialize_string(integerToString, buffer);
+	free(integerToString);
 }
 
 void serialize_codeIndex(t_intructions* codeIndex, t_size instructionsCount, Buffer *buffer){
@@ -249,7 +251,13 @@ t_intructions* deserialize_codeIndex(char* serializedCodeIndex, t_size instructi
 		codeIndex[i].start = atoi(deserializedInstruction[0]);
 		codeIndex[i].offset = atoi(deserializedInstruction[1]);
 		//printf("--- Índice de código n° %d: %s \n", i, deserializedList[i]);
+
+		free(deserializedInstruction[0]);
+		free(deserializedInstruction[1]);
+		free(deserializedInstruction);
+		free(deserializedList[i]);
 	}
+	free(deserializedList);
 	return codeIndex;
 }
 
@@ -297,7 +305,11 @@ t_list* deserialize_stack(char* serializedStack, int stackCount){
 int32_t convertToInt32(char* buffer){
 	int32_t* number = malloc(sizeof(int32_t));
 	memcpy(number, buffer, sizeof(int32_t));
-	return *number;
+	free(buffer);
+
+	int32_t numberToReturn = *number;
+	free(number);
+	return numberToReturn;
 }
 
 //u_int32_t processId;					//Identificador único del proceso
@@ -371,6 +383,7 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	//return (char*)buffer->data;
 
 	char* data = string_from_format("%s", buffer->data);
+	buffer_free(buffer);
 	return data;
 }
 
@@ -402,7 +415,9 @@ PCB* deserialize_pcb(char* serializedPCB){
 		pcb->stack = list_create();
 	}
 
-
+	int i = 0;
+	for(i = 0; i <= 10; i++) free(serializedComponents[i]);
+	free(serializedComponents);
 
 	return pcb;
 }
