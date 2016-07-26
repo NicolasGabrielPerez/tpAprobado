@@ -52,6 +52,7 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 	if(!result.ok){
 		enviarFAIL(cpu_socket, result.codError);
 		log_trace(logger, "Enviada respuesta de fallo");
+		return;
 	}
 
 	escribirEnFrame(buffer, offset, tamanio, result.frameEntry->nroFrame);
