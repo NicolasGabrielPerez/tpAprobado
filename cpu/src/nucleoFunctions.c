@@ -41,6 +41,7 @@ void enviarPCB(){
 
 	buffer_free(buffer);
 
+	free(pcbzerial);
 	free_pcb(pcb);
 	pcb = 0;
 }
@@ -65,6 +66,9 @@ bool nucleo_init(t_config* config) {
 		return false;
 	}
 
+	if(message->contenidoSize >0) free(message->contenido);
+	free(message);
+
 	return true;
 }
 
@@ -80,6 +84,8 @@ PCB* nucleo_recibir_pcb() {
 	if(message->codError == SOCKET_DESCONECTADO) {
 		return 0;
 	}
+	if(message->contenidoSize >0) free(message->contenido);
+	free(message);
 
 	PCB* pcb = deserialize_pcb(message->contenido);
 
@@ -97,6 +103,9 @@ PCB* nucleo_recibir_pcb() {
 		t_stackContent* stackContent = init_stackContent();
 		list_add(pcb->stack, stackContent);
 	}
+
+	if(message->contenidoSize >0) free(message->contenido);
+	free(message);
 
 	return pcb;
 }

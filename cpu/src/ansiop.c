@@ -62,7 +62,7 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 	int32_t value = atoi(buffer);
 
-	//free(memoryAddr);
+	free(buffer);
 
 	return value;
 }
@@ -82,7 +82,7 @@ void asignar(t_puntero puntero, t_valor_variable variable) {
 	char* param = string_itoa(variable);
 	umc_set_with_page_control(memoryAddr, sizeof(t_valor_variable), param);
 
-	//free(param);
+	free(param);
 	//free(memoryAddr);
 }
 

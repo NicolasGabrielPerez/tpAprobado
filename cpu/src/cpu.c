@@ -78,9 +78,15 @@ void doQuantum(int quantumCount, PCB* pcb) {
 
 	char* instruction = umc_get_with_page_control(start, size);
 
-	log_trace(logger, string_from_format("Ejecutando quantum: %d", quantumCount));
-	log_trace(logger, string_from_format("Ejecutando instruccion: %s", instruction));
-	analizadorLinea(strdup(instruction), &functions, &kernel_functions);
+	log_trace(logger, "Ejecutando quantum: %d", quantumCount);
+	log_trace(logger, "Ejecutando instruccion: %s", instruction);
+
+	char* instructionDupped = strdup(instruction);
+
+	analizadorLinea(instructionDupped, &functions, &kernel_functions);
+
+	free(instruction);
+	free(instructionDupped);
 
 	//Notificar al nucleo que concluyo un quantum
 	nucleo_notificarFinDeQuantum(quantumCount);

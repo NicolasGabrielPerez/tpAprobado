@@ -55,6 +55,9 @@ bool umc_init(t_config* config){
 	}
 	PAGE_SIZE = convertToInt32(message->contenido);
 
+	if(message->contenidoSize >0) free(message->contenido);
+	free(message);
+
 	log_trace(logger, "Tamaño de Página: %d", PAGE_SIZE);
 	return true;
 }
@@ -77,6 +80,9 @@ void umc_process_active(int32_t processId) {
 	resp = sendMessageInt(socket_umc, HEADER_ALMACENAR_PAGINAS, processId);
 
 	response* respuesta = recibirResponse(socket_umc);
+
+	if(respuesta->contenidoSize >0) free(respuesta->contenido);
+	free(respuesta);
 }
 
 void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
