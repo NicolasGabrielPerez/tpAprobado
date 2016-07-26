@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
 
 	//int  length =string_length(argv[1]);
 //	file =argv[1];
-	file = "/home/utnso/Descargas/scripts-ansisop-master/scripts/facil.ansisop";
+	file = "/home/utnso/Descargas/scripts-ansisop-master/scripts/completo.ansisop";
 
 	fp = fopen ( file , "rb+" );
 	if (fp==NULL) {fputs ("File error",stderr); exit (1);}
