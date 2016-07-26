@@ -48,23 +48,26 @@ void ejecutarComando(char* command){
 
 void* consolaDeComandos(){
 	int rc;
-	char* buff = malloc(30);
+
 
 	while(1){
+		char* buff = malloc(30);
 		rc = getLine ("Esperando comando> ", buff, 30);
 		if (rc == NO_INPUT) {
 			// Extra NL since my system doesn't output that on EOF.
 			printf ("\nSin input de comando\n");
+			free(buff);
 			continue;
 		}
 
 		if (rc == TOO_LONG) {
 			printf ("Comando demasiado largo [%s]\n", buff);
+			free(buff);
 			continue;
 		}
 
 		ejecutarComando(buff);
-		buff = malloc(30);
+		free(buff);
 	}
 }
 

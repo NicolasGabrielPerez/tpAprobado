@@ -28,10 +28,7 @@ void* espera_resultados(){
 
 	int fin_program = 1;
 	while(fin_program || FEOP){
-		message* nucleoResponse;
-		nucleoResponse = receiveMessage(socket_nucleo);
-		// deserialize response
-
+		message* nucleoResponse = receiveMessage(socket_nucleo);
 
 		if (nucleoResponse->header == HEADER_FIN_PROGRAMA) {
 			printf("FIN DE PROGRAMA \n");
@@ -54,6 +51,7 @@ void* espera_resultados(){
 			free(mensaje);
 		}
 
+		if(nucleoResponse->contenidoSize > 0) free(nucleoResponse->contenido);
 		free(nucleoResponse);
 	}
 }
