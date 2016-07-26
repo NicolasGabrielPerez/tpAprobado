@@ -22,10 +22,13 @@ void initSwap(t_config* config){
 
 	if(swapInitResponse->ok){
 		log_info(logger, "Respuesta incial de Swap: %s", swapInitResponse->contenido);
+		deleteResponse(swapInitResponse);
 		return;
 	} else{
 		log_error(logger, "Error de Swap: %d", swapInitResponse->codError);
 	}
+
+	deleteResponse(swapInitResponse);
 
 	exit(1);
 }

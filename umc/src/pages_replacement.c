@@ -38,6 +38,7 @@ void cargarEnPresentes(int pid, presente* presente){
 	}
 
 	cargarEnMemoriaPrincipal(response->contenido, presente->nroFrame);
+	deleteResponse(response);
 }
 
 presente* siguientePresente(tabla_de_paginas* tablaDePaginas){

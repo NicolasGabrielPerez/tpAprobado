@@ -4,6 +4,7 @@
 #include "nucleo-interfaz.h"
 #include "tlb.h"
 #include "console-umc.h"
+#include <sockets/communication.h>
 
 pthread_attr_t pthread_attr;
 pthread_cond_t condition_var = PTHREAD_COND_INITIALIZER;
@@ -29,20 +30,15 @@ void *gestionarCPU(void* socket){
 		if(message->header == HEADER_ALMACENAR_PAGINAS){
 			log_trace(logger, "HEADER_ALMACENAR_PAGINAS recibido [Socket %d]", (int) socket);
 			recibirAlmacenarPaginas((int)socket, pidActivo);
-			continue;
-		}
-		if(message->header == HEADER_SOLICITAR_PAGINAS){
+		} else if(message->header == HEADER_SOLICITAR_PAGINAS){
 			log_trace(logger, "HEADER_SOLICITAR_PAGINAS recibido [Socket %d]", (int) socket);
 			recibirSolicitarPaginas((int)socket, pidActivo);
-			continue;
-		}
-		if(message->header == HEADER_CAMBIO_PROCESO_ACTIVO){
+		} else if(message->header == HEADER_CAMBIO_PROCESO_ACTIVO){
 			log_trace(logger, "HEADER_CAMBIO_PROCESO_ACTIVO recibido [Socket %d]", (int) socket);
 			recibirCambioDeProcesoActivo((int)socket, &pidActivo);
-			continue;
 		}
 
-		//TODO deleteMessage(response);
+		deleteMessage(message);
 	}
 
 	return 0;

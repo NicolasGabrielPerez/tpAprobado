@@ -18,6 +18,10 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 	message* bufferMessage = receiveMessage(cpu_socket);
 	buffer = bufferMessage->contenido;
 
+	deleteMessage(nroPaginaMessage);
+	deleteMessage(offsetMessage);
+	deleteMessage(tamanioMessage);
+
 	log_trace(logger, "Pedido almacenar paginas [pid: %d, nroPagina %d, offset %d, tamanio %d]", pidActivo, nroPagina, offset, tamanio);
 	log_trace(logger, "[Buffer: %s]", buffer);
 
@@ -27,6 +31,8 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 		log_error(logger, "Pid %d no existe", pidActivo);
 		enviarFAIL(cpu_socket, PID_NO_EXISTE);
 		log_trace(logger, "Enviada respuesta de fallo");
+
+		deleteMessage(bufferMessage);
 		return;
 	}
 
@@ -35,6 +41,8 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 		if(frame!=-1){
 			escribirEnFrame(buffer, offset, tamanio, frame);
 			enviarOKSinContenido(cpu_socket);
+
+			deleteMessage(bufferMessage);
 			return;
 		}
 	}
@@ -53,6 +61,9 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 
 	demorarSolicitud();
 	enviarOKSinContenido(cpu_socket);
+
+	deleteMessage(bufferMessage);
+
 	log_trace(logger, "Enviada respuesta Ok! [Socket %d]", cpu_socket);
 }
 
@@ -70,6 +81,11 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 
 	message* tamanioMessage = receiveMessage(cpu_socket);
 	tamanio = convertToInt32(tamanioMessage->contenido);
+
+
+	deleteMessage(nroPaginaMessage);
+	deleteMessage(offsetMessage);
+	deleteMessage(tamanioMessage);
 
 	log_trace(logger, "Pedido recibir paginas [pid: %d, nroPagina %d, offset %d, tamanio %d]", pidActivo, nroPagina, offset, tamanio);
 
