@@ -38,11 +38,11 @@ void handleCpuRequests(int socket){
 		}
 
 		//Recepción de estructura PCB desde CPU => actualiza PCB
-		if(mensaje->header == HEADER_ENVIAR_PCB){
+		/*if(mensaje->header == HEADER_ENVIAR_PCB){
 			log_trace(nucleo_logger, "COMUNICACIÓN: Recibido PCB desde CPU %d", socket);
 			PCB* pcb = deserialize_pcb(mensaje->contenido);
 			nucleo_updatePCB(pcb);
-		}
+		}*/
 
 		if(mensaje->header == HEADER_NOTIFICAR_FIN_QUANTUM){
 			log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de quantum desde CPU %d", socket);
@@ -130,6 +130,10 @@ void nucleo_notificarFinDeQuantum(message* mensaje, t_CPU* cpu){
 }
 
 void nucleo_notificarFinDeRafaga(message* mensaje, int socket){
+	message* pcbMessage = receiveMessage(socket);
+	log_trace(nucleo_logger, "COMUNICACIÓN: Recibido PCB desde CPU %d", socket);
+	PCB* pcb = deserialize_pcb(pcbMessage->contenido);
+	nucleo_updatePCB(pcb);
 	t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
 	change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
 }
@@ -211,19 +215,19 @@ void com_cpuManejarSocketChanges(int socket, fd_set* read_set){
 
 void com_manejarConexionesCPUs(){
 	fd_set read_fds; //set auxiliar
-		read_fds = cpu_sockets_set;
+	read_fds = cpu_sockets_set;
 
-		while(1){
+	while(1){
 
-			if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
-				perror("select");
-				exit(4);
-			}
-			int i;
-			for(i = 0; i <= fd_cpu_max; i++) {
-				com_cpuManejarSocketChanges(i, &read_fds);
-			};
+		if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
+			perror("select");
+			exit(4);
 		}
+		int i;
+		for(i = 0; i <= fd_cpu_max; i++) {
+			com_cpuManejarSocketChanges(i, &read_fds);
+		};
+	}
 }
 
 void* cpu_comunication_program(){
