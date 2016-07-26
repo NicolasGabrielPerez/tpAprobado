@@ -138,6 +138,5 @@ int convertToInt32(char* buffer){
 	memcpy(number, buffer, sizeof(int32_t));
 
 	int32_t numberToReturn = *number;
-	free(number);
 	return numberToReturn;
 }
