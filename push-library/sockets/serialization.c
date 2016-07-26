@@ -393,6 +393,8 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 
 	//return (char*)buffer->data;
 
+	printf("%s ", buffer->data);
+
 	char* data = string_from_format("%s", buffer->data);
 
 	printf("Serializando PCB: %s", data);
