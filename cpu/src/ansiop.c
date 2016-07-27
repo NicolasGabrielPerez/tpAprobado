@@ -12,7 +12,7 @@ t_puntero definirVariable(t_nombre_variable variable) {
 
 	log_trace(logger, "ANSISOP: definirVariable, %c", variable);
 
-	t_puntero memoryAddr = pcb->memoryIndex;
+	t_puntero memoryAddr = pcb->memoryIndex + pcb->guti * PAGE_SIZE;;
 	pcb->memoryIndex += sizeof(t_valor_variable);
 
 	char* key = string_from_format("%c", variable);
@@ -56,7 +56,7 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 //	t_variable* memoryAddr = getMemoryAddr(puntero);
 //	char* buffer = umc_get(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size);
 
-	t_puntero  memoryAddr = puntero + pcb->guti * PAGE_SIZE;
+	t_puntero  memoryAddr = puntero;
 
 	char* buffer = umc_get_with_page_control(memoryAddr, sizeof(t_valor_variable));
 
@@ -79,7 +79,7 @@ void asignar(t_puntero puntero, t_valor_variable variable) {
 
 	//umc_set(memoryAddr->pageNumber, memoryAddr->offset, memoryAddr->size, param);
 
-	t_puntero  memoryAddr = puntero + pcb->guti * PAGE_SIZE;
+	t_puntero  memoryAddr = puntero;
 
 	char* param = string_itoa(variable);
 	umc_set_with_page_control(memoryAddr, sizeof(t_valor_variable), param);
@@ -92,8 +92,6 @@ t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
 
 	log_trace(logger, "ANSISOP: obtenerValorCompartida, %s", name);
 
-	//TODO: Testing
-
 	t_valor_variable value = nucleo_variable_compartida_obtener(name);
 	return value;
 }
@@ -102,8 +100,6 @@ t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
 t_valor_variable asignarValorCompartida(t_nombre_compartida name, t_valor_variable value) {
 
 	log_trace(logger, "ANSISOP: asignarValorCompartida, %s, %d", name, value);
-
-	//TODO: Testing
 
 	nucleo_variable_compartida_asignar(name, value);
 	return value;
@@ -117,34 +113,23 @@ void irAlLabel(t_nombre_etiqueta etiqueta) {
 	//TODO: Testing
 
 	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
-	pcb->programCounter = pointer;
+	pcb->programCounter = pointer - 1;
 }
 
 void llamarConRetorno(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
 	log_trace(logger, "ANSISOP: llamarConRetorno, %s %d", etiqueta, donde_retornar);
 
-	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
-	pcb->programCounter = pointer;
-
 	t_list* stack = pcb->stack;
 
-	//TODO: Hacer los argumentos de funcion al ser llamado.
-
-
-
-
-
 	t_stackContent* newStackContent = init_stackContent();
-	newStackContent->returnAddress = donde_retornar;
+	newStackContent->returnAddress = pcb->programCounter;
+	newStackContent->returnVariable = donde_retornar;
 
-	t_variable* var = newStackContent->returnVariable;
-
-	t_puntero memoryAddr = pcb->memoryIndex;
 	pcb->memoryIndex += sizeof(t_valor_variable);
 
-	var->id = string_from_format("%s", "a");
-	var->position = memoryAddr;
+	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
+	pcb->programCounter = pointer - 1;
 
 	list_add(stack, newStackContent);
 }
@@ -174,22 +159,21 @@ void retornar(t_valor_variable valor) {
 	u_int32_t stackPosition = list_size(pcb->stack) - 1;
 	t_stackContent* content = list_get(stack, stackPosition);
 
-	pcb->programCounter = content->returnAddress;
-
 	//Liberar del stack de variables en UMC, ver la manera de restar el index
 	int size = dictionary_size(content->variables) * sizeof(t_valor_variable);
 	pcb->memoryIndex -= size;
 
 	t_puntero returnAddr = content->returnAddress;
-	t_variable* returnVar = content->returnVariable;
+	t_puntero returnVar = content->returnVariable;
+
+	char* param = string_itoa(valor);
+	umc_set_with_page_control(returnVar, sizeof(t_valor_variable), param);
 
 	//Pop
 	list_remove(stack, stackPosition);
 	free_stackContent(content);
 
 	pcb->programCounter = returnAddr;
-
-	//TODO Revisar el retorno de la variable.
 }
 
 void imprimir(t_valor_variable valor) {
@@ -216,7 +200,7 @@ void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {
 
 	//TODO: Testing
 
-	nucleo_notificarIO(valor);
+	//nucleo_notificarIO(valor);
 }
 
 

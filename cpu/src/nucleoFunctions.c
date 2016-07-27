@@ -39,8 +39,6 @@ void enviarPCB(){
 	int size = string_length(pcbzerial) + 1;
 	sendMessage(socket_nucleo, HEADER_ENVIAR_PCB, size , pcbzerial);
 
-	buffer_free(buffer);
-
 	free(pcbzerial);
 	free_pcb(pcb);
 	pcb = 0;

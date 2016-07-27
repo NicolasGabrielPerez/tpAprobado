@@ -72,6 +72,9 @@ void sigusr1_handler(int signum) {
 
 
 void doQuantum(int quantumCount, PCB* pcb) {
+
+	if(pcb == 0) return;
+
 	u_int32_t i = pcb->programCounter;
 	u_int32_t start = pcb->codeIndex[i].start;
 	u_int32_t size = pcb->codeIndex[i].offset;
@@ -126,6 +129,8 @@ void receiveInstructions(PCB* pcb, int quantumCount) {
 		if(pcb == 0) return;
 
 		doQuantum(quantumCounter, pcb);
+
+		if(pcb == 0) return;
 
 		if(hasToReturn) {
 			hasToReturn = false;
