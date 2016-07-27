@@ -146,7 +146,7 @@ void* consolaDeComandos(){
 		}
 
 		ejecutarComando(buff);
-		free(buff);
+		//free(buff);
 	}
 }
 

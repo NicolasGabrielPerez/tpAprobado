@@ -285,6 +285,7 @@ void testFragmentacionExterna(){
 }
 
 int main(void) {
+
 	t_config* config = config_create("umc.config");
 	if(config==NULL){
 		printf("No se pudo leer la configuración");

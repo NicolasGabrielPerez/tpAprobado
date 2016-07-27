@@ -41,7 +41,7 @@ void printData(tabla_de_paginas* tabla){
 
 			if(entry->presente){
 				char* frame = leerFrame(entry->nroFrame);
-				frame[marco_size] = '0';
+				frame[marco_size] = '\0';
 				printFrame(frame);
 			}
 

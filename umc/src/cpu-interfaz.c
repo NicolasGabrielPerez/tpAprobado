@@ -40,6 +40,8 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 		int frame = buscarEnTLB(nroPagina, pidActivo);
 		if(frame!=-1){
 			escribirEnFrame(buffer, offset, tamanio, frame);
+			tabla_de_paginas_entry* pageEntry = buscarPorNroPaginaYPID(nroPagina, pidActivo);
+			pageEntry->modificado = 1;
 			enviarOKSinContenido(cpu_socket);
 
 			deleteMessage(bufferMessage);
@@ -56,6 +58,8 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 	}
 
 	escribirEnFrame(buffer, offset, tamanio, result.frameEntry->nroFrame);
+	tabla_de_paginas_entry* pageEntry = buscarPorNroPaginaYPID(nroPagina, pidActivo);
+	pageEntry->modificado = 1;
 
 	//Actualizar TLB
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
@@ -119,6 +123,7 @@ void recibirSolicitarPaginas(int cpu_socket, int pidActivo){
 	if(TLBEnable) actualizarTLB(nroPagina, pidActivo, result.frameEntry->nroFrame);
 
 	demorarSolicitud();
+
 	enviarOKConContenido(cpu_socket, tamanio, result.frameEntry->direccion_real + offset);
 }
 

@@ -226,7 +226,7 @@ tabla_de_frame_entry* obtenerEntradaDeFrame(int nroFrame){
 
 void escribirEnFrame(char* buffer, int offset, int tamanio, int nroFrame){
 	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(nroFrame);
-	char* where = entrada->direccion_real + offset;
+    char* where = entrada->direccion_real + offset;
 	memcpy(where, buffer, tamanio);
 	log_trace(logger, "Frame %d escrito!", nroFrame);
 }
