@@ -95,7 +95,7 @@ void free_stackContent(t_stackContent* stackContent) {
 void free_pcb(PCB* pcb) {
 
 	list_destroy_and_destroy_elements(pcb->stack, free_stackContent);
-	list_destroy_and_destroy_elements(pcb->codeIndex, free);
+	//list_destroy_and_destroy_elements(pcb->codeIndex, free); //TODO ROMPE ACA
 	free(pcb);
 }
 

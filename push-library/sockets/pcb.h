@@ -34,7 +34,7 @@ typedef struct stackContent {
 	t_dictionary* arguments;
 	t_dictionary* variables;
 	t_puntero returnAddress;
-	u_int32_t returnVariable;
+	t_puntero returnVariable;
 } t_stackContent;
 
 typedef struct indexTag {
