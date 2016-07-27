@@ -12,11 +12,11 @@ t_log* nucleo_logger;
 
 int main(void) {
 
-	test_PCB_serialization();
+	//	test_PCB_serialization();
 	//test_planification();
 	//test_serialization();
 
-	/*
+	//	/*
 	t_config* config = getConfig("nucleo.config");
 
 	//*
@@ -45,7 +45,7 @@ int main(void) {
 			if(!queue_is_empty(READY_Process_Queue)){
 				set_next_pcb_RUNNING(freeCPU->cpuSocket);
 			}
-		}
+		}*/
 	}
 	//*/
 	return EXIT_SUCCESS;
