@@ -118,6 +118,24 @@ void serialize_int(int integer, Buffer *buffer) {
 	free(integerToString);
 }
 
+void serialize_tagIndex(char* tagIndex, t_size tagIndexSize, Buffer *buffer){
+	int j;
+	char* formatedString = malloc(tagIndexSize);
+	memcpy(formatedString, tagIndex, tagIndexSize);
+
+	for(j = 0 ; j < tagIndexSize ; j++){
+		if(formatedString[j] == '\0'){
+			formatedString[j] = '.';
+		}
+	}
+	reserve_space(buffer, tagIndexSize);
+	//memcpy(((char *)buffer->data) + buffer->next, string, stringSize);
+	memcpy(buffer->data + buffer->next, formatedString, tagIndexSize);
+	buffer->next += tagIndexSize;
+
+	free(formatedString);
+}
+
 void serialize_codeIndex(t_intructions* codeIndex, t_size instructionsCount, Buffer *buffer){
 	if(instructionsCount > 0){
 		int i;
@@ -361,18 +379,7 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	//codeIndex
 	serialize_codeIndex(pcb->codeIndex, pcb->instructionsCount, buffer);
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
-	//tagIndexSize
-	serialize_int(pcb->tagIndexSize, buffer);
-	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
-	//tagIndex
-	if(pcb->tagIndexSize > 0){
-		serialize_string(pcb->tagIndex, buffer);
-	}
-	else{
-		serialize_string(EMPTYVALUE_IDENTIFIER, buffer);
-	}
-	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
 	//guti
 	serialize_int(pcb->guti, buffer);
@@ -390,6 +397,18 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 	}
 	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
+	//tagIndexSize
+	serialize_int(pcb->tagIndexSize, buffer);
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
+
+	//tagIndex
+	if(pcb->tagIndexSize > 0){
+		serialize_tagIndex(pcb->tagIndex, pcb->tagIndexSize, buffer);
+	}
+	else{
+		serialize_string(EMPTYVALUE_IDENTIFIER, buffer);
+	}
+	serialize_ending_special_character(PCBSTRUCT_SEPARATOR, buffer);
 
 	//return (char*)buffer->data;
 
@@ -397,7 +416,7 @@ char* serialize_pcb(PCB *pcb, Buffer *buffer){
 
 	char* data = string_from_format("%s", buffer->data);
 
-	printf("Serializando PCB: %s", data);
+	//printf("Serializando PCB: %s", data);
 
 	buffer_free(buffer);
 	return data;
@@ -416,23 +435,29 @@ PCB* deserialize_pcb(char* serializedPCB){
 	pcb->instructionsCount = atoi(serializedComponents[3]);				//instructionsCount
 	pcb->memoryIndex = atoi(serializedComponents[4]);					//memoryIndex
 	pcb->codeIndex = deserialize_codeIndex(serializedComponents[5], pcb->instructionsCount);	//codeIndex
-	pcb->tagIndexSize = atoi(serializedComponents[6]);					//tagIndexSize
-	if(strcmp(serializedComponents[7], "_")){
-		pcb->tagIndex = string_from_format("%s", serializedComponents[7]);							//tagIndex
+	pcb->guti = atoi(serializedComponents[6]);							//tagIndexSize
+	pcb->stackCount = atoi(serializedComponents[7]);					//stackCount
+	if(strcmp(serializedComponents[8], "_")){
+		pcb->tagIndex = string_from_format("%s", serializedComponents[8]);			//stack
+	}
+	else{
+		pcb->stack = list_create();
+	}
+
+	pcb->tagIndexSize = atoi(serializedComponents[9]);							//tagIndexSize
+	if(strcmp(serializedComponents[10], "_")){
+		pcb->tagIndex = string_from_format("%s", serializedComponents[10]);		//tagIndex
+		int j;
+		for(j = 0 ; j < pcb->tagIndexSize ; j++){
+			if(pcb->tagIndex[j] == '.'){
+				pcb->tagIndex[j] = '\0';
+			}
+		}
 	}
 	else{
 		pcb->tagIndex = string_new();
 	}
 
-	pcb->guti = atoi(serializedComponents[8]);
-	pcb->stackCount = atoi(serializedComponents[9]);					//stackCount
-
-	if(strcmp(serializedComponents[10], "_")){
-		pcb->stack = deserialize_stack(serializedComponents[10], pcb->stackCount);
-	}
-	else{
-		pcb->stack = list_create();
-	}
 
 	int i = 0;
 	for(i = 0; i <= 10; i++) free(serializedComponents[i]);

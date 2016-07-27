@@ -276,11 +276,47 @@ void test_PCB_serialization(){
 
 	Buffer* buffer = new_buffer();
 
+	//Remplazo del \0
+	int j;
+
+	//	for(j = 0 ; j < pcb1->tagIndexSize ; j++){
+	//		if(pcb1->tagIndex[j] == '\0'){
+	//			pcb1->tagIndex[j] = '.';
+	//		}
+	//		printf("Elemento %d = %c \n", j, pcb1->tagIndex[j]);
+	//	}
+	puts(" - PCB 1:\n");
+	printf("TagIndexSize 1: %d\n", pcb1->tagIndexSize);
+	for(j = 0 ; j < pcb1->tagIndexSize ; j++){
+		//		if(pcb1->tagIndex[j] == '.'){
+		//			pcb1->tagIndex[j] = '\0';
+		//		}
+		printf("Elemento %d = %c \n", j, pcb1->tagIndex[j]);
+	}
+
 	char* serializedPCB = serialize_pcb(pcb1, buffer);
-	printf("Caca \n");
 	printf("cadena serializada: %s \n", serializedPCB);
 
+	//Revertir formateo de tag Index
+	puts("Desconvirtiendo\n");
+	for(j = 0 ; j < pcb1->tagIndexSize ; j++){
+		if(pcb1->tagIndex[j] == '.'){
+			pcb1->tagIndex[j] = '\0';
+		}
+	}
+
+
 	PCB* pcb2 = deserialize_pcb(serializedPCB);
+	puts(" - PCB 2:\n");
+	printf("TagIndexSize 2: %d\n", pcb2->tagIndexSize);
+	puts("Desconvirtiendo\n");
+	for(j = 0 ; j < pcb2->tagIndexSize ; j++){
+		if(pcb2->tagIndex[j] == '.'){
+			pcb2->tagIndex[j] = '\0';
+		}
+		printf("PCB 2 - Elemento %d = %c \n", j, pcb2->tagIndex[j]);
+	}
+	printf("TagIndex 2: %s\n", pcb2->tagIndex);
 	/*
 	printf("cadena serializada: %s", serializedPCB);
 	printf("Longitud de cadena serializada: %d",strlen(serializedPCB));
@@ -289,13 +325,14 @@ void test_PCB_serialization(){
 
 	char** serializedComponents1 = malloc(strlen(serializedPCB));
 	serializedComponents1 = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
-*/
+	 */
 
 	//char* serializedPCB = malloc(strlen(serialize_pcb(pcb1, buffer)) + 1);
 	//serializedPCB = serialize_pcb(pcb1, buffer);
 	//string_append(serializedPCB, '\0');
 
-	puts("TEST - Tag index\n");
+	puts("***************************TEST - Tag index\n");
+	printf("PCB 1 - TagIndex: %s\n", pcb1->tagIndex);
 	t_puntero_instruccion puntero = metadata_buscar_etiqueta("triple", pcb1->tagIndex, pcb1->tagIndexSize);
 	printf("Posición de puntero: %d\n",	puntero);
 
@@ -303,62 +340,63 @@ void test_PCB_serialization(){
 	printf("Posición de puntero: %d\n",	puntero);
 
 	puts("PCB Serializado\n");
+	printf("PCB 2 - TagIndex: %s\n", pcb2->tagIndex);
 	puntero = metadata_buscar_etiqueta("triple", pcb2->tagIndex, pcb2->tagIndexSize);
 	printf("Posición de puntero 2: %d\n",	puntero);
 
-	puntero = metadata_buscar_etiqueta("doble", pcb1->tagIndex, pcb2->tagIndexSize);
+	puntero = metadata_buscar_etiqueta("doble", pcb2->tagIndex, pcb2->tagIndexSize);
 	printf("Posición de puntero 2: %d\n",	puntero);
 
-	puts("Inicio de comparación");
+	puts("Inicio de comparación\n");
 	if(pcb1->processId != pcb2->processId){
-		printf("ERROR: PID 1 = %d | PID 2 = %d", pcb1->processId, pcb2->processId);
+		printf("ERROR: PID 1 = %d | PID 2 = %d\n", pcb1->processId, pcb2->processId);
 	}
 
 	if(pcb1->codePagesCount != pcb2->codePagesCount){
-		printf("ERROR: codePagesCount 1 = %d | codePagesCount 2 = %d", pcb1->codePagesCount, pcb2->codePagesCount);
+		printf("ERROR: codePagesCount 1 = %d | codePagesCount 2 = %d\n", pcb1->codePagesCount, pcb2->codePagesCount);
 	}
 
 	if(pcb1->guti != pcb2->guti){
-		printf("ERROR: guti 1 = %d | guti 2 = %d", pcb1->guti, pcb2->guti);
+		printf("ERROR: guti 1 = %d | guti 2 = %d\n", pcb1->guti, pcb2->guti);
 	}
 
 	if(pcb1->instructionsCount != pcb2->instructionsCount){
-		printf("ERROR: instructionsCount 1 = %d | instructionsCount 2 = %d", pcb1->instructionsCount, pcb2->instructionsCount);
+		printf("ERROR: instructionsCount 1 = %d | instructionsCount 2 = %d\n", pcb1->instructionsCount, pcb2->instructionsCount);
 	}
 
 	if(pcb1->memoryIndex != pcb2->memoryIndex){
-		printf("ERROR: memoryIndex 1 = %d | memoryIndex 2 = %d", pcb1->memoryIndex, pcb2->memoryIndex);
+		printf("ERROR: memoryIndex 1 = %d | memoryIndex 2 = %d\n", pcb1->memoryIndex, pcb2->memoryIndex);
 	}
 
 	if(pcb1->tagIndexSize != pcb2->tagIndexSize){
-		printf("ERROR: tagIndexSize 1 = %d | tagIndexSize 2 = %d", pcb1->tagIndexSize, pcb2->tagIndexSize);
+		printf("ERROR: tagIndexSize 1 = %d | tagIndexSize 2 = %d\n", pcb1->tagIndexSize, pcb2->tagIndexSize);
 	}
 
 	if(pcb1->stackCount != pcb2->stackCount){
-		printf("ERROR: stackCount 1 = %d | stackCount 2 = %d", pcb1->stackCount, pcb2->stackCount);
+		printf("ERROR: stackCount 1 = %d | stackCount 2 = %d\n", pcb1->stackCount, pcb2->stackCount);
 	}
 	if(pcb1->programCounter != pcb2->programCounter){
-		printf("ERROR: programCounter 1 = %d | programCounter 2 = %d", pcb1->programCounter, pcb2->programCounter);
+		printf("ERROR: programCounter 1 = %d | programCounter 2 = %d\n", pcb1->programCounter, pcb2->programCounter);
 	}
 	if(list_size(pcb1->stack) != list_size(pcb2->stack)){
-		printf("ERROR: Stack size 1 = %d | Stack size 2 = %d", list_size(pcb1->stack), list_size(pcb2->stack));
+		printf("ERROR: Stack size 1 = %d | Stack size 2 = %d\n", list_size(pcb1->stack), list_size(pcb2->stack));
 	}
 
 	int i;
-		for( i = 0 ; i < pcb2->instructionsCount ; i++ ){
-			if(pcb1->codeIndex[i].start != pcb2->codeIndex[i].start){
-				printf("ERROR: codeIndex1, inst %d start = %d | codeIndex2, inst %d = %d", i, pcb1->codeIndex[i].start, i, pcb2->codeIndex[i].start);
-			}
-
-			if(pcb1->codeIndex[i].offset != pcb2->codeIndex[i].offset){
-				printf("ERROR: codeIndex1, inst %d offset = %d | codeIndex2, inst %d = %d", i, pcb1->codeIndex[i].offset, i, pcb2->codeIndex[i].offset);
-			}
+	for( i = 0 ; i < pcb2->instructionsCount ; i++ ){
+		if(pcb1->codeIndex[i].start != pcb2->codeIndex[i].start){
+			printf("ERROR: codeIndex1, inst %d start = %d | codeIndex2, inst %d = %d\n", i, pcb1->codeIndex[i].start, i, pcb2->codeIndex[i].start);
 		}
+
+		if(pcb1->codeIndex[i].offset != pcb2->codeIndex[i].offset){
+			printf("ERROR: codeIndex1, inst %d offset = %d | codeIndex2, inst %d = %d\n", i, pcb1->codeIndex[i].offset, i, pcb2->codeIndex[i].offset);
+		}
+	}
 
 	//if(strcmp(pcb1->tagIndex,pcb2->tagIndex)){
 	//	printf("ERROR: tagIndex 1 = %s | tagIndex 2 = %s", pcb1->tagIndex, pcb2->tagIndex);
 	//}
 
-	puts("Fin de comparación");
+	puts("Fin de comparación\n");
 
 }
