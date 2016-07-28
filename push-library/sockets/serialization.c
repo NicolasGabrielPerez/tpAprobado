@@ -432,8 +432,9 @@ PCB* deserialize_pcb(char* serializedPCB){
 	pcb->codeIndex = deserialize_codeIndex(serializedComponents[5], pcb->instructionsCount);	//codeIndex
 	pcb->stackInitPosition = atoi(serializedComponents[6]);							//tagIndexSize
 	pcb->stackCount = atoi(serializedComponents[7]);					//stackCount
+
 	if(strcmp(serializedComponents[8], "_")){
-		pcb->tagIndex = string_from_format("%s", serializedComponents[8]);			//stack
+		pcb->stack = deserialize_stack(serializedComponents[8], pcb->stackCount);		//stack
 	}
 	else{
 		pcb->stack = list_create();
