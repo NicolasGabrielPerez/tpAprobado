@@ -129,7 +129,7 @@ PCB* nucleo_obtener_pcb(message* programBlock){
 }
 
 void nucleo_notificarFinDeQuantum(message* mensaje, t_CPU* cpu){
-	log_trace(nucleo_logger, "PROGRAMA %d: Ejecución de quantum %s ", cpu->PID, mensaje->contenido);
+	log_trace(nucleo_logger, "PROGRAMA %d: Ejecución de quantum %d ", cpu->PID, convertToInt32(mensaje->contenido));
 }
 
 void nucleo_notificarFinDeRafaga(message* mensaje, int socket){
@@ -140,8 +140,8 @@ void nucleo_notificarFinDeRafaga(message* mensaje, int socket){
 	t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
 	change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
 
-	if(mensaje->contenidoSize > 0) free(mensaje->contenido);
-	free(mensaje);
+	//if(pcbMessage->contenidoSize > 0) free(pcbMessage->contenido);
+	free(pcbMessage);
 }
 
 void nucleo_notificarFinDePrograma(message* mensaje){//FINALIZADA
