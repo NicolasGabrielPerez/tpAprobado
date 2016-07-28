@@ -219,15 +219,16 @@ t_variable* deserialize_variable(char* serializedVariable){
 void serialize_stackContent(t_stackContent* content, Buffer* buffer){
 
 	//Serializar cantidad de elementos en el diccionario
-	serialize_int(dictionary_size(content->arguments), buffer);
+//	serialize_int(dictionary_size(content->arguments), buffer);
+	serialize_int(0, buffer);
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 	//serializar diccionario => arguments
-	if(dictionary_size(content->arguments) > 0){
-		serialize_dictionary(content->arguments, buffer);
-	}
-	else{
+//	if(dictionary_size(content->arguments) > 0){
+//		serialize_dictionary(content->arguments, buffer);
+//	}
+//	else{
 		serialize_string(EMPTYVALUE_IDENTIFIER, buffer);
-	}
+//	}
 	serialize_ending_special_character(STACKCONTENT_SEPARATOR, buffer);
 
 	//Serializar cantidad de elementos en el diccionario
