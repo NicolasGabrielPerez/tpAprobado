@@ -112,6 +112,10 @@ char* programa4 = "begin"
 		"print A+1"
 		"goto Proximo";
 
+void testDictionaryElement(char* key, void* value){
+	printf("Variable: %s    -    Valor: %s\n", key, string_from_format("%s", value));
+}
+
 void print_program_metadata(t_metadata_program *programMetadata) {
 	puts("++++++++++++Program Metadada++++++++++++ \n");
 	printf("t_size: %d \n", programMetadata->instrucciones_size);
@@ -354,32 +358,45 @@ void test_PCB_serialization(){
 
 	int j;
 
-	//	for(j = 0 ; j < pcb1->tagIndexSize ; j++){
-	//		if(pcb1->tagIndex[j] == '\0'){
-	//			pcb1->tagIndex[j] = '.';
-	//		}
-	//		printf("Elemento %d = %c \n", j, pcb1->tagIndex[j]);
-	//	}
+
 	puts(" - PCB 1:\n");
 	printf("TagIndexSize 1: %d\n", pcb1->tagIndexSize);
 	for(j = 0 ; j < pcb1->tagIndexSize ; j++){
-		//		if(pcb1->tagIndex[j] == '.'){
-		//			pcb1->tagIndex[j] = '\0';
-		//		}
 		printf("Elemento %d = %c \n", j, pcb1->tagIndex[j]);
 	}
 
+	//Agregar elementos al stack
+	t_stackContent* stackContent = init_stackContent();
+	stackContent->returnAddress = 10;
+	stackContent->returnVariable = 20;
+	dictionary_put(stackContent->variables, "var1", "9");
+	dictionary_put(stackContent->variables, "var2", "30");
+	dictionary_put(stackContent->variables, "var3", "100");
+	dictionary_put(stackContent->variables, "a", "1234567890");
+
+	list_add(pcb1->stack, stackContent);
+	pcb1->stackCount++;
+
+	t_stackContent* stackContent2 = init_stackContent();
+	stackContent2->returnAddress = 10;
+	stackContent2->returnVariable = 20;
+	dictionary_put(stackContent2->variables, "var4", "9");
+	dictionary_put(stackContent2->variables, "var5", "30");
+	dictionary_put(stackContent2->variables, "var6", "100");
+	dictionary_put(stackContent2->variables, "b", "2345678901");
+
+	list_add(pcb1->stack, stackContent2);
+	pcb1->stackCount++;
+
 	char* serializedPCB = serialize_pcb(pcb1, buffer);
 	printf("cadena serializada: %s \n", serializedPCB);
-
 	//Revertir formateo de tag Index
-	puts("Desconvirtiendo\n");
-	for(j = 0 ; j < pcb1->tagIndexSize ; j++){
-		if(pcb1->tagIndex[j] == '.'){
-			pcb1->tagIndex[j] = '\0';
-		}
-	}
-
+	//	puts("Desconvirtiendo\n");
+	//	for(j = 0 ; j < pcb1->tagIndexSize ; j++){
+	//		if(pcb1->tagIndex[j] == '.'){
+	//			pcb1->tagIndex[j] = '\0';
+	//		}
+	//	}
 
 	PCB* pcb2 = deserialize_pcb(serializedPCB);
 	puts(" - PCB 2:\n");
@@ -392,26 +409,13 @@ void test_PCB_serialization(){
 		printf("PCB 2 - Elemento %d = %c \n", j, pcb2->tagIndex[j]);
 	}
 	printf("TagIndex 2: %s\n", pcb2->tagIndex);
-	/*
-	printf("cadena serializada: %s", serializedPCB);
-	printf("Longitud de cadena serializada: %d",strlen(serializedPCB));
-
-	char** serializedComponents = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
-
-	char** serializedComponents1 = malloc(strlen(serializedPCB));
-	serializedComponents1 = string_split(serializedPCB, PCBSTRUCT_SEPARATOR);
-	 */
-
-	//char* serializedPCB = malloc(strlen(serialize_pcb(pcb1, buffer)) + 1);
-	//serializedPCB = serialize_pcb(pcb1, buffer);
-	//string_append(serializedPCB, '\0');
 
 	char* etiqueta1 = "Siguiente";
 	char* etiqueta2 = "Proximo";
 	char* etiqueta3 = "doble";
 
 
-	puts("***************************TEST - Tag index\n");
+	puts("***************************-------------------TEST - Tag index\n");
 	printf("PCB 1 - TagIndex: %s\n", pcb1->tagIndex);
 	t_puntero_instruccion puntero = metadata_buscar_etiqueta(etiqueta1, pcb1->tagIndex, pcb1->tagIndexSize);
 	printf("Posición de puntero %s: %d\n", etiqueta1, puntero);
@@ -475,6 +479,31 @@ void test_PCB_serialization(){
 	}
 
 	int i;
+	t_stackContent* testStackContent1;
+	t_stackContent* testStackContent2;
+	for( i = 0 ; i < pcb2->stackCount ; i++){
+		testStackContent1 = list_get(pcb1->stack, i);
+		testStackContent2 = list_get(pcb2->stack, i);
+
+		if(testStackContent1->returnAddress != testStackContent2->returnAddress){
+			printf("ERROR: StackContent[%d] returnAddress 1 = %d | returnAddress 2 = %d\n", i, testStackContent1->returnAddress, testStackContent2->returnAddress);
+		}
+
+		if(testStackContent1->returnVariable != testStackContent2->returnVariable){
+			printf("ERROR: StackContent[%d] returnVariable 1 = %d | returnVariable 2 = %d\n", i, testStackContent1->returnVariable, testStackContent2->returnVariable);
+		}
+
+		if(dictionary_size(testStackContent1->variables) != dictionary_size(testStackContent2->variables)){
+			printf("ERROR: StackContent[%d] variables size 1 = %d | variables size 2 = %d\n", i, dictionary_size(testStackContent1->variables), dictionary_size(testStackContent2->variables));
+		}
+
+		puts("Diccionario stack - PCB1");
+		dictionary_iterator(testStackContent1->variables, testDictionaryElement);
+
+		puts("Diccionario stack - PCB2");
+		dictionary_iterator(testStackContent2->variables, testDictionaryElement);
+	}
+
 	for( i = 0 ; i < pcb2->instructionsCount ; i++ ){
 		if(pcb1->codeIndex[i].start != pcb2->codeIndex[i].start){
 			printf("ERROR: codeIndex1, inst %d start = %d | codeIndex2, inst %d = %d\n", i, pcb1->codeIndex[i].start, i, pcb2->codeIndex[i].start);
