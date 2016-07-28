@@ -448,8 +448,8 @@ void test_PCB_serialization(){
 		printf("ERROR: codePagesCount 1 = %d | codePagesCount 2 = %d\n", pcb1->codePagesCount, pcb2->codePagesCount);
 	}
 
-	if(pcb1->guti != pcb2->guti){
-		printf("ERROR: guti 1 = %d | guti 2 = %d\n", pcb1->guti, pcb2->guti);
+	if(pcb1->stackInitPosition != pcb2->stackInitPosition){
+		printf("ERROR: guti 1 = %d | guti 2 = %d\n", pcb1->stackInitPosition, pcb2->stackInitPosition);
 	}
 
 	if(pcb1->instructionsCount != pcb2->instructionsCount){

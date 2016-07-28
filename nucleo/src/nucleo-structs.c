@@ -217,15 +217,16 @@ void end_process(int PID){
 }
 
 void nucleo_updatePCB(PCB* newPCB){
-	//TODO: Testear esto
 	PCB* actualPCB = get_pcb_by_ID(General_Process_List, newPCB->processId);
-	actualPCB->codePagesCount = newPCB->codePagesCount;
+
 	actualPCB->programCounter = newPCB->programCounter;
 	actualPCB->memoryIndex = newPCB->memoryIndex;
-	actualPCB->stack = newPCB->stack;
 	actualPCB->stackCount = newPCB->stackCount;
-	actualPCB->codeIndex = newPCB->codeIndex;
-	actualPCB->instructionsCount = newPCB->instructionsCount;
+
+	list_destroy_and_destroy_elements(actualPCB->stack, free_stackContent);
+	actualPCB->stack = list_create();
+
+	list_add_all(actualPCB->stack, newPCB->stack);
 
 	//Actualizar con datos que provienen del CPU
 }

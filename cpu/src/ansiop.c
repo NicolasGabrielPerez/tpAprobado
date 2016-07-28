@@ -12,7 +12,7 @@ t_puntero definirVariable(t_nombre_variable variable) {
 
 	log_trace(logger, "ANSISOP: definirVariable, %c", variable);
 
-	t_puntero memoryAddr = pcb->memoryIndex + pcb->guti * PAGE_SIZE;;
+	t_puntero memoryAddr = pcb->memoryIndex + pcb->stackInitPosition * PAGE_SIZE;;
 	pcb->memoryIndex += sizeof(t_valor_variable);
 
 	char* key = string_from_format("%c", variable);

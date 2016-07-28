@@ -62,13 +62,13 @@ void create_program_PCB(PCB* pcb, char* program, int codePagesCount){
 	pcb->stackCount = 0;
 	pcb->memoryIndex = 0;
 	if(memoryPageSize != 0){
-		pcb->guti =  (strlen(program) / memoryPageSize);
+		pcb->stackInitPosition =  (strlen(program) / memoryPageSize);
 		if(strlen(program) % memoryPageSize){
-			pcb->guti++;
+			pcb->stackInitPosition++;
 		}
 	}
 	else{
-		pcb->guti = 0;
+		pcb->stackInitPosition = 0;
 	}
 }
 

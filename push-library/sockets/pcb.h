@@ -61,7 +61,7 @@ typedef struct PCB {
 	t_list* stack;
 	u_int32_t stackCount;
 	t_puntero memoryIndex;
-	u_int32_t guti;					//Nro de página relativa en donde empieza el stack
+	u_int32_t stackInitPosition;					//Nro de página relativa en donde empieza el stack
 
 
 } PCB;
