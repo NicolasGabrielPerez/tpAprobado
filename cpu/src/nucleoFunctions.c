@@ -76,7 +76,7 @@ void nucleo_delete(){//final
 
 PCB* nucleo_recibir_pcb() {
 
-	log_trace(logger, "NUCLEO: recibiendo PCB");
+	log_trace(logger, "NUCLEO: esperando PCB");
 
 	message* message = receiveMessage(socket_nucleo);
 	if(message->codError == SOCKET_DESCONECTADO) {
@@ -109,15 +109,21 @@ PCB* nucleo_recibir_pcb() {
 	return pcb;
 }
 
-void nucleo_notificarIO(t_nombre_dispositivo valor) {//final
+void nucleo_notificarIO(t_nombre_dispositivo nombre, u_int32_t tiempo) {//final
 
 	log_trace(logger, "NUCLEO: notificar IO");
 
 
 	//Campo contenido mensaje el nombre del dispositivo.
-	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_IO, sizeof(valor), valor) == -1) {
+	if (sendMessage(socket_nucleo, HEADER_NOTIFICAR_IO, sizeof(nombre), nombre) == -1) {
 		log_error(logger, "Error enviando  IO");
 	}
+
+	if (sendMessageInt(socket_nucleo, HEADER_NOTIFICAR_IO, tiempo) == -1) {
+		log_error(logger, "Error enviando  IO");
+	}
+
+	pcb->programCounter++;
 
 	//Enviar PCB
 	enviarPCB(pcb);

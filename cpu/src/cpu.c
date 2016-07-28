@@ -29,8 +29,9 @@
 #include "test.h"
 
 t_log* logger;
-;
+
 u_int32_t QUANTUM = 3;
+u_int32_t quantum = 0;
 
 u_int32_t socketNucleo = 0;
 u_int32_t socketUmc = 0;
@@ -71,13 +72,9 @@ void sigusr1_handler(int signum) {
 }
 
 
-void doQuantum(int quantumCount, PCB* pcb) {
+void doQuantum() {
 
 	if(pcb == 0) return;
-
-	if(quantumCount >= 17) {
-		printf("nada");
-	}
 
 	u_int32_t i = pcb->programCounter;
 	u_int32_t start = pcb->codeIndex[i].start;
@@ -85,7 +82,7 @@ void doQuantum(int quantumCount, PCB* pcb) {
 
 	char* instruction = umc_get_with_page_control(start, size);
 
-	log_trace(logger, "Ejecutando quantum: %d", quantumCount);
+	log_trace(logger, "Ejecutando quantum: %d", quantum);
 	log_trace(logger, "Ejecutando instruccion: %s", instruction);
 
 	char* instructionDupped = strdup(instruction);
@@ -95,10 +92,12 @@ void doQuantum(int quantumCount, PCB* pcb) {
 	free(instruction);
 	free(instructionDupped);
 
-	//Notificar al nucleo que concluyo un quantum
-	nucleo_notificarFinDeQuantum(quantumCount);
+	if(pcb == 0) return;
 
-	quantumCount++;
+	//Notificar al nucleo que concluyo un quantum
+	nucleo_notificarFinDeQuantum(quantum);
+
+	quantum++;
 
 	//Incrementar Program Counter
 	pcb->programCounter++;
@@ -112,18 +111,18 @@ void doQuantum(int quantumCount, PCB* pcb) {
 	}
 
 
-	if(quantumCount >= QUANTUM) {
+	if(quantum >= QUANTUM) {
 		//Notificar al nucleo que concluyo una rafaga
 		nucleo_notificarFinDeRafaga(pcb);
 
-		quantumCount = 0;
+		quantum = 0;
 	}
 
 	return;
 }
 
 //Devuelve un booleano si tiene que salir del programa.
-void receiveInstructions(PCB* pcb, int quantumCount) {
+void receiveInstructions(int quantumCount) {
 
 	log_trace(logger, "Recibido el PCB, ejecutando...");
 
@@ -132,7 +131,7 @@ void receiveInstructions(PCB* pcb, int quantumCount) {
 	while(quantumCounter < quantumCount) {
 		if(pcb == 0) return;
 
-		doQuantum(quantumCounter, pcb);
+		doQuantum(quantumCounter);
 
 		if(pcb == 0) return;
 
@@ -198,8 +197,12 @@ int main(int argc, char **argv) {
 	while(hasToExitCPU == false) {
 		pcb = nucleo_recibir_pcb();
 		if(pcb == 0) continue;
+
+		quantum = 0;
+		hasToReturn = false;
+
 		umc_process_active(pcb->processId);
-		receiveInstructions(pcb, QUANTUM);
+		receiveInstructions(QUANTUM);
 	}
 
 	exitProgram();

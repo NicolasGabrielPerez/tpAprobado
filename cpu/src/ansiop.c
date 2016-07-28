@@ -150,6 +150,8 @@ void llamarConRetorno(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 	t_puntero_instruccion pointer = metadata_buscar_etiqueta(blankedEtiqueta, pcb->tagIndex, pcb->tagIndexSize);
 	pcb->programCounter = pointer - 1;
 
+	t_stackContent* fixedContent = list_get(stack, 0);
+
 	list_add(stack, newStackContent);
 }
 
@@ -195,6 +197,8 @@ void retornar(t_valor_variable valor) {
 
 	umc_set(page, offset, sizeof(t_valor_variable), intChar);
 
+	t_stackContent* fixedContent = list_get(stack, stackPosition - 1);
+
 	//Pop
 	list_remove(stack, stackPosition);
 	free_stackContent(content);
@@ -226,7 +230,7 @@ void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {
 
 	//TODO: Testing
 
-	//nucleo_notificarIO(valor);
+	nucleo_notificarIO(valor, tiempo);
 }
 
 

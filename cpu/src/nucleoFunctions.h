@@ -26,7 +26,7 @@ void nucleo_delete();
 
 PCB* nucleo_recibir_pcb();
 
-void nucleo_notificarIO(t_nombre_dispositivo valor);
+void nucleo_notificarIO(t_nombre_dispositivo valor, u_int32_t tiempo);
 void nucleo_notificarFinDeQuantum(u_int32_t quantumCount);
 void nucleo_notificarFinDeRafaga();
 void nucleo_notificarFinDePrograma();
