@@ -306,7 +306,7 @@ t_list* deserialize_stack(char* serializedStack, int stackCount){
 //			stackContent->arguments = deserialize_dictionary(deserializedElement[1], auxCounter);
 //		}
 //		else{
-			stackContent->arguments = dictionary_create();
+//			stackContent->arguments = dictionary_create();
 //		}
 
 		auxCounter = atoi(deserializedElement[2]);

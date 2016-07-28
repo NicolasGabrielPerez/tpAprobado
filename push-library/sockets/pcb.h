@@ -31,7 +31,7 @@ typedef struct Variable{
 } t_variable;
 
 typedef struct stackContent {
-	t_dictionary* arguments;
+	//t_dictionary* arguments;
 	t_dictionary* variables;
 	t_puntero returnAddress;
 	t_puntero returnVariable;

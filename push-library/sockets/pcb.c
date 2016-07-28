@@ -85,7 +85,7 @@ PCB* new_pcb(int processID) {
 
 void free_stackContent(t_stackContent* stackContent) {
 
-	dictionary_destroy_and_destroy_elements(stackContent->arguments, free);
+	//dictionary_destroy_and_destroy_elements(stackContent->arguments, free);
 	dictionary_destroy_and_destroy_elements(stackContent->variables, free);
 
 
@@ -102,7 +102,7 @@ void free_pcb(PCB* pcb) {
 t_stackContent* init_stackContent() {
 
 	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
-	stackContent->arguments = dictionary_create();
+	//stackContent->arguments = dictionary_create();
 	stackContent->variables = dictionary_create();
 	stackContent->returnVariable = 0;
 	stackContent->returnAddress = 0;
