@@ -12,11 +12,12 @@ pthread_attr_t nucleo_attr;
 
 //Función que se cargará en el hilo de dispositivo
 void ioDeviceProgram(t_IO_Device* device){
+	printf("Iniciado dispositivo %s [Sleep time %d]", device->ioId, device->sleepTime);
 	while(1){
 		if(!queue_is_empty(device->BlockedProcessesQueue)){
 			attend_blocked_processes(device);
 		}
-		sleep(io_thread_sleep);
+		//sleep(io_thread_sleep);
 	}
 }
 
@@ -49,7 +50,7 @@ void set_pcb_BLOCKED_by_device(PCB* pcb, t_IO_Device* device){
 }
 
 void execute_process_IO(int sleepTime){
-	usleep(sleepTime);
+	usleep(sleepTime * 1000);
 }
 
 //Ejecuta TODAS las IO encoladas del dispositivo y las encola en READY
@@ -58,7 +59,7 @@ void attend_blocked_processes(t_IO_Device* io_device){
 
 	while(queue_size(io_device->BlockedProcessesQueue) > 0){
 		pcb = queue_pop(io_device->BlockedProcessesQueue);
-		execute_process_IO(io_device->sleepTime);
+		execute_process_IO(io_device->sleepTime * pcb->sleepUnits);
 		set_pcb_READY(pcb);
 	}
 }
@@ -93,9 +94,11 @@ void execute_all_processes_IO(){
 	}
 }
 
-void process_call_io(char* deviceName, int32_t PID){
+void process_call_io(char* deviceName, int32_t PID, int32_t time){
 	t_IO_Device* device = get_device_by_id(deviceName);
+
 	PCB* pcb = remove_pcb_by_ID(RUNNING_Process_List, PID); //Saco PCB de lista de READY (desactualizado)
+	pcb->sleepUnits = time;
 	set_pcb_BLOCKED_by_device(pcb, device);					//Encolar en la cola de bloqueados de device
 }
 
@@ -115,7 +118,10 @@ static t_link_element* list_find_by_name(t_list *self, char* name, bool(*conditi
 	t_link_element *element = self->head;
 	int position = 0;
 
-	while (element != NULL && !condition(element->data, name)) {
+	while (element != NULL) {
+		if(!condition(element->data, name)){
+			return element;
+		}
 		element = element->next;
 		position++;
 	}

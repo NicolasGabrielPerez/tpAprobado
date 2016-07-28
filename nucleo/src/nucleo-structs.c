@@ -167,6 +167,10 @@ void add_pcb_to_general_list(PCB* pcb){
 
 //Encola pcb en la cola general de listos
 void set_pcb_READY(PCB* pcb){
+	if(queue_is_empty(READY_Process_Queue)){
+		free(READY_Process_Queue);
+		READY_Process_Queue = queue_create();
+	}
 	queue_push(READY_Process_Queue, pcb);
 	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d READY", pcb->processId);
 }
@@ -213,6 +217,8 @@ void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
 //Finalizar un proceso
 void end_process(int PID){
 	PCB* pcb = remove_pcb_by_ID(General_Process_List, PID);
+	remove_pcb_by_ID(RUNNING_Process_List, PID);
+
 	free_pcb(pcb);
 }
 

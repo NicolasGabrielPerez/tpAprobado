@@ -48,11 +48,3 @@ void liberarCpu(int socket){
 	t_CPU* unaCpu = get_CPU_by_socket(socket);
 	unaCpu->PID = -1;
 }
-
-void enviar_a_cpu_libre(int PID, char* serializado){
-	 int contenidoSize = sizeof(serializado);
-	 t_CPU* cpuLibre = get_next_free_CPU();
-	 cpuLibre->PID = PID;
-	 int sockete = cpuLibre->cpuSocket;
-	 int enviarOKConContenido(sockete, contenidoSize, serializado);
-}

@@ -39,5 +39,5 @@ t_IO_Device* device_list_find_element(t_list *self, char* ioID, bool(*condition)
 int find_device(t_IO_Device* device, char* ioID);
 t_IO_Device* get_device_by_id(char* ioID);
 int exists_any_blocked_process();
-void process_call_io(char* deviceName, int32_t PID);
+void process_call_io(char* deviceName, int32_t PID, int32_t time);
 #endif /* IO_DEVICE_H_ */

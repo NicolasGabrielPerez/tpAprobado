@@ -50,6 +50,12 @@ void umc_notificarFinDePrograma(int processID){
 	log_trace(nucleo_logger, "COMUNICACIÓN: UMC - Fin de programa ID: %d", processID);
 	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, processID);
 	sendMessageInt(socket_umc, HEADER_FIN_PROGRAMA, processID); //Se tiene que enviar dos veces, NO esta repetido.
+	response* respuesta =  recibirResponse(socket_umc);
+	if(respuesta->ok){
+		log_info(nucleo_logger, "Finalizado pid %d", processID);
+	} else{
+		log_warning(nucleo_logger, "Error al finalizar pid %d", processID);
+	}
 }
 
 void handshake_con_UMC(){

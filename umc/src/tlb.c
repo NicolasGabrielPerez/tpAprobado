@@ -97,8 +97,6 @@ int buscarEnTLB(int nroPagina, int pid){
 }
 
 void destroyTlbEntry(void* entry){
-	log_trace(logger, "Flush de TLB");
-
 	tlb_entry* tlbEntry = (tlb_entry*) entry;
 	free(tlbEntry->last_use);
 	free(tlbEntry);

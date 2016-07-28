@@ -30,6 +30,7 @@ void operarSegunHeader(int32_t header){
 }
 
 int main(void) {
+
 	t_config* config = config_create("swap.config");
 	if(config==NULL){
 		printf("No se pudo leer la configuración");

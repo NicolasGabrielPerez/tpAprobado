@@ -7,6 +7,7 @@
 
 #ifndef PLANIFICADOR_H_
 #define PLANIFICADOR_H_
+#include "nucleo-structs.h"
 
 void* plannificationProgram();
 

@@ -181,7 +181,7 @@ message* receiveMessage(int socket){
 	message->contenidoSize = responsePayload->contenidoSize;
 	if(!responsePayload->ok){
 		message->codError = responsePayload->codError;
-		deleteResponse(responsePayload);
+		//deleteResponse(responsePayload);
 		return message;
 	}
 

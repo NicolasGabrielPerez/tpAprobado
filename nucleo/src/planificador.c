@@ -21,10 +21,6 @@ void agregarCPU(CPU* cpu){
 	list_add(CPUs, cpu);
 }
 
-void agregarPCB(PCB* pcb){
-	queue_push(ready_status_queue, pcb);
-}
-
 void setearDisponible(int cpu_socket){
 	int i;
 	CPU* actual;
@@ -54,20 +50,6 @@ int obtenerCpuDisponible(){
 		cpu_socket = buscarDisponible();
 	}
 	return cpu_socket;
-}
-
-void enviarAEjecutar(PCB* pcb, int cpu_socket){
-
-}
-
-void planificar(){
-
-	while(1){
-		if(!queue_is_empty(ready_status_queue)){ //hay algun PCB para ejecutar
-			int cpuDisponible = obtenerCpuDisponible();
-			enviarAEjecutar(queue_pop(ready_status_queue), cpuDisponible);
-		}
-	}
 }
 
 //Al encontrar un cpu libre envía el proximo PCB READY a ejecución
