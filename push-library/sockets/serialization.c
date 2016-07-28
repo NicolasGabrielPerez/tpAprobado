@@ -505,8 +505,9 @@ char* cleanStringSpaces (char* input){
 			j--;
 	}
 
-	char* finalString = malloc(charsCounts);
+	char* finalString = malloc(charsCounts + 1);
 	memcpy(finalString, output, charsCounts);
+	finalString[charsCounts] = '\0';
 
 	free(output);
 
