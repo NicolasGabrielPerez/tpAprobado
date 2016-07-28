@@ -301,12 +301,12 @@ t_list* deserialize_stack(char* serializedStack, int stackCount){
 		deserializedElement = string_split(deserializedList[i], STACKCONTENT_SEPARATOR);
 
 		auxCounter = atoi(deserializedElement[0]);
-		if(auxCounter > 0){
-			stackContent->arguments = deserialize_dictionary(deserializedElement[1], auxCounter);
-		}
-		else{
+//		if(auxCounter > 0){
+//			stackContent->arguments = deserialize_dictionary(deserializedElement[1], auxCounter);
+//		}
+//		else{
 			stackContent->arguments = dictionary_create();
-		}
+//		}
 
 		auxCounter = atoi(deserializedElement[2]);
 
