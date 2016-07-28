@@ -83,4 +83,6 @@
 	char* serialize_globalVar(t_globalVar* var, Buffer* buffer);
 	t_globalVar* deserialize_globalVar(char* serializedVar);
 
+	char* cleanStringSpaces (char* input);
+
 #endif

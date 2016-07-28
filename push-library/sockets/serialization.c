@@ -489,3 +489,26 @@ t_globalVar* deserialize_globalVar(char* serializedVar){
 
 	return var;
 }
+
+char* cleanStringSpaces (char* input){
+	char *output= malloc(sizeof(input));
+	int charsCounts = 0;
+	int i;
+	int j;
+	for (i = 0, j = 0; i<strlen(input); i++,j++)
+	{
+		if (input[i]!='\n' && input[i]!='\t' ){
+			output[j]=input[i];
+			charsCounts++;
+		}
+		else
+			j--;
+	}
+
+	char* finalString = malloc(charsCounts);
+	memcpy(finalString, output, charsCounts);
+
+	free(output);
+
+	return finalString;
+}
