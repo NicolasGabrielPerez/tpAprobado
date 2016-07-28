@@ -292,13 +292,16 @@ t_list* deserialize_stack(char* serializedStack, int stackCount){
 
 	if(stackCount == 0) return stack;
 
-	t_stackContent* stackContent = malloc(sizeof(t_stackContent));
+
 	char** deserializedList = string_split(serializedStack, STACK_SEPARATOR);
 	char** deserializedElement;
 
 	int auxCounter;
 	int i;
 	for( i = 0 ; i < stackCount ; i++ ){
+
+		t_stackContent* stackContent = malloc(sizeof(t_stackContent));
+
 		deserializedElement = string_split(deserializedList[i], STACKCONTENT_SEPARATOR);
 
 		auxCounter = atoi(deserializedElement[0]);
