@@ -29,6 +29,18 @@ char* programa1 = "function triple\n"
 		"variables f\n"
 		"f = $0 + $0\n"
 		"return f\n"
+		"end"
+
+		"function guti\n"
+		"variables f\n"
+		"f = $0 + $0\n"
+		"return f\n"
+		"end"
+
+		"function unafuncionmaslargaquelamierda\n"
+		"variables f\n"
+		"f = $0 + $0\n"
+		"return f\n"
 		"end";
 
 char* programa2 = "begin \n"
@@ -37,6 +49,68 @@ char* programa2 = "begin \n"
 		"g <- a\n"
 		"print g\n"
 		"end\n";
+
+char* programa3 = "begin\n"
+		"variables f,  A,  g\n"
+		"A = 	0\n"
+		"!compartida = 1+A\n"
+		"print !compartida\n"
+		"jnz !compartida Siguiente\n"
+		":Proximo\n"
+
+		"f = 8\n"
+		"g <- doble !compartida\n"
+		"io LPT1 20\n"
+
+		"textPrint    Hola Mundo!\n"
+
+		"g = 1 + g\n"
+		"print 		g\n"
+		"textPrint Bye\n"
+		"end\n"
+
+		"#Devolver el doble del\n"
+		"#primer parametro\n"
+		"function doble\n"
+		"variables f\n"
+		"f = $0 + $0\n"
+		"return f\n"
+		"end\n"
+
+		":Siguiente\n"
+		"print A+1\n"
+		"goto Proximo\n";
+
+char* programa4 = "begin"
+		"variables f,  A,  g"
+		"A = 	0"
+		"!compartida = 1+A"
+		"print !compartida"
+		"jnz !compartida Siguiente"
+		":Proximo"
+
+		"f = 8"
+		"g <- doble !compartida"
+		"io LPT1 20"
+
+		"textPrint    Hola Mundo!"
+
+		"g = 1 + g"
+		"print 		g"
+		"textPrint Bye"
+		"end"
+
+		"#Devolver el doble del"
+		"#primer parametro"
+		"function doble"
+		"variables f"
+		"f = $0 + $0"
+		"return f"
+		"end"
+
+		":Siguiente"
+		"print A+1"
+		"goto Proximo";
 
 void print_program_metadata(t_metadata_program *programMetadata) {
 	puts("++++++++++++Program Metadada++++++++++++ \n");
@@ -271,12 +345,13 @@ void test_cpu_communication(){
 }
 
 void test_PCB_serialization(){
+	char* programa = programa3;
+
 	PCB* pcb1 = new_pcb(0);
-	create_program_PCB(pcb1, programa1, 45);
+	create_program_PCB(pcb1, programa, 45);
 
 	Buffer* buffer = new_buffer();
 
-	//Remplazo del \0
 	int j;
 
 	//	for(j = 0 ; j < pcb1->tagIndexSize ; j++){
@@ -331,21 +406,38 @@ void test_PCB_serialization(){
 	//serializedPCB = serialize_pcb(pcb1, buffer);
 	//string_append(serializedPCB, '\0');
 
+	char* etiqueta1 = "Siguiente";
+	char* etiqueta2 = "Proximo";
+	char* etiqueta3 = "doble";
+
+
 	puts("***************************TEST - Tag index\n");
 	printf("PCB 1 - TagIndex: %s\n", pcb1->tagIndex);
-	t_puntero_instruccion puntero = metadata_buscar_etiqueta("triple", pcb1->tagIndex, pcb1->tagIndexSize);
-	printf("Posición de puntero: %d\n",	puntero);
+	t_puntero_instruccion puntero = metadata_buscar_etiqueta(etiqueta1, pcb1->tagIndex, pcb1->tagIndexSize);
+	printf("Posición de puntero %s: %d\n", etiqueta1, puntero);
 
-	puntero = metadata_buscar_etiqueta("doble", pcb1->tagIndex, pcb1->tagIndexSize);
-	printf("Posición de puntero: %d\n",	puntero);
+	puntero = metadata_buscar_etiqueta(etiqueta2, pcb1->tagIndex, pcb1->tagIndexSize);
+	printf("Posición de puntero %s: %d\n", etiqueta2, puntero);
+
+	puntero = metadata_buscar_etiqueta(etiqueta3, pcb1->tagIndex, pcb1->tagIndexSize);
+	printf("Posición de puntero %s: %d\n", etiqueta3, puntero);
+
+	puntero = metadata_buscar_etiqueta("unafuncionmaslargaquelamierda", pcb1->tagIndex, pcb1->tagIndexSize);
+	printf("Posición de puntero %s: %d\n", "unafuncionmaslargaquelamierda", puntero);
 
 	puts("PCB Serializado\n");
 	printf("PCB 2 - TagIndex: %s\n", pcb2->tagIndex);
-	puntero = metadata_buscar_etiqueta("triple", pcb2->tagIndex, pcb2->tagIndexSize);
-	printf("Posición de puntero 2: %d\n",	puntero);
+	puntero = metadata_buscar_etiqueta(etiqueta1, pcb2->tagIndex, pcb2->tagIndexSize);
+	printf("Posición de puntero 2 %s: %d\n", etiqueta1, puntero);
 
-	puntero = metadata_buscar_etiqueta("doble", pcb2->tagIndex, pcb2->tagIndexSize);
-	printf("Posición de puntero 2: %d\n",	puntero);
+	puntero = metadata_buscar_etiqueta(etiqueta2, pcb2->tagIndex, pcb2->tagIndexSize);
+	printf("Posición de puntero 2 %s: %d\n", etiqueta2, puntero);
+
+	puntero = metadata_buscar_etiqueta(etiqueta3, pcb2->tagIndex, pcb2->tagIndexSize);
+	printf("Posición de puntero 2 %s: %d\n", etiqueta3, puntero);
+
+	puntero = metadata_buscar_etiqueta("unafuncionmaslargaquelamierda", pcb2->tagIndex, pcb2->tagIndexSize);
+	printf("Posición de puntero 2 %s: %d\n", "unafuncionmaslargaquelamierda", puntero);
 
 	puts("Inicio de comparación\n");
 	if(pcb1->processId != pcb2->processId){

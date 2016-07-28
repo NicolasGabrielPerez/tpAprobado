@@ -39,6 +39,7 @@ extern char** io_ids;
 extern char** io_sleep_times;
 
 extern int test_mode;
+extern int io_thread_sleep;
 
 extern t_log* nucleo_logger;
 

@@ -9,6 +9,7 @@ char** semaforos_init_values;
 char** shared_values;
 int stack_size;
 int test_mode;
+int io_thread_sleep;
 char* umc_ip;
 
 int32_t memoryPageSize;
@@ -38,6 +39,7 @@ void initNucleo(t_config* config){
 	stack_size = config_get_int_value(config, "STACK_SIZE");
 	umc_ip = config_get_string_value(config, "UMC_IP");
 	test_mode = config_get_int_value(config, "TEST_MODE");
+	io_thread_sleep = config_get_int_value(config, "IO_THREAD_SLEEP");
 
 
 	//Estruturas para control de estados

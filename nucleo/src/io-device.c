@@ -6,6 +6,8 @@ t_queue* READY_Process_Queue;
 char** io_ids;
 char** io_sleep_times;
 
+int io_thread_sleep;
+
 pthread_attr_t nucleo_attr;
 
 //Función que se cargará en el hilo de dispositivo
@@ -14,6 +16,7 @@ void ioDeviceProgram(t_IO_Device* device){
 		if(!queue_is_empty(device->BlockedProcessesQueue)){
 			attend_blocked_processes(device);
 		}
+		sleep(io_thread_sleep);
 	}
 }
 
