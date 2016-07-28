@@ -99,9 +99,7 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 
 	resp = sendMessageInt(socket_umc, HEADER_ALMACENAR_PAGINAS, size);
 
-	int length = string_length(buffer);
-	sendMessage(socket_umc, HEADER_ALMACENAR_PAGINAS, sizeof(char) * length , buffer);
-
+	sendMessage(socket_umc, HEADER_ALMACENAR_PAGINAS, sizeof(t_valor_variable) , buffer);
 
 	//Recibir respuesta: RESPUESTA_OK, RESPUESTA_FAIL
 	response* respuesta = recibirResponse(socket_umc);
@@ -161,7 +159,7 @@ char* umc_get_with_page_control(t_puntero start, t_size size) {
 	u_int32_t offset = start % PAGE_SIZE;
 
 	char* content = string_new();
-	while(size > PAGE_SIZE){
+	while(size + offset > PAGE_SIZE){
 		char* instructionPage = umc_get(page, offset, PAGE_SIZE - offset);
 
 		if(instructionPage == 0) return 0;

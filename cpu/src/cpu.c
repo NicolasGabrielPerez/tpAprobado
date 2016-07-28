@@ -75,6 +75,10 @@ void doQuantum(int quantumCount, PCB* pcb) {
 
 	if(pcb == 0) return;
 
+	if(quantumCount >= 17) {
+		printf("nada");
+	}
+
 	u_int32_t i = pcb->programCounter;
 	u_int32_t start = pcb->codeIndex[i].start;
 	u_int32_t size = pcb->codeIndex[i].offset;

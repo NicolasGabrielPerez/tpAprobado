@@ -58,11 +58,14 @@ t_valor_variable dereferenciar(t_puntero puntero) {
 
 	t_puntero  memoryAddr = puntero;
 
-	char* buffer = umc_get_with_page_control(memoryAddr, sizeof(t_valor_variable));
+	u_int32_t page = memoryAddr / PAGE_SIZE;
+	u_int32_t offset = memoryAddr % PAGE_SIZE;
+
+	char* buffer = umc_get(page, offset, sizeof(t_valor_variable));
 
 	if(buffer == 0) return 0;
 
-	int32_t value = atoi(buffer);
+	int32_t value = convertToInt32(buffer);
 
 	free(buffer);
 
@@ -81,10 +84,15 @@ void asignar(t_puntero puntero, t_valor_variable variable) {
 
 	t_puntero  memoryAddr = puntero;
 
-	char* param = string_itoa(variable);
-	umc_set_with_page_control(memoryAddr, sizeof(t_valor_variable), param);
+	char* intChar = malloc(sizeof(t_valor_variable));
+	memcpy(intChar, &variable, sizeof(t_valor_variable));
 
-	free(param);
+	u_int32_t page = memoryAddr / PAGE_SIZE;
+	u_int32_t offset = memoryAddr % PAGE_SIZE;
+
+	umc_set(page, offset, sizeof(t_valor_variable), intChar);
+
+	free(intChar);
 	//free(memoryAddr);
 }
 
@@ -92,7 +100,12 @@ t_valor_variable obtenerValorCompartida(t_nombre_compartida name) {
 
 	log_trace(logger, "ANSISOP: obtenerValorCompartida, %s", name);
 
-	t_valor_variable value = nucleo_variable_compartida_obtener(name);
+	char* blankedName = cleanStringSpaces(name);
+
+	t_valor_variable value = nucleo_variable_compartida_obtener(blankedName);
+
+	free(blankedName);
+
 	return value;
 }
 
@@ -101,7 +114,11 @@ t_valor_variable asignarValorCompartida(t_nombre_compartida name, t_valor_variab
 
 	log_trace(logger, "ANSISOP: asignarValorCompartida, %s, %d", name, value);
 
-	nucleo_variable_compartida_asignar(name, value);
+	char* blankedName = cleanStringSpaces(name);
+
+	nucleo_variable_compartida_asignar(blankedName, value);
+
+	free(blankedName);
 	return value;
 }
 
@@ -110,9 +127,9 @@ void irAlLabel(t_nombre_etiqueta etiqueta) {
 
 	log_trace(logger, "ANSISOP: irAlLabel, %s", etiqueta);
 
-	//TODO: Testing
+	char* blankedEtiqueta = cleanStringSpaces(etiqueta);
 
-	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
+	t_puntero_instruccion pointer = metadata_buscar_etiqueta(blankedEtiqueta, pcb->tagIndex, pcb->tagIndexSize);
 	pcb->programCounter = pointer - 1;
 }
 
@@ -128,7 +145,9 @@ void llamarConRetorno(t_nombre_etiqueta etiqueta, t_puntero donde_retornar) {
 
 	pcb->memoryIndex += sizeof(t_valor_variable);
 
-	t_puntero_instruccion pointer = metadata_buscar_etiqueta(etiqueta, pcb->tagIndex, pcb->tagIndexSize);
+	char* blankedEtiqueta = cleanStringSpaces(etiqueta);
+
+	t_puntero_instruccion pointer = metadata_buscar_etiqueta(blankedEtiqueta, pcb->tagIndex, pcb->tagIndexSize);
 	pcb->programCounter = pointer - 1;
 
 	list_add(stack, newStackContent);
@@ -148,6 +167,7 @@ void finalizar() {
 
 	nucleo_notificarFinDePrograma(pcb);
 	hasToReturn = true;
+	pcb = 0;
 }
 
 void retornar(t_valor_variable valor) {
@@ -166,8 +186,14 @@ void retornar(t_valor_variable valor) {
 	t_puntero returnAddr = content->returnAddress;
 	t_puntero returnVar = content->returnVariable;
 
-	char* param = string_itoa(valor);
-	umc_set_with_page_control(returnVar, sizeof(t_valor_variable), param);
+
+	char* intChar = malloc(sizeof(t_valor_variable));
+	memcpy(intChar, &valor, sizeof(t_valor_variable));
+
+	u_int32_t page = returnVar / PAGE_SIZE;
+	u_int32_t offset = returnVar % PAGE_SIZE;
+
+	umc_set(page, offset, sizeof(t_valor_variable), intChar);
 
 	//Pop
 	list_remove(stack, stackPosition);
