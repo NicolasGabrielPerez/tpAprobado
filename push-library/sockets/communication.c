@@ -174,6 +174,7 @@ message* receiveMessage(int socket){
 	//PAYLOAD
 	response* responsePayload = recibirResponse(socket);
 	if(responsePayload->contenidoSize>0){
+		message->contenido = malloc(responsePayload->contenidoSize);
 		memcpy(message->contenido, responsePayload->contenido, responsePayload->contenidoSize);
 	}
 
