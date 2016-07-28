@@ -171,7 +171,8 @@ t_dictionary* deserialize_dictionary(char* serializedDictionary, int elementsCou
 	int i;
 	for( i = 0 ; i < elementsCount ; i++ ){
 		deserializedElement = string_split(deserializedList[i], PRIMITIVE_SEPARATOR);
-		dictionary_put(resultDictionary, deserializedElement[0], deserializedElement[1]);
+		dictionary_put(resultDictionary, string_from_format("%s", deserializedElement[0]),
+				string_from_format("%s", deserializedElement[1]));
 
 		free(deserializedList[i]);
 		free(deserializedElement[0]);
