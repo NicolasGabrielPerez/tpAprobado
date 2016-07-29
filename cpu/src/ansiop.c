@@ -238,9 +238,10 @@ void ansiop_wait(t_nombre_semaforo id) {
 
 	log_trace(logger, "ANSISOP: wait %s", id);
 
-	//TODO: Testing
+	char* id2 = cleanStringSpaces(id);
+	nucleo_wait(id2);
 
-	nucleo_wait(id);
+	free(id2);
 }
 
 
@@ -248,7 +249,8 @@ void ansiop_signal(t_nombre_semaforo id) {
 
 	log_trace(logger, "ANSISOP: signal %s", id);
 
-	//TODO: Testing
+	char* id2 = cleanStringSpaces(id);
+	nucleo_signal(id2);
 
-	nucleo_signal(id);
+	free(id2);
 }
