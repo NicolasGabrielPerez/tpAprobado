@@ -93,8 +93,8 @@ void free_stackContent(t_stackContent* stackContent) {
 }
 
 void free_pcb(PCB* pcb) {
-
-	list_destroy_and_destroy_elements(pcb->stack, free_stackContent);
+	//TODO:
+	//list_destroy_and_destroy_elements(pcb->stack, free_stackContent);
 	//list_destroy_and_destroy_elements(pcb->codeIndex, free); //TODO ROMPE ACA
 	free(pcb);
 }
@@ -156,7 +156,7 @@ int is_program_alive(int processId){
 	PCB* pcbCheck = get_pcb_by_ID(General_Process_List, processId);
 
 	if(pcbCheck != NULL){
-		free_pcb(pcbCheck);
+		//free_pcb(pcbCheck);
 		return true;
 	}
 	else {

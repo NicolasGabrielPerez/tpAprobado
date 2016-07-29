@@ -14,7 +14,7 @@ void handleConsoleRquests(int consoleSocket){
 	message* consoleMessage = receiveMessage(consoleSocket);
 
 	if(consoleMessage->codError == SOCKET_DESCONECTADO){
-		log_warning(nucleo_logger, "Socket de CONSOLA %d desconectado\n", consoleSocket);
+		//log_warning(nucleo_logger, "Socket de CONSOLA %d desconectado\n", consoleSocket);
 		disconnect_console(consoleSocket);
 		return;
 	}
@@ -26,12 +26,11 @@ void handleConsoleRquests(int consoleSocket){
 
 	if(consoleMessage->header == HEADER_FIN_PROGRAMA){
 		log_trace(nucleo_logger, "COMUNICACIÓN: Fin de programa recibido desde consola %d", consoleSocket);
-		FD_CLR(consoleSocket, &consola_sockets_set);
-		close(consoleSocket);
-		set_pcb_EXIT(consoleSocket);		//consoleSocket == PID
+		disconnect_console(consoleSocket);
 	}
 	if(consoleMessage->header == HEADER_INIT_PROGRAMA){
-		log_trace(nucleo_logger, "COMUNICACIÓN: Nuevo programa recibido de consola %d", consoleSocket);
+		int imp = consoleSocket;
+		log_trace(nucleo_logger, "COMUNICACIÓN: Nuevo programa recibido de consola %d", imp);
 		char* programaANSISOP = consoleMessage->contenido;
 		initNewProgram(consoleMessage->contenidoSize, programaANSISOP, consoleSocket);
 		free(programaANSISOP);
@@ -57,7 +56,9 @@ void console_endProgram(int socket){
 
 //Envía mensajes a la consola con lo que debe mostrar en pantalla
 void console_sendResults(int socket, message* result){
-	sendMessage(socket, HEADER_RESULTADOS, result->contenidoSize, result->contenido);
+	if(is_program_alive(socket)){
+		sendMessage(socket, HEADER_RESULTADOS, result->contenidoSize, result->contenido);
+	}
 }
 //---------------------------------------------- </SEND>
 
@@ -103,23 +104,7 @@ void com_consoleManejarCambiosEnSocket(int socket, fd_set* read_set){
 	};
 }
 
-//Select principal de consolas
-void com_manejarConexionesConsolas(){
-	fd_set read_fds; //set auxiliar
-	read_fds = consola_sockets_set;
-	if (select(fd_consola_max+1, &read_fds, NULL, NULL, NULL) == -1) {
-		perror("select");
-		//exit(4);
-	}
-
-	int i;
-	for(i = 0; i <= fd_consola_max; i++) {
-		com_consoleManejarCambiosEnSocket(i, &read_fds);
-	}
-}
-
 void* console_comunication_program(){
-
 
 	while(1){
 		read_fds = consola_sockets_set;
@@ -131,22 +116,10 @@ void* console_comunication_program(){
 		int i;
 		for(i = 0; i <= fd_consola_max; i++) {
 			com_consoleManejarCambiosEnSocket(i, &read_fds);
-		};
+		}
 	}
-
-	/*while(1){
-		manejarConexionesConsolas();
-	}*/
 }
 //---------------------------------------------- </COMMUNICATION>
-
-int convertToInt32(char* buffer){
-	int32_t* number = malloc(sizeof(int32_t));
-	memcpy(number, buffer, sizeof(int32_t));
-
-	int32_t numberToReturn = *number;
-	return numberToReturn;
-}
 
 void disconnect_console(int consoleSocket){
 	//Obtener PCB asociado a consola
@@ -154,6 +127,9 @@ void disconnect_console(int consoleSocket){
 	//Eliminar pcb de todas las estructuras
 	remove_pcb_by_ID(RUNNING_Process_List, consoleSocket);
 
+	end_process(pcbToKill->processId);						//Destruye las estructuras del proceso dentro del núcleo
+	FD_CLR(consoleSocket, &consola_sockets_set);
+	//close(consoleSocket);
 	//Que pasa si hago free de un pcb que está en una cola o lista???
 	//Si está ejecutando, que pasa si quiero actualizar al volver el pcb desde CPU???
 }

@@ -11,8 +11,6 @@
 
 	void com_initConsolaListener(t_config* config);
 
-	void com_manejarConexionesConsolas();
-
 	void console_endProgram(int socket);
 
 	void console_sendResults(int socket, message* result);

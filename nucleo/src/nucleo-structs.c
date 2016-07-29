@@ -222,16 +222,19 @@ void set_pcb_EXIT(int processID){
 void change_status_RUNNING_to_READY(t_CPU* cpu){
 	//sacar PCB de RUNNING
 	PCB* readyPcb = remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
-	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d removido de RUNNING", readyPcb->processId);
+	if(readyPcb != 0) {
+		log_trace(nucleo_logger, "PLANIFICACION: Proceso %d removido de RUNNING", readyPcb->processId);
 
-	//TODO: Guti - TESTEAR
-	//encolar en ready
-	if(is_program_alive(readyPcb->processId)){
-		set_pcb_READY(readyPcb);
+		//TODO: Guti - TESTEAR
+		//encolar en ready
+		if(is_program_alive(readyPcb->processId)){
+			set_pcb_READY(readyPcb);
+		}
+		else{
+			log_warning(nucleo_logger, "Programa %d no seteado a READY por desconexión de consola", readyPcb->processId);
+		}
 	}
-	else{
-		log_warning(nucleo_logger, "Programa %d no seteado a READY por desconexión de consola", readyPcb->processId);
-	}
+
 	liberarCpu(cpu->cpuSocket);
 	log_trace(nucleo_logger, "CONTROL CPU: CPU %d libre", cpu->cpuSocket);
 }
@@ -250,7 +253,6 @@ void change_status_RUNNING_to_BLOCKED(int PID, char* deviceID){
 void end_process(int PID){
 	PCB* pcb = remove_pcb_by_ID(General_Process_List, PID);
 	remove_pcb_by_ID(RUNNING_Process_List, PID);
-
 	free_pcb(pcb);
 }
 

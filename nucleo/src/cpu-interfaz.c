@@ -9,39 +9,39 @@ int fd_cpu_max;
 
 int test_mode;
 
-void handleCpuRequests(int socket){
+void handleCpuRequests(int cpuSocket){
 
-	message* mensaje = receiveMessage(socket);
+	message* mensaje = receiveMessage(cpuSocket);
 
 	if(mensaje->codError == SOCKET_DESCONECTADO){
-		log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
-		disconnect_cpu(socket);
+		log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", cpuSocket);
+		disconnect_cpu(cpuSocket);
 		return;
 	}
 
 	if(mensaje->header == HEADER_HANDSHAKE){
-		handShakeWithCPU(socket);
-		log_trace(nucleo_logger, "COMUNICACIÓN: Nuevo CPU conectado en %d", socket);
+		handShakeWithCPU(cpuSocket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: Nuevo CPU conectado en %d", cpuSocket);
 	}
 
 	if(mensaje->header == HEADER_NOTIFICAR_IO){
-		log_trace(nucleo_logger, "COMUNICACIÓN: Solicitud E/S desde CPU %d", socket);
-		t_CPU* cpu = get_CPU_by_socket(socket);						//Obtengo estructura CPU
+		log_trace(nucleo_logger, "COMUNICACIÓN: Solicitud E/S desde CPU %d", cpuSocket);
+		t_CPU* cpu = get_CPU_by_socket(cpuSocket);						//Obtengo estructura CPU
 		char* deviceName = mensaje->contenido;
 		deviceName[mensaje->contenidoSize] = '\0';
 
-		message* timeMessage = receiveMessage(socket);
+		message* timeMessage = receiveMessage(cpuSocket);
 		if(mensaje->codError == SOCKET_DESCONECTADO){
-			log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
-			disconnect_cpu(socket);
+			log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", cpuSocket);
+			disconnect_cpu(cpuSocket);
 			return;
 		}
 		int32_t time = convertToInt32(timeMessage->contenido);
 
-		message* pcbMessage = receiveMessage(socket);
+		message* pcbMessage = receiveMessage(cpuSocket);
 		if(mensaje->codError == SOCKET_DESCONECTADO){
-			log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
-			disconnect_cpu(socket);
+			log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", cpuSocket);
+			disconnect_cpu(cpuSocket);
 			return;
 		}
 		PCB* pcb = deserialize_pcb(pcbMessage->contenido);
@@ -52,7 +52,7 @@ void handleCpuRequests(int socket){
 		if(timeMessage->contenidoSize > 0) free(timeMessage->contenido);
 		free(timeMessage);
 
-		liberarCpu(socket);
+		liberarCpu(cpuSocket);
 	}
 
 	//Recepción de estructura PCB desde CPU => actualiza PCB
@@ -63,27 +63,27 @@ void handleCpuRequests(int socket){
 		}*/
 
 	if(mensaje->header == HEADER_NOTIFICAR_FIN_QUANTUM){
-		log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de quantum desde CPU %d", socket);
-		t_CPU* cpu = get_CPU_by_socket(socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de quantum desde CPU %d", cpuSocket);
+		t_CPU* cpu = get_CPU_by_socket(cpuSocket);
 		nucleo_notificarFinDeQuantum(mensaje, cpu);
 	}
 	if(mensaje->header == HEADER_FIN_PROGRAMA){
-		log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de programa desde CPU %d", socket);
-		t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
+		log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de programa desde CPU %d", cpuSocket);
+		t_CPU* cpu = get_CPU_by_socket(cpuSocket);			//Obtengo estructura CPU
 		set_pcb_EXIT(cpu->PID);				//Me encargo de notificar y destruir estructuras correspondientes
-		liberarCpu(socket);
+		liberarCpu(cpuSocket);
 	}
 	if(mensaje->header == HEADER_NOTIFICAR_FIN_RAFAGA){
-		log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de ráfaga desde CPU %d", socket);
-		nucleo_notificarFinDeRafaga(mensaje, socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de ráfaga desde CPU %d", cpuSocket);
+		nucleo_notificarFinDeRafaga(mensaje, cpuSocket);
 	}
 	if(mensaje->header == HEADER_NOTIFICAR_WAIT){
-		log_trace(nucleo_logger, "COMUNICACIÓN: WAIT() SEMAFORO %s desde CPU %d", mensaje->contenido, socket);
-		t_CPU* cpu = get_CPU_by_socket(socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: WAIT() SEMAFORO %s desde CPU %d", mensaje->contenido, cpuSocket);
+		t_CPU* cpu = get_CPU_by_socket(cpuSocket);
 		nucleo_wait(mensaje, cpu);
 	}
 	if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
-		log_trace(nucleo_logger, "COMUNICACIÓN: SIGNAL() SEMAFORO %s desde CPU %d", mensaje->contenido, socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: SIGNAL() SEMAFORO %s desde CPU %d", mensaje->contenido, cpuSocket);
 		nucleo_signal(mensaje);
 	}
 	/*if(mensaje->header == HEADER_IMPRIMIR){
@@ -91,28 +91,28 @@ void handleCpuRequests(int socket){
 		nucleo_imprimir(mensaje, cpu);
 	}*/
 	if(mensaje->header == HEADER_IMPRIMIR_TEXTO){
-		log_trace(nucleo_logger, "COMUNICACIÓN: Imprimir texto desde CPU %d", socket);
-		t_CPU* cpu = get_CPU_by_socket(socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: Imprimir texto desde CPU %d", cpuSocket);
+		t_CPU* cpu = get_CPU_by_socket(cpuSocket);
 		nucleo_imprimir_texto(mensaje, cpu);
 	}
 	//perror("header invalido");
 	//enviarFAIL(socket, HEADER_INVALIDO);
 
 	if(mensaje->header == HEADER_SETEAR_VARIABLE){
-		log_trace(nucleo_logger, "COMUNICACIÓN: Setear variable desde CPU %d", socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: Setear variable desde CPU %d", cpuSocket);
 		t_globalVar* var = deserialize_globalVar(mensaje->contenido);
 		nucleo_setear_variable(var);
 	}
 
 	if(mensaje->header == HEADER_OBTENER_VARIABLE){
-		log_trace(nucleo_logger, "COMUNICACIÓN: Obtener variable desde CPU %d", socket);
-		t_CPU* cpu = get_CPU_by_socket(socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: Obtener variable desde CPU %d", cpuSocket);
+		t_CPU* cpu = get_CPU_by_socket(cpuSocket);
 		nucleo_obtener_variable(mensaje, cpu);
 	}
 
 	if(mensaje->header == SIGUSR1){
-		log_trace(nucleo_logger, "COMUNICACIÓN: CPU %d desconectada", socket);
-		disconnect_cpu(socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: CPU %d desconectada", cpuSocket);
+		disconnect_cpu(cpuSocket);
 	}
 
 	if(mensaje->contenidoSize > 0) free(mensaje->contenido);
@@ -163,6 +163,10 @@ void nucleo_notificarFinDeRafaga(message* mensaje, int socket){
 	}
 	log_trace(nucleo_logger, "COMUNICACIÓN: Recibido PCB desde CPU %d", socket);
 	PCB* pcb = deserialize_pcb(pcbMessage->contenido);
+
+	if(!is_program_alive(pcb->processId)){
+		umc_notificarFinDePrograma(pcb->processId);		//Notifica fin de programa a UMC
+	}
 	nucleo_updatePCB(pcb);
 	t_CPU* cpu = get_CPU_by_socket(socket);			//Obtengo estructura CPU
 	change_status_RUNNING_to_READY(cpu);			//Mover PCB a cola de READY
