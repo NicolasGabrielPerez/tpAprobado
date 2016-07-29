@@ -1,4 +1,7 @@
 #!/bin/bash
+
+sudo cp .bashrc /home/utnso/
+
 cd so-commons-library
 sudo make uninstall
 sudo make clean
