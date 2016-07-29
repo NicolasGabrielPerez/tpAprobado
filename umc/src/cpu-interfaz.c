@@ -142,7 +142,7 @@ void recibirCambioDeProcesoActivo(int cpu_socket, int* pidActivo){
 		return;
 	}
 	if(TLBEnable){
-		flush(*pidActivo);
+		flush(pid);
 	}
 	*pidActivo = pid;
 

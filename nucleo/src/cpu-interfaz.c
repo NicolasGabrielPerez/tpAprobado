@@ -123,6 +123,7 @@ void cpu_sendPCB(PCB* pcb, int cpu_socket){
 
 void cpu_sendQuantum(int cpu_socket){
 	sendMessageInt(cpu_socket, HEADER_ENVIAR_QUANTUM, quantum);
+	sendMessageInt(cpu_socket, HEADER_ENVIAR_QUANTUM, quantum_sleep);
 }
 //---------------------------------------------- </SEND>
 
@@ -228,7 +229,7 @@ void com_cpuManejarSocketChanges(int socket, fd_set* read_set){
 
 			//Agrego un nuevo cpu a la lista de control
 			nucleo_nuevo_cpu(new_fd);
-			FD_SET(new_fd, read_set);
+			FD_SET(new_fd, &cpu_sockets_set);
 		}
 		else{
 			handleCpuRequests(socket);
@@ -236,29 +237,12 @@ void com_cpuManejarSocketChanges(int socket, fd_set* read_set){
 	}
 }
 
-void com_manejarConexionesCPUs(){
-	fd_set read_fds; //set auxiliar
-	read_fds = cpu_sockets_set;
-
-	while(1){
-
-		if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
-			perror("select");
-			exit(4);
-		}
-		int i;
-		for(i = 0; i <= fd_cpu_max; i++) {
-			com_cpuManejarSocketChanges(i, &read_fds);
-		};
-	}
-}
-
 void* cpu_comunication_program(){
 	fd_set read_fds; //set auxiliar
-	read_fds = cpu_sockets_set;
+
 
 	while(1){
-
+		read_fds = cpu_sockets_set;
 		if (select(fd_cpu_max+1, &read_fds, NULL, NULL, NULL) == -1) {
 			perror("select");
 			exit(4);

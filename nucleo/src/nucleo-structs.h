@@ -26,6 +26,7 @@
 
 extern int32_t memoryPageSize;
 extern u_int32_t quantum;
+extern int quantum_sleep;
 extern t_queue* READY_Process_Queue;			//Cola de procesos listos para ejecución
 extern t_list* RUNNING_Process_List;			//Lista general de procesos en ejecución
 extern t_queue* BLOCKED_Process_Queue;			//Cola general de procesos bloqueados

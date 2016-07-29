@@ -22,7 +22,15 @@ void cargarNroPagYFrame(presente* presente, tabla_de_paginas* tablaDePaginas, in
 		pthread_mutex_lock(&search_free_frame);
 			int nroFrameDisponible = obtenerFrameDisponible();
 			tabla_de_frame_entry* frameDisponible = obtenerEntradaDeFrame(nroFrameDisponible);
-			frameDisponible->ocupado = 1;
+
+			if(frameDisponible!=NULL){
+				frameDisponible->ocupado = 1;
+			} else{
+				printf("End of the world exception, cerrando programa.\n");
+				exit(1);
+			}
+
+
 		pthread_mutex_unlock(&search_free_frame);
 
 		presente->nroFrame = nroFrameDisponible;
@@ -46,7 +54,7 @@ presente* siguientePresente(tabla_de_paginas* tablaDePaginas){
 
 	tablaDePaginas->aguja++;
 
-	if(tablaDePaginas->aguja == marcos_x_proc){
+	if(tablaDePaginas->aguja == list_size(tablaDePaginas->presentes)){
 		tablaDePaginas->aguja = 0;
 	}
 

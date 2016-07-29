@@ -158,6 +158,15 @@ void borrarTablaDePaginas(tabla_de_paginas* tablaDePaginas){
 		return;
 	}
 
+	int i;
+	tabla_de_frame_entry* frame;
+	presente* present;
+	for(i=0; i< list_size(tablaDePaginas->presentes); i++){
+		present = list_get(tablaDePaginas->presentes, i);
+		frame = obtenerEntradaDeFrame(present->nroFrame);
+		frame->ocupado = 0;
+	}
+
 	list_remove_and_destroy_element(tablasDePaginas, pagesTableIndex, destroyPagesTable);
 }
 
@@ -177,6 +186,18 @@ response* finalizarPidDeUMC(int pid){
 	return createOKResponse();
 }
 
+int calcularFramesDisponibles(){
+	int contador = 0;
+	int i;
+	tabla_de_frame_entry* frame;
+	for(i=0; i<cantidad_de_marcos; i++){
+		frame = list_get(tablaDeFrames->entradas, i);
+		if(!frame->ocupado) contador ++;
+	}
+
+	return contador;
+}
+
 response* initProgramaUMC(int pid, int cantPaginas){
 	// verificar que no exista pid
 	if(buscarPorPID(pid)!=NULL){
@@ -190,7 +211,10 @@ response* initProgramaUMC(int pid, int cantPaginas){
 	t_list* presentes = list_create();
 
 	int i;
-	for(i = 0; i<marcos_x_proc; i++){
+	int cantidadDeFramesDisponibles = calcularFramesDisponibles();
+	int cantMarcos = marcos_x_proc;
+	if(cantidadDeFramesDisponibles < marcos_x_proc) cantMarcos = cantidadDeFramesDisponibles;
+	for(i = 0; i< cantMarcos ; i++){
 		presente* presenteNuevo = malloc(sizeof(presente));
 		presenteNuevo->nroFrame = -1;
 		presenteNuevo->nroPagina = -1;
