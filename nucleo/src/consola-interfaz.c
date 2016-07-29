@@ -20,7 +20,7 @@ void handleConsoleRquests(int consoleSocket){
 
 	if(message->header == HEADER_FIN_PROGRAMA){
 		log_trace(nucleo_logger, "COMUNICACIÓN: Fin de programa recibido desde consola %d", consoleSocket);
-		FD_CLR(consoleSocket, &read_fds);
+		FD_CLR(consoleSocket, &consola_sockets_set);
 		close(consoleSocket);
 		set_pcb_EXIT(consoleSocket);		//consoleSocket == PID
 	}
@@ -89,7 +89,7 @@ void com_consoleManejarCambiosEnSocket(int socket, fd_set* read_set){
 			actualizarFdMax(new_fd);
 			handleConsoleRquests(new_fd);
 
-			FD_SET(new_fd, read_set);
+			FD_SET(new_fd, &consola_sockets_set);
 		} else{
 			//Cambio en socket consola => interpretar los mensajes de forma apropiada
 			handleConsoleRquests(socket);
@@ -113,9 +113,10 @@ void com_manejarConexionesConsolas(){
 }
 
 void* console_comunication_program(){
-	read_fds = consola_sockets_set;
+
 
 	while(1){
+		read_fds = consola_sockets_set;
 
 		if (select(fd_consola_max+1, &read_fds, NULL, NULL, NULL) == -1) {
 			perror("select");

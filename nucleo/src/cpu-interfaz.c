@@ -15,9 +15,8 @@ void handleCpuRequests(int socket){
 
 	if(mensaje->codError == SOCKET_DESCONECTADO){
 		log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
-		//TODO: Implementar apagado de CPU
-		//Sacar estructura de control de la lista general de cpu
-		//Mover PCB de lista de RUNNING a READY
+		disconnect_cpu(socket);
+		return;
 	}
 
 	if(mensaje->header == HEADER_HANDSHAKE){
@@ -32,9 +31,19 @@ void handleCpuRequests(int socket){
 		deviceName[mensaje->contenidoSize] = '\0';
 
 		message* timeMessage = receiveMessage(socket);
+		if(mensaje->codError == SOCKET_DESCONECTADO){
+			log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
+			disconnect_cpu(socket);
+			return;
+		}
 		int32_t time = convertToInt32(timeMessage->contenido);
 
 		message* pcbMessage = receiveMessage(socket);
+		if(mensaje->codError == SOCKET_DESCONECTADO){
+			log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
+			disconnect_cpu(socket);
+			return;
+		}
 		PCB* pcb = deserialize_pcb(pcbMessage->contenido);
 		nucleo_updatePCB(pcb);
 
@@ -101,6 +110,10 @@ void handleCpuRequests(int socket){
 		nucleo_obtener_variable(mensaje, cpu);
 	}
 
+	if(mensaje->header == SIGUSR1){
+		log_trace(nucleo_logger, "COMUNICACIÓN: CPU %d desconectada", socket);
+		disconnect_cpu(socket);
+	}
 
 	if(mensaje->contenidoSize > 0) free(mensaje->contenido);
 	free(mensaje);
@@ -143,6 +156,11 @@ void nucleo_notificarFinDeQuantum(message* mensaje, t_CPU* cpu){
 
 void nucleo_notificarFinDeRafaga(message* mensaje, int socket){
 	message* pcbMessage = receiveMessage(socket);
+	if(mensaje->codError == SOCKET_DESCONECTADO){
+		log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
+		disconnect_cpu(socket);
+		return;
+	}
 	log_trace(nucleo_logger, "COMUNICACIÓN: Recibido PCB desde CPU %d", socket);
 	PCB* pcb = deserialize_pcb(pcbMessage->contenido);
 	nucleo_updatePCB(pcb);
@@ -166,7 +184,11 @@ void nucleo_wait(message* mensaje, t_CPU* cpu){
 	else{
 		sendMessage(cpu->cpuSocket, HEADER_WAIT_BLOQUEAR, 0, 0);
 		message* pcbMessage = receiveMessage(cpu->cpuSocket);
-
+		if(mensaje->codError == SOCKET_DESCONECTADO){
+			log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
+			disconnect_cpu(socket);
+			return;
+		}
 		//Bloquear proceso por semáforo
 		PCB* pcb = deserialize_pcb(pcbMessage->contenido);
 		nucleo_updatePCB(pcb);
@@ -206,6 +228,24 @@ void nucleo_setear_variable(t_globalVar* var){
 //---------------------------------------------- </RECEIVE>
 
 //---------------------------------------------- <COMMUNICATION>
+void disconnect_cpu(int socket){
+	int i;
+	t_CPU* buscando;
+	for(i=0; i<list_size(CPU_control_list);i++){
+		buscando = list_get(CPU_control_list, i);
+		if(buscando->cpuSocket==socket){
+			buscando = list_remove(CPU_control_list, i);
+			if(buscando->PID > 0){
+				change_status_RUNNING_to_READY(buscando);
+			}
+			free(buscando);
+			FD_CLR(socket, &cpu_sockets_set);
+			close(socket);
+			break;
+		}
+	}
+}
+
 void com_initCPUListener(t_config* config){
 	char* puerto_cpu = config_get_string_value(config, "PUERTO_CPU");
 	cpu_listener = crear_puerto_escucha(puerto_cpu);
