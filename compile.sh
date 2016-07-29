@@ -45,6 +45,7 @@ sudo make clean
 sudo make all
 sudo cp ansisop /usr/bin/ansisop
 cd ..
+sudo cp consola.config /home/utnso/
 cd ..
 
 cd swap
