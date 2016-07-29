@@ -5,17 +5,55 @@ cd ..
 
 cd ansisop-parser
 cd parser
-make all
-sudo make install
+sudo make all
+sudo sudo make install
 cd ..
 cd ..
 
 cd push-library
-make all
-sudo make install
+cd Debug
+sudo make clean
+sudo make all
+cd ..
 cd ..
 
-cd test_scripts
+cd cpu
+cd Debug
+sudo make clean
+sudo make all
+cd ..
+cd ..
+
+cd nucleo
+cd Debug
+sudo make clean
+sudo make all
+cd ..
+cd ..
+
+cd consola
+cd Debug
+sudo make clean
+sudo make all
+sudo cp consola /usr/bin/ansisop
+cd ..
+cd ..
+
+cd swap
+cd Debug
+sudo make clean
+sudo make all
+cd ..
+cd ..
+
+cd umc
+cd Debug
+sudo make clean
+sudo make all
+cd ..
+cd ..
+
+cd scripts
 chmod +x completo.ansisop
 chmod +x consumidor.ansisop
 chmod +x deref-prioridad.ansisop

@@ -26,13 +26,13 @@ endif
 all: ansisop
 
 dependents:
-	-cd /home/utnso/git/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug && $(MAKE) clean all
+	-cd /home/utnso/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug && $(MAKE) clean all
 
 # Tool invocations
-ansisop: $(OBJS) $(USER_OBJS) /home/utnso/git/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug/libpush-library.so
+ansisop: $(OBJS) $(USER_OBJS) /home/utnso/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug/libpush-library.so
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L"/home/utnso/git/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug" -o "ansisop" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L"/home/utnso/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug" -o "ansisop" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
@@ -48,6 +48,6 @@ post-build:
 
 .PHONY: all clean dependents
 .SECONDARY: post-build
-/home/utnso/git/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug/libpush-library.so:
+/home/utnso/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug/libpush-library.so:
 
 -include ../makefile.targets
