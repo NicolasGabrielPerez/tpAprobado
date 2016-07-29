@@ -32,6 +32,7 @@ t_log* logger;
 
 u_int32_t QUANTUM = 3;
 u_int32_t quantum = 0;
+u_int32_t SLEEP_QUANTUM = 1;
 
 u_int32_t socketNucleo = 0;
 u_int32_t socketUmc = 0;
@@ -88,6 +89,7 @@ void doQuantum() {
 	char* instructionDupped = strdup(instruction);
 
 	analizadorLinea(instructionDupped, &functions, &kernel_functions);
+	usleep(SLEEP_QUANTUM);
 
 	free(instruction);
 	free(instructionDupped);

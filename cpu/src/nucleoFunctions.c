@@ -93,10 +93,17 @@ PCB* nucleo_recibir_pcb() {
 	if(message->codError == SOCKET_DESCONECTADO) {
 		return 0;
 	}
-
 	char* content = message->contenido;
-
 	QUANTUM = convertToInt32(content);
+
+	//Recibir quantum count
+	message = receiveMessage(socket_nucleo);
+	if(message->codError == SOCKET_DESCONECTADO) {
+		return 0;
+	}
+
+	char* content2 = message->contenido;
+	SLEEP_QUANTUM = convertToInt32(content2);
 
 	if(list_size(pcb->stack) == 0) {
 		t_stackContent* stackContent = init_stackContent();
