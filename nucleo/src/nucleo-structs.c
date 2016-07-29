@@ -96,7 +96,15 @@ int find_semaforo(t_semaforo* semaforo, char* id){
 
 //Devuelve un semaforo con id = id dentro de list
 t_semaforo* get_semaforo_by_ID(t_list* list, char* id){
-	return semaforo_list_find_element(list, id, find_semaforo);
+	t_semaforo* semaforo;
+	int i;
+	for(i = 0 ; i < list_size(semaforo_control_list) ; i++){
+		semaforo = list_get(semaforo_control_list, i);
+		if(!strcmp(semaforo->sem_id, id)){
+			return semaforo;
+		}
+	}
+	return NULL;
 }
 
 //Setea la lista general de semáforos con los valores cargados por configuración
@@ -229,10 +237,10 @@ void nucleo_updatePCB(PCB* newPCB){
 	actualPCB->memoryIndex = newPCB->memoryIndex;
 	actualPCB->stackCount = newPCB->stackCount;
 
-	list_destroy_and_destroy_elements(actualPCB->stack, free_stackContent);
-	actualPCB->stack = list_create();
+	list_clean_and_destroy_elements(actualPCB->stack, free_stackContent);
+	actualPCB->stack = newPCB->stack;
 
-	list_add_all(actualPCB->stack, newPCB->stack);
+	//list_add_all(actualPCB->stack, newPCB->stack);
 
 	//Actualizar con datos que provienen del CPU
 }

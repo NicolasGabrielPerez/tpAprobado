@@ -69,12 +69,12 @@ void handleCpuRequests(int socket){
 		nucleo_notificarFinDeRafaga(mensaje, socket);
 	}
 	if(mensaje->header == HEADER_NOTIFICAR_WAIT){
-		log_trace(nucleo_logger, "COMUNICACIÓN: WAIT() desde CPU %d", socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: WAIT() SEMAFORO %s desde CPU %d", mensaje->contenido, socket);
 		t_CPU* cpu = get_CPU_by_socket(socket);
 		nucleo_wait(mensaje, cpu);
 	}
 	if(mensaje->header == HEADER_NOTIFICAR_SIGNAL){
-		log_trace(nucleo_logger, "COMUNICACIÓN: SIGNAL() desde CPU %d", socket);
+		log_trace(nucleo_logger, "COMUNICACIÓN: SIGNAL() SEMAFORO %s desde CPU %d", mensaje->contenido, socket);
 		nucleo_signal(mensaje);
 	}
 	/*if(mensaje->header == HEADER_IMPRIMIR){
@@ -163,11 +163,18 @@ void nucleo_wait(message* mensaje, t_CPU* cpu){
 		sendMessage(cpu->cpuSocket, HEADER_WAIT_CONTINUAR, 0, 0);
 	}
 	else{
+		sendMessage(cpu->cpuSocket, HEADER_WAIT_BLOQUEAR, 0, 0);
+		message* pcbMessage = receiveMessage(cpu->cpuSocket);
+
 		//Bloquear proceso por semáforo
-		PCB* pcb = get_pcb_by_ID(General_Process_List, cpu->PID);
+		PCB* pcb = deserialize_pcb(pcbMessage->contenido);
+		nucleo_updatePCB(pcb);
 		queue_blocked_process_to_semaforo(semaforo->sem_id, pcb);
+
+		remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
+
 		//Setear cpu libre
-		cpu->PID = -1;
+		liberarCpu(cpu->cpuSocket);
 	}
 }
 
