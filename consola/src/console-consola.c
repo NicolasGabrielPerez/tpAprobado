@@ -1,4 +1,6 @@
 #include "console-consola.h"
+#include "consola.h"
+#include <sockets/communication.h>
 
 #define OK       0
 #define NO_INPUT 1
@@ -31,9 +33,14 @@ static int getLine (char *prmpt, char *buff, size_t sz) {
 
 void kill(){
 	printf("Comando kill ejecutado\n");
+
+	sendMessage(socket_nucleo, HEADER_FIN_PROGRAMA, 0, "");
+
+	exit(EXIT_SUCCESS);
 }
 
 void ejecutarComando(char* command){
+
 	string_trim_left(&command);
 
 	//TODO
@@ -49,25 +56,25 @@ void ejecutarComando(char* command){
 void* consolaDeComandos(){
 	int rc;
 
+	char* buff = malloc(30);
 
 	while(1){
-		char* buff = malloc(30);
 		rc = getLine ("Esperando comando> ", buff, 30);
 		if (rc == NO_INPUT) {
 			// Extra NL since my system doesn't output that on EOF.
 			printf ("\nSin input de comando\n");
-			free(buff);
+			//free(buff);
 			continue;
 		}
 
 		if (rc == TOO_LONG) {
 			printf ("Comando demasiado largo [%s]\n", buff);
-			free(buff);
+			//free(buff);
 			continue;
 		}
 
 		ejecutarComando(buff);
-		free(buff);
+		//free(buff);
 	}
 }
 
