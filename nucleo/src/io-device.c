@@ -9,6 +9,7 @@ char** io_sleep_times;
 int io_thread_sleep;
 
 pthread_attr_t nucleo_attr;
+t_log* nucleo_logger;
 
 //Función que se cargará en el hilo de dispositivo
 void ioDeviceProgram(t_IO_Device* device){

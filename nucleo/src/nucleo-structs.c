@@ -139,7 +139,7 @@ void signal(char* id){
 		nextPcb = queue_pop(semaforo->blocked_process_queue);
 
 		if(is_program_alive(nextPcb->processId)){
-			set_pcb_READY();
+			set_pcb_READY(nextPcb);
 		}
 		else{
 			while(!queue_is_empty(semaforo->blocked_process_queue)){
@@ -148,7 +148,7 @@ void signal(char* id){
 					nextPcb = queue_pop(semaforo->blocked_process_queue);
 				}
 				else{
-					set_pcb_READY();
+					set_pcb_READY(nextPcb);
 					break;
 				}
 			}
