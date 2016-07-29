@@ -234,10 +234,10 @@ void disconnect_cpu(int socket){
 	for(i=0; i<list_size(CPU_control_list);i++){
 		buscando = list_get(CPU_control_list, i);
 		if(buscando->cpuSocket==socket){
-			buscando = list_remove(CPU_control_list, i);
 			if(buscando->PID > 0){
 				change_status_RUNNING_to_READY(buscando);
 			}
+			buscando = list_remove(CPU_control_list, i);
 			free(buscando);
 			FD_CLR(socket, &cpu_sockets_set);
 			close(socket);

@@ -46,5 +46,6 @@ t_CPU* get_CPU_by_socket(int socket){
 //Remplaza el valor de proceso en ejecución asociado a una cpu
 void liberarCpu(int socket){
 	t_CPU* unaCpu = get_CPU_by_socket(socket);
+	if(unaCpu == NULL) return;
 	unaCpu->PID = -1;
 }
