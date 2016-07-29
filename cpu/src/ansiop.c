@@ -216,8 +216,6 @@ void imprimir(t_valor_variable valor) {
 
 	log_trace(logger, "ANSISOP: imprimir %d", valor);
 
-	//TODO: Testing
-
 	nucleo_imprimir(valor);
 }
 
@@ -225,16 +223,12 @@ void imprimirTexto(char* texto) {
 
 	log_trace(logger, "ANSISOP: imprimirTexto, %s", texto);
 
-	//TODO: Testing
-
 	nucleo_imprimir_texto(texto);
 }
 
 void entradaSalida(t_nombre_dispositivo valor, u_int32_t tiempo) {
 
 	log_trace(logger, "ANSISOP: entradaSalida %s, %d", valor, tiempo);
-
-	//TODO: Testing
 
 	nucleo_notificarIO(valor, tiempo);
 }
