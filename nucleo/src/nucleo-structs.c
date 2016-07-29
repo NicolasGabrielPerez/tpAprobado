@@ -237,7 +237,7 @@ void nucleo_updatePCB(PCB* newPCB){
 	actualPCB->memoryIndex = newPCB->memoryIndex;
 	actualPCB->stackCount = newPCB->stackCount;
 
-	list_clean_and_destroy_elements(actualPCB->stack, free_stackContent);
+	//list_clean_and_destroy_elements(actualPCB->stack, free_stackContent);
 	actualPCB->stack = newPCB->stack;
 
 	//list_add_all(actualPCB->stack, newPCB->stack);
