@@ -10,7 +10,7 @@ void init(enum AlgoritmoReemplazo algoritmoReemplzao){
 	algoritmo = algoritmoReemplzao;
 }
 
-void cargarNroPagYFrame(presente* presente, tabla_de_paginas* tablaDePaginas, int nroPagina){
+int cargarNroPagYFrame(presente* presente, tabla_de_paginas* tablaDePaginas, int nroPagina){
 	if((presente->nroPagina != -1) && presente->modificado){ //REEMPLAZO DE PAGINA
 		//Escribir en swap lo que va a ser reemplazado
 		tabla_de_frame_entry* victimaFrame = obtenerEntradaDeFrame(presente->nroFrame);
@@ -21,21 +21,23 @@ void cargarNroPagYFrame(presente* presente, tabla_de_paginas* tablaDePaginas, in
 	if(presente->nroPagina == -1){ //Todavia hay lugar libre
 		pthread_mutex_lock(&search_free_frame);
 			int nroFrameDisponible = obtenerFrameDisponible();
-			tabla_de_frame_entry* frameDisponible = obtenerEntradaDeFrame(nroFrameDisponible);
 
-			if(frameDisponible!=NULL){
-				frameDisponible->ocupado = 1;
-			} else{
-				printf("End of the world exception, cerrando programa.\n");
-				exit(1);
+			if(nroFrameDisponible == -1){//No hay lugar
+				log_warning(logger, "End of the world exception, cerrando programa %d", tablaDePaginas->pid);
+				pthread_mutex_unlock(&search_free_frame);
+				return -1;
 			}
 
+			tabla_de_frame_entry* frameDisponible = obtenerEntradaDeFrame(nroFrameDisponible);
+			frameDisponible->ocupado = 1;
 
 		pthread_mutex_unlock(&search_free_frame);
 
 		presente->nroFrame = nroFrameDisponible;
 	}
 	presente->nroPagina = nroPagina;
+
+	return 1;
 }
 
 void cargarEnPresentes(int pid, presente* presente){
@@ -194,7 +196,11 @@ umcResult getPageEntry(tabla_de_paginas* tablaDePaginas, int nroPagina){
 
 	actualizarPaginaVictima(tablaDePaginas->pid, presenteACargar->nroPagina);
 
-	cargarNroPagYFrame(presenteACargar, tablaDePaginas, nroPagina);
+	int cargaResult = cargarNroPagYFrame(presenteACargar, tablaDePaginas, nroPagina);
+
+	if(cargaResult == -1){
+		return createUmcResult(0, HEADER_PAGINAS_NO_DISPONIBLES, 0, 0);
+	}
 
 	cargarEnPresentes(tablaDePaginas->pid, presenteACargar); //cargar nuevo presente en memoria real
 	pageEntry->presente = 1;

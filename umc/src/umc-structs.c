@@ -379,7 +379,7 @@ umcResult createOkFrameResult(tabla_de_frame_entry* frameEntry){
 }
 
 void initLogger(){
-	logger = log_create("umc.log", "UMC",true, LOG_LEVEL_TRACE);
+	logger = log_create("umc.log", "UMC",false, LOG_LEVEL_TRACE);
 	log_trace(logger, "---------------INIT LOG----------------");
 }
 
