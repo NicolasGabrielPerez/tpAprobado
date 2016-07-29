@@ -521,3 +521,49 @@ void test_PCB_serialization(){
 	puts("Fin de comparación\n");
 
 }
+
+void test_list_and_queues(){
+	PCB* pcb0 = new_pcb(0);
+	create_program_PCB(pcb0, programa1, 40);
+	list_add(General_Process_List, pcb0);
+	list_add(RUNNING_Process_List, pcb0);
+	queue_push(READY_Process_Queue, pcb0);
+
+	PCB* pcb1 = new_pcb(1);
+	create_program_PCB(pcb1, programa1, 70);
+	list_add(General_Process_List, pcb1);
+	list_add(RUNNING_Process_List, pcb1);
+	queue_push(READY_Process_Queue, pcb1);
+
+	PCB* pcb2 = new_pcb(2);
+	create_program_PCB(pcb2, programa1, 100);
+	list_add(General_Process_List, pcb2);
+	list_add(RUNNING_Process_List, pcb2);
+	queue_push(READY_Process_Queue, pcb1);
+
+	PCB* pcbAux3 = remove_pcb_by_ID(General_Process_List, 0);
+	free_pcb(pcbAux3);
+	PCB* pcbAux0 = get_pcb_by_ID(RUNNING_Process_List, 0);
+	pcbAux3 = get_pcb_by_ID(RUNNING_Process_List, 0);
+
+	PCB* pcbAux1 = queue_pop(READY_Process_Queue);
+	printf("Cola de READY POP - ProcessId: %d\n", pcbAux1->processId);
+
+	PCB* pcbAux4 = get_pcb_by_ID(General_Process_List, 0);
+	if(pcbAux4 != NULL){
+		printf("Proceso encontrado en lista\n");
+	}
+	else{
+		printf("Proceso no encontrado en la lista\n");
+	}
+
+	pcb1->tagIndex = "Tag Index modificado desde pcb1";
+	pcbAux4 = get_pcb_by_ID(RUNNING_Process_List, 1);
+	printf("TagIndex modificado - Recibido desde RUNNING: %s\n", pcbAux4->tagIndex);
+
+	pcbAux4 = queue_pop(READY_Process_Queue);
+	printf("Cola de READY POP - ProcessId: %d\n", pcbAux4->processId);
+	printf("TagIndex modificado - Recibido desde Cola de READY: %s\n", pcbAux4->tagIndex);
+
+
+}

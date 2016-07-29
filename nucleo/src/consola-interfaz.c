@@ -11,25 +11,31 @@ fd_set read_fds; //set auxiliar
 
 //Recibe mensajes y llama a las funciones correspondientes según el HEADER
 void handleConsoleRquests(int consoleSocket){
-	message* message = receiveMessage(consoleSocket);
+	message* consoleMessage = receiveMessage(consoleSocket);
 
-	if(message->header == HEADER_HANDSHAKE){
+	if(consoleMessage->codError == SOCKET_DESCONECTADO){
+		log_warning(nucleo_logger, "Socket de CONSOLA %d desconectado\n", consoleSocket);
+		disconnect_console(consoleSocket);
+		return;
+	}
+
+	if(consoleMessage->header == HEADER_HANDSHAKE){
 		console_makeHandshake(consoleSocket);
 		log_trace(nucleo_logger, "COMUNICACIÓN: Nueva consola conectada en %d", consoleSocket);
 	}
 
-	if(message->header == HEADER_FIN_PROGRAMA){
+	if(consoleMessage->header == HEADER_FIN_PROGRAMA){
 		log_trace(nucleo_logger, "COMUNICACIÓN: Fin de programa recibido desde consola %d", consoleSocket);
 		FD_CLR(consoleSocket, &consola_sockets_set);
 		close(consoleSocket);
 		set_pcb_EXIT(consoleSocket);		//consoleSocket == PID
 	}
-	if(message->header == HEADER_INIT_PROGRAMA){
+	if(consoleMessage->header == HEADER_INIT_PROGRAMA){
 		log_trace(nucleo_logger, "COMUNICACIÓN: Nuevo programa recibido de consola %d", consoleSocket);
-		char* programaANSISOP = message->contenido;
-		initNewProgram(message->contenidoSize, programaANSISOP, consoleSocket);
+		char* programaANSISOP = consoleMessage->contenido;
+		initNewProgram(consoleMessage->contenidoSize, programaANSISOP, consoleSocket);
 		free(programaANSISOP);
-		free(message);
+		free(consoleMessage);
 	}
 	/*
 	else{
@@ -141,3 +147,15 @@ int convertToInt32(char* buffer){
 	int32_t numberToReturn = *number;
 	return numberToReturn;
 }
+
+void disconnect_console(int consoleSocket){
+	//Obtener PCB asociado a consola
+	PCB* pcbToKill = remove_pcb_by_ID(General_Process_List, consoleSocket);
+	//Eliminar pcb de todas las estructuras
+	remove_pcb_by_ID(RUNNING_Process_List, consoleSocket);
+
+	//Que pasa si hago free de un pcb que está en una cola o lista???
+	//Si está ejecutando, que pasa si quiero actualizar al volver el pcb desde CPU???
+}
+
+

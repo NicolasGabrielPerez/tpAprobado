@@ -29,11 +29,11 @@ u_int32_t quantum;
 t_log* nucleo_logger;
 
 void initNucleo(t_config* config){
-    quantum = config_get_int_value(config, "QUANTUM");
-    quantum_sleep = config_get_int_value(config, "QUANTUM_SLEEP");
+	quantum = config_get_int_value(config, "QUANTUM");
+	quantum_sleep = config_get_int_value(config, "QUANTUM_SLEEP");
 	io_ids = config_get_array_value(config, "IO_ID");
 	io_sleep_times = config_get_array_value(config, "IO_SLEEP");
-    semaforos_ids = config_get_array_value(config, "SEM_IDS");
+	semaforos_ids = config_get_array_value(config, "SEM_IDS");
 	semaforos_init_values = config_get_array_value(config, "SEM_INIT");
 	shared_values = config_get_array_value(config, "SHARED_VARS");
 	stack_size = config_get_int_value(config, "STACK_SIZE");
@@ -131,10 +131,28 @@ void queue_blocked_process_to_semaforo(char* id, PCB* pcb){
 void signal(char* id){
 	t_semaforo* semaforo = get_semaforo_by_ID(semaforo_control_list, id);
 	semaforo->sem_value ++;
+	PCB* nextPcb;
 
+	//TODO: Guti - TESTEAR
 	if(!queue_is_empty(semaforo->blocked_process_queue)){
 		//Poner en cola de ready al próximo proceso bloqueado
-		set_pcb_READY(queue_pop(semaforo->blocked_process_queue));
+		nextPcb = queue_pop(semaforo->blocked_process_queue);
+
+		if(is_program_alive(nextPcb->processId)){
+			set_pcb_READY();
+		}
+		else{
+			while(!queue_is_empty(semaforo->blocked_process_queue)){
+				if(!is_program_alive(nextPcb->processId)){
+					free_pcb(nextPcb);
+					nextPcb = queue_pop(semaforo->blocked_process_queue);
+				}
+				else{
+					set_pcb_READY();
+					break;
+				}
+			}
+		}
 	}
 }
 
@@ -203,11 +221,17 @@ void set_pcb_EXIT(int processID){
 
 void change_status_RUNNING_to_READY(t_CPU* cpu){
 	//sacar PCB de RUNNING
-	PCB* pcb = remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
-	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d removido de RUNNING", pcb->processId);
-	//encolar en ready
-	set_pcb_READY(pcb);
+	PCB* readyPcb = remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
+	log_trace(nucleo_logger, "PLANIFICACION: Proceso %d removido de RUNNING", readyPcb->processId);
 
+	//TODO: Guti - TESTEAR
+	//encolar en ready
+	if(is_program_alive(readyPcb->processId)){
+		set_pcb_READY(readyPcb);
+	}
+	else{
+		log_warning(nucleo_logger, "Programa %d no seteado a READY por desconexión de consola", readyPcb->processId);
+	}
 	liberarCpu(cpu->cpuSocket);
 	log_trace(nucleo_logger, "CONTROL CPU: CPU %d libre", cpu->cpuSocket);
 }
@@ -231,15 +255,19 @@ void end_process(int PID){
 }
 
 void nucleo_updatePCB(PCB* newPCB){
-	PCB* actualPCB = get_pcb_by_ID(General_Process_List, newPCB->processId);
+	if(is_program_alive(newPCB->processId)){
+		PCB* actualPCB = get_pcb_by_ID(General_Process_List, newPCB->processId);
 
-	actualPCB->programCounter = newPCB->programCounter;
-	actualPCB->memoryIndex = newPCB->memoryIndex;
-	actualPCB->stackCount = newPCB->stackCount;
+		actualPCB->programCounter = newPCB->programCounter;
+		actualPCB->memoryIndex = newPCB->memoryIndex;
+		actualPCB->stackCount = newPCB->stackCount;
 
-	//list_clean_and_destroy_elements(actualPCB->stack, free_stackContent);
-	actualPCB->stack = newPCB->stack;
-
+		//list_clean_and_destroy_elements(actualPCB->stack, free_stackContent);
+		actualPCB->stack = newPCB->stack;
+	}
+	else{
+		log_warning(nucleo_logger, "Programa %d no actualizado por desconexión de consola", newPCB->processId);
+	}
 	//list_add_all(actualPCB->stack, newPCB->stack);
 
 	//Actualizar con datos que provienen del CPU
@@ -251,7 +279,7 @@ void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSock
 	int memoryPagesCount;
 	memoryPagesCount = getProgramPagesCount(programSourceCode);
 	create_program_PCB(nuevoPCB, programSourceCode, memoryPagesCount);
-//TODO:Sacar linea
+	//TODO:Sacar linea
 	//add_pcb_to_general_list(nuevoPCB);
 
 	//Envío solicitud de páginas a UMC
@@ -261,10 +289,16 @@ void initNewProgram(u_int32_t codeSize, char* programSourceCode, int consoleSock
 //Toma el primer programa de la cola de READY y lo envía a cpu para su ejecución
 void set_next_pcb_RUNNING(int cpu_id){
 	t_CPU* cpu = get_CPU_by_socket(cpu_id);
-	PCB* pcb = queue_pop(READY_Process_Queue);
-	cpu->PID = pcb->processId;					//Asigno a la estructura CPU el id del proceso que va a ejecutar
-	list_add(RUNNING_Process_List, pcb);
-	cpu_sendPCB(pcb, cpu->cpuSocket);
+
+	//TODO: Guti - TESTEAR
+	PCB* pcbCandidate = queue_pop(READY_Process_Queue);
+	while(!is_program_alive(pcbCandidate->processId)){
+		free_pcb(pcbCandidate);
+		pcbCandidate = queue_pop(READY_Process_Queue);
+	}
+	cpu->PID = pcbCandidate->processId;					//Asigno a la estructura CPU el id del proceso que va a ejecutar
+	list_add(RUNNING_Process_List, pcbCandidate);
+	cpu_sendPCB(pcbCandidate, cpu->cpuSocket);
 }
 //---------------------------------------------- </PCBs>
 
@@ -272,10 +306,10 @@ void set_next_pcb_RUNNING(int cpu_id){
 //Setea el diccionario general de variables globales definidos por configuración, iniciándolas en cero
 void set_vars_dictionary(){
 	int i = 0;
-		while(shared_values[i] != NULL){
-			dictionary_put(vars_control_dictionary, shared_values[i], 0);
-			i++;
-		}
+	while(shared_values[i] != NULL){
+		dictionary_put(vars_control_dictionary, shared_values[i], 0);
+		i++;
+	}
 }
 
 //Setea el valor de una variable compartida

@@ -42,9 +42,10 @@ int main(void) {
 		}
 	}
 	else{
-		test_PCB_serialization();
+		//test_PCB_serialization();
 		//test_planification();
 		//test_serialization();
+		test_list_and_queues();
 	}
 	return EXIT_SUCCESS;
 }

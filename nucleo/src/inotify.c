@@ -17,7 +17,8 @@
 // Puedo manejar hasta 1024 eventos simultaneos.
 #define BUF_LEN     ( 1024 * EVENT_SIZE )
 
-int main(int argc, char **argv) {
+//TODO: dos main en el proyecto me rompen todo ;)
+int main2(int argc, char **argv) {
 	char buffer[BUF_LEN];
 
 	// Al inicializar inotify este nos devuelve un descriptor de archivo

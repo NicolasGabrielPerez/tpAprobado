@@ -191,11 +191,17 @@ void nucleo_wait(message* mensaje, t_CPU* cpu){
 		}
 		//Bloquear proceso por semáforo
 		PCB* pcb = deserialize_pcb(pcbMessage->contenido);
-		nucleo_updatePCB(pcb);
-		queue_blocked_process_to_semaforo(semaforo->sem_id, pcb);
 
-		remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
-
+		//TODO: Guti - TESTEAR
+		if(is_program_alive(pcb->processId)){
+			nucleo_updatePCB(pcb);
+			queue_blocked_process_to_semaforo(semaforo->sem_id, pcb);
+			remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
+		}
+		else{
+			pcb = remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
+			free_pcb(pcb);
+		}
 		//Setear cpu libre
 		liberarCpu(cpu->cpuSocket);
 	}

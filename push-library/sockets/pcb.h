@@ -89,6 +89,8 @@ PCB* get_pcb_by_ID(t_list* pcbList, int PID);
 PCB* remove_pcb_by_ID(t_list* pcbList, int PID);
 
 int get_next_Process_ID();
+
+int is_program_alive(int processId);
 //--------------------------Functions
 
 #endif

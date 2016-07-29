@@ -151,3 +151,16 @@ PCB* remove_pcb_by_ID(t_list* pcbList, int PID){
 
 	return NULL;
 }
+
+int is_program_alive(int processId){
+	PCB* pcbCheck = get_pcb_by_ID(General_Process_List, processId);
+
+	if(pcbCheck != NULL){
+		free_pcb(pcbCheck);
+		return true;
+	}
+	else {
+		free_pcb(pcbCheck);
+		return false;
+	}
+}

@@ -59,8 +59,15 @@ void attend_blocked_processes(t_IO_Device* io_device){
 
 	while(queue_size(io_device->BlockedProcessesQueue) > 0){
 		pcb = queue_pop(io_device->BlockedProcessesQueue);
+
+		if(is_program_alive(pcb->processId)){
 		execute_process_IO(io_device->sleepTime * pcb->sleepUnits);
 		set_pcb_READY(pcb);
+		}
+		else{
+			free_pcb(pcb);
+			log_warning(nucleo_logger, "Programa %d no ejecuta E/S por desconexión de consola", pcb->processId);
+		}
 	}
 }
 
