@@ -105,7 +105,7 @@ void doQuantum() {
 	pcb->programCounter++;
 
 	if(hasToFinishProgram) {
-		nucleo_imprimir_texto("Finalizando programa debido a un acceso no valido a memoria");
+		nucleo_imprimir_texto("Finalizando programa debido a un acceso no valido a memoria o falta memoria.");
 		nucleo_notificarFinDePrograma();
 
 		hasToReturn = true;
@@ -169,6 +169,7 @@ void createSIGUSR1Thread() {
 	pthread_create(&thread, &pthread_attr, &test,  0);
 }
 
+int lastProcessId = -1;
 int main(int argc, char **argv) {
 
 	logger = log_create("log.txt", "CPU", true, LOG_LEVEL_TRACE);
@@ -203,7 +204,10 @@ int main(int argc, char **argv) {
 		quantum = 0;
 		hasToReturn = false;
 
-		umc_process_active(pcb->processId);
+		if(lastProcessId != pcb->processId) {
+			lastProcessId = pcb->processId;
+			umc_process_active(pcb->processId);
+		}
 		receiveInstructions(QUANTUM);
 	}
 

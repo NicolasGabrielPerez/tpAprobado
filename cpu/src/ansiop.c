@@ -167,7 +167,13 @@ void llamarSinRetorno(t_nombre_etiqueta etiqueta) {
 void finalizar() {
 	log_trace(logger, "ANSISOP: finalizar");
 
+
+	int32_t pid = pcb->processId;
+
 	nucleo_notificarFinDePrograma(pcb);
+
+	umc_process_active(pid);
+
 	hasToReturn = true;
 	pcb = 0;
 }
