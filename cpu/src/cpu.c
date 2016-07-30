@@ -88,6 +88,7 @@ void doQuantum() {
 
 	if(instruction == 0 || strlen(instruction) < 2) {
 
+		nucleo_imprimir_texto("Fin de programa por error de memoria en la instruccion");
 		nucleo_notificarFinDePrograma();
 		return;
 	}
