@@ -17,7 +17,7 @@ void printPagesTable(tabla_de_paginas* tabla){
 	for(j=0; j< list_size(tabla->presentes); j++){
 		presente* presente = list_get(tabla->presentes, j);
 		printf("Pagina: %d | Frame= %d | U=%d | M=%d\n",
-						presente->nroPagina, presente->nroFrame, presente->uso, presente->modificado);
+				presente->nroPagina, presente->nroFrame, presente->uso, presente->modificado);
 
 	}
 
@@ -37,7 +37,7 @@ void printData(tabla_de_paginas* tabla){
 		entry = list_get(tabla->entradas, i);
 		if(entry->presente){
 			printf("Pagina: %d | Frame= %d | U=%d | M=%d\n",
-							entry->nroPagina, entry->nroFrame, entry->uso, entry->modificado);
+					entry->nroPagina, entry->nroFrame, entry->uso, entry->modificado);
 
 			if(entry->presente){
 				char* frame = leerFrame(entry->nroFrame);
@@ -63,6 +63,17 @@ void dumpAllTables(){
 		tablaActual = list_get(tablasDePaginas, i);
 		printPagesTable(tablaActual);
 	}
+}
+
+void showActive(){
+	printf("----------------- Mostrando Procesos activos -----------------\n");
+	int i;
+	tabla_de_paginas* tabla;
+	for(i = 0; i< list_size(tablasDePaginas); i++){
+		tabla = list_get(tablasDePaginas, i);
+		printf("PID %d\n", tabla->pid);
+	}
+	printf("----------------- Fin de Procesos activos -----------------\n");
 }
 
 void dumpTable(int pid){

@@ -15,6 +15,8 @@ enum AlgoritmoReemplazo algoritmoActivo;
 
 t_log* logger;
 
+pthread_mutex_t umc_memory = PTHREAD_MUTEX_INITIALIZER;
+
 void demorarSolicitud()
 {
    struct timespec req, rem;
@@ -165,11 +167,12 @@ void borrarTablaDePaginas(tabla_de_paginas* tablaDePaginas){
 	for(i=0; i< list_size(tablaDePaginas->presentes); i++){
 		present = list_get(tablaDePaginas->presentes, i);
 		frame = obtenerEntradaDeFrame(present->nroFrame);
-		if(frame==0) return;
+		if(frame==0) break;
 		frame->ocupado = 0;
 	}
 
-	list_remove_and_destroy_element(tablasDePaginas, pagesTableIndex, destroyPagesTable);
+	//list_remove_and_destroy_element(tablasDePaginas, pagesTableIndex, destroyPagesTable);
+	list_remove(tablasDePaginas, pagesTableIndex);
 }
 
 response* finalizarPidDeUMC(int pid){
@@ -234,8 +237,10 @@ response* initProgramaUMC(int pid, int cantPaginas){
 }
 
 char* obtenerBytes(char* contenido, int offset, int tamanio){
+	pthread_mutex_lock(&umc_memory);
 	char* bytes = malloc(tamanio);
 	memcpy(bytes, contenido+offset, tamanio);
+	pthread_mutex_unlock(&umc_memory);
 	return bytes;
 }
 
@@ -253,12 +258,15 @@ tabla_de_frame_entry* obtenerEntradaDeFrame(int nroFrame){
 void escribirEnFrame(char* buffer, int offset, int tamanio, int nroFrame){
 	tabla_de_frame_entry* entrada = obtenerEntradaDeFrame(nroFrame);
     char* where = entrada->direccion_real + offset;
-	memcpy(where, buffer, tamanio);
+    pthread_mutex_lock(&umc_memory);
+    memcpy(where, buffer, tamanio);
 	log_trace(logger, "Frame %d escrito!", nroFrame);
+	pthread_mutex_unlock(&umc_memory);
 }
 
 char* obtenerBytesDeMemoriaPrincipal(int frame, int offset, int tamanio){
 	demorarSolicitud();
+
 	int i;
 	for(i=0; i<list_size(tablaDeFrames->entradas);i++){
 		tabla_de_frame_entry* actual = list_get(tablaDeFrames->entradas, i);

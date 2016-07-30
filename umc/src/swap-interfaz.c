@@ -34,7 +34,7 @@ void initSwap(t_config* config){
 }
 
 response* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
-	//pthread_mutex_lock(&swap_semaphore);
+	pthread_mutex_lock(&swap_semaphore);
 	if (send(swap_socket, &HEADER_INIT_PROGRAMA, sizeof(int32_t), 0) == -1) {
 		perror("send");
 		exit(1);
@@ -52,7 +52,7 @@ response* initProgramaSwap(int* pid, int* cantPaginas, char* codFuente){
 		exit(1);
 	}
 	response* swapResponse = recibirResponse(swap_socket);
-	//pthread_mutex_unlock(&swap_semaphore);
+	pthread_mutex_unlock(&swap_semaphore);
 	return swapResponse;
 }
 

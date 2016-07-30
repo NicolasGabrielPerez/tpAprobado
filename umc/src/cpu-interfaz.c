@@ -59,6 +59,12 @@ void recibirAlmacenarPaginas(int cpu_socket, int pidActivo){
 
 	escribirEnFrame(buffer, offset, tamanio, result.frameEntry->nroFrame);
 	tabla_de_paginas_entry* pageEntry = buscarPorNroPaginaYPID(nroPagina, pidActivo);
+	if(pageEntry == 0){
+		enviarFAIL(cpu_socket, result.codError);
+		log_trace(logger, "Enviada respuesta de fallo");
+		return;
+	}
+
 	pageEntry->modificado = 1;
 
 	//Actualizar TLB

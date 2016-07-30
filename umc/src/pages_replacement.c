@@ -24,6 +24,7 @@ int cargarNroPagYFrame(presente* presente, tabla_de_paginas* tablaDePaginas, int
 
 			if(nroFrameDisponible == -1){//No hay lugar
 				log_warning(logger, "End of the world exception, cerrando programa %d", tablaDePaginas->pid);
+				finalizarPidDeUMC(tablaDePaginas->pid);
 				pthread_mutex_unlock(&search_free_frame);
 				return -1;
 			}

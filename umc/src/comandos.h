@@ -15,6 +15,8 @@
 
 	void dumpData(int pid);
 
+	void showActive();
+
 	void flushTlb();
 
 	void dumpTlb();
