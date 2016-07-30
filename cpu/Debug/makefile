@@ -26,7 +26,7 @@ endif
 all: cpu
 
 dependents:
-	-cd /home/utnso/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug && $(MAKE) all
+	-cd /home/utnso/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug && $(MAKE) clean all
 
 # Tool invocations
 cpu: $(OBJS) $(USER_OBJS) /home/utnso/tp-2016-1c-Pusheo-luego-existo.../push-library/Debug/libpush-library.so

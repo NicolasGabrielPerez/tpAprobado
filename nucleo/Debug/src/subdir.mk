@@ -9,6 +9,7 @@ C_SRCS += \
 ../src/cpu.c \
 ../src/inotify.c \
 ../src/io-device.c \
+../src/nucleo-comandos.c \
 ../src/nucleo-structs.c \
 ../src/nucleo.c \
 ../src/planificador.c \
@@ -21,6 +22,7 @@ OBJS += \
 ./src/cpu.o \
 ./src/inotify.o \
 ./src/io-device.o \
+./src/nucleo-comandos.o \
 ./src/nucleo-structs.o \
 ./src/nucleo.o \
 ./src/planificador.o \
@@ -33,6 +35,7 @@ C_DEPS += \
 ./src/cpu.d \
 ./src/inotify.d \
 ./src/io-device.d \
+./src/nucleo-comandos.d \
 ./src/nucleo-structs.d \
 ./src/nucleo.d \
 ./src/planificador.d \
