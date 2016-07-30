@@ -140,8 +140,7 @@ int main(int argc, char **argv) {
 	//pthread_create(&comando, &nucleo_attr, &comandosPorPantalla, socket_nucleo);
 	espera_resultados(socket_nucleo);
 
-
-	puts("Terminé felizmente\n");
+	puts("Programa finalizado\n");
 
 	return EXIT_SUCCESS;
 }
