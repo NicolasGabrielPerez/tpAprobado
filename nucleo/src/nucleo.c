@@ -4,6 +4,7 @@
 #include "umc-interfaz.h"
 #include "planificador.h"
 #include "testing-serialization.h"
+#include "nucleo-comando.h"
 #include <pthread.h>
 #include <commons/log.h>
 #include <sys/types.h>
@@ -42,6 +43,7 @@ int main(void) {
 		init_cpu_communication_thread(nucleo_attr);
 		init_console_communication_thread(nucleo_attr);
 		init_planification_thread(nucleo_attr);
+		initNUCLEOConsole(nucleo_attr);
 
 		//test_cpu_communication();
 
