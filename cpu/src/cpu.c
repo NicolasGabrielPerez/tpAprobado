@@ -86,6 +86,12 @@ void doQuantum() {
 	log_trace(logger, "Ejecutando quantum: %d", quantum);
 	log_trace(logger, "Ejecutando instruccion: %s", instruction);
 
+	if(instruction == 0 || strlen(instruction) < 2) {
+
+		nucleo_notificarFinDePrograma();
+		return;
+	}
+
 	char* instructionDupped = strdup(instruction);
 
 	analizadorLinea(instructionDupped, &functions, &kernel_functions);

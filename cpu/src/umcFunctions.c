@@ -109,16 +109,14 @@ void umc_set(t_puntero page, t_puntero offset, t_size size, char* buffer) {
 		if(respuesta->codError == PAGINA_NO_EXISTE) {
 			log_error(logger, "Página %d no existe o inaccesible. Finalizando programa",
 					page);
-
-			hasToFinishProgram = true;
 		}
 
 		if(respuesta->codError == HEADER_PAGINAS_NO_DISPONIBLES) {
 			log_error(logger, "Página %d no disponible. Finalizando programa",
 					page);
-
-			hasToFinishProgram = true;
 		}
+
+		hasToFinishProgram = true;
 	}
 
 	free(respuesta);
@@ -146,11 +144,14 @@ char* umc_get(t_puntero page, t_puntero offset, t_size size) {
 
 		if(respuesta->codError == PAGINA_NO_EXISTE) {
 			log_error(logger, "Página %d no existe o inaccesible", page);
-
-			hasToFinishProgram = true;
-			return 0;
 		}
 
+		if(respuesta->codError == HEADER_PAGINAS_NO_DISPONIBLES) {
+			log_error(logger, "Página %d no disponible. Finalizando programa",
+					page);
+		}
+
+		hasToFinishProgram = true;
 	}
 	//En caso de fallo, hacer un receive adicional con un codigo int32.
 
