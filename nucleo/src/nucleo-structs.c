@@ -1,4 +1,5 @@
 #include "nucleo-structs.h"
+#include "inotify.h"
 
 u_int32_t quantum;
 int quantum_sleep;

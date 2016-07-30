@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/inotify.h>
+#include "nucleo-structs.h"
 
 // El tamaño de un evento es igual al tamaño de la estructura de inotify
 // mas el tamaño maximo de nombre de archivo que nosotros soportemos
@@ -18,7 +19,7 @@
 #define BUF_LEN     ( 1024 * EVENT_SIZE )
 
 //TODO: dos main en el proyecto me rompen todo ;)
-int main2(int argc, char **argv) {
+void* checkEvent() {
 	char buffer[BUF_LEN];
 
 	// Al inicializar inotify este nos devuelve un descriptor de archivo
@@ -58,7 +59,9 @@ int main2(int argc, char **argv) {
 
 				//create config otra vez
 				//chequear que el campo haya cambiado (quantum o lo que sea)
-
+				t_config* config = getConfig("nucleo.config");
+				quantum = config_get_int_value(config, "QUANTUM");
+				quantum_sleep = config_get_int_value(config, "QUANTUM_SLEEP");
 			}
 		}
 		offset += sizeof (struct inotify_event) + event->len;
