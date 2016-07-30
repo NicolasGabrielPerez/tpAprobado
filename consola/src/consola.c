@@ -36,14 +36,14 @@ void* espera_resultados(){
 			FEOP = 0;
 		}
 		if (nucleoResponse->header == HEADER_PAGINAS_NO_DISPONIBLES) {
-					printf("NO HAY MEMORIA DISPONIBLE \n");
-					fin_program = 0;
-					FEOP = 0;
-				}
+			printf("NO HAY MEMORIA DISPONIBLE \n");
+			fin_program = 0;
+			FEOP = 0;
+		}
 		if (nucleoResponse->header == HEADER_PAGINAS_DISPONIBLES) {
-					printf("INICIADO \n");
+			printf("INICIADO \n");
 
-				}
+		}
 		if (nucleoResponse->header == HEADER_RESULTADOS){
 			char* mensaje = string_from_format("Imprimiendo: %s \n", nucleoResponse->contenido);
 
