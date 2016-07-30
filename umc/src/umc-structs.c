@@ -94,6 +94,7 @@ tabla_de_paginas_entry* buscarEntradaPorPagina(tabla_de_paginas* tablaDePaginas,
 
 tabla_de_paginas_entry* buscarPorNroPaginaYPID(int nroPagina, int pid){
 	tabla_de_paginas* tablaDePaginas = buscarPorPID(pid);
+	if(tablaDePaginas==0) return 0;
 	return buscarEntradaPorPagina(tablaDePaginas, nroPagina);
 }
 
@@ -163,6 +164,7 @@ void borrarTablaDePaginas(tabla_de_paginas* tablaDePaginas){
 	presente* present;
 	for(i=0; i< list_size(tablaDePaginas->presentes); i++){
 		present = list_get(tablaDePaginas->presentes, i);
+		if(frame==0) continue;
 		frame = obtenerEntradaDeFrame(present->nroFrame);
 		frame->ocupado = 0;
 	}
