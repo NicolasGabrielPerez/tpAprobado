@@ -112,7 +112,10 @@ void ejecutarComando(char* command){
 		dumpTlb();
 		return;
 	}
-
+	if(string_starts_with(command, "dump frame")){
+		dumpFrames();
+		return;
+	}
 	printf("Comando invalido\n");
 }
 

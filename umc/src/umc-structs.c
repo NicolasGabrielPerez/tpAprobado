@@ -164,8 +164,8 @@ void borrarTablaDePaginas(tabla_de_paginas* tablaDePaginas){
 	presente* present;
 	for(i=0; i< list_size(tablaDePaginas->presentes); i++){
 		present = list_get(tablaDePaginas->presentes, i);
-		if(frame==0) continue;
 		frame = obtenerEntradaDeFrame(present->nroFrame);
+		if(frame==0) return;
 		frame->ocupado = 0;
 	}
 
@@ -381,7 +381,7 @@ umcResult createOkFrameResult(tabla_de_frame_entry* frameEntry){
 }
 
 void initLogger(){
-	logger = log_create("umc.log", "UMC",false, LOG_LEVEL_TRACE);
+	logger = log_create("umc.log", "UMC",true, LOG_LEVEL_TRACE);
 	log_trace(logger, "---------------INIT LOG----------------");
 }
 

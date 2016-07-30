@@ -73,6 +73,19 @@ void dumpTable(int pid){
 	printPagesTable(tabla);
 }
 
+void dumpFrames(){
+	tabla_de_frame_entry* frameEntry;
+	int i;
+	for(i=0; i< list_size(tablaDeFrames->entradas); i++){
+		frameEntry = list_get(tablaDeFrames->entradas, i);
+		printf("Frame= %d | Ocupado=%d | Direccion=%d\n",
+				frameEntry->nroFrame, frameEntry->ocupado, frameEntry->direccion_real);
+	}
+	if(i==0){
+		printf("No hay frames WTF\n");
+	}
+}
+
 void dumpAllData(){
 	int i;
 	tabla_de_paginas* tablaActual;

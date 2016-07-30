@@ -80,7 +80,8 @@
 		tabla_de_frame_entry* frameEntry;
 	} umcResult;
 
-	t_list* tablasDePaginas;
+	extern t_list* tablasDePaginas;
+	extern tabla_de_frames* tablaDeFrames;
 
 	pthread_attr_t pthread_attr;
 
