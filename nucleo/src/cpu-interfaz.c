@@ -70,8 +70,10 @@ void handleCpuRequests(int cpuSocket){
 	if(mensaje->header == HEADER_FIN_PROGRAMA){
 		log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de programa desde CPU %d", cpuSocket);
 		t_CPU* cpu = get_CPU_by_socket(cpuSocket);			//Obtengo estructura CPU
-		set_pcb_EXIT(cpu->PID);				//Me encargo de notificar y destruir estructuras correspondientes
-		liberarCpu(cpuSocket);
+		if(cpu->PID > 0){
+			set_pcb_EXIT(cpu->PID);				//Me encargo de notificar y destruir estructuras correspondientes
+			liberarCpu(cpuSocket);
+		}
 	}
 	if(mensaje->header == HEADER_NOTIFICAR_FIN_RAFAGA){
 		log_trace(nucleo_logger, "COMUNICACIÓN: Recibido fin de ráfaga desde CPU %d", cpuSocket);

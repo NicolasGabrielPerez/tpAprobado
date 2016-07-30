@@ -41,8 +41,6 @@ static int getLine (char *prmpt, char *buff, size_t sz) {
 	return OK;
 }
 
-
-
 void parsearDumpVar(char* command){
 	int offset = sizeof("dump variables") - 1;
 	//char* sPid = string_substring_from(command, offset);
@@ -88,66 +86,77 @@ void parsearDumpCola(char* command){
 void printColas(){
 	printf("----------------- Comienzo colas -----------------\n");
 
-
-
-
-
 	t_queue* redy = READY_Process_Queue;
-	t_list* listaRedy =redy->elements;
+	t_list* listaReady =redy->elements;
 	t_queue* block= BLOCKED_Process_Queue;
 	t_list* listaBlock = block->elements;
 	t_list* general =General_Process_List;
 	t_list* run = RUNNING_Process_List;
 
-	t_list* io = IO_Device_List;
-	t_list* cpu = CPU_control_list;
-	t_list* semaforo = semaforo_control_list;
+	t_list* ioList = IO_Device_List;
+	t_list* cpuList = CPU_control_list;
+	t_list* semaforoList = semaforo_control_list;
 
 
 	int i;
-	for(i = 0; i< list_size(listaRedy); i++){
-		PCB* entry = (PCB*)list_get(listaRedy, i);
-		printf("Cola De READY | PID=%d\n",
+	PCB* entry;
+	PCB* entry2;
+	PCB* unPCB;
+	PCB* unPCB2;
+	t_IO_Device* auxDevice;
+
+	for(i = 0; i< list_size(listaReady); i++){
+		entry = (PCB*)list_get(listaReady, i);
+		printf("Cola De READY | PID = %d\n",
 				entry->processId);
 		printf("------- Fin entrada de cola -------\n");
 	}
 	for(i = 0; i< list_size(listaBlock); i++){
-		PCB* entry2 = (PCB*)list_get(listaBlock, i);
+		entry2 = (PCB*)list_get(listaBlock, i);
 		printf("Cola De BLOCKED | PID=%d\n",
 				entry2->processId);
 		printf("------- Fin entrada de cola -------\n");
 	}
 	for(i = 0; i< list_size(general); i++){
-		PCB* unPCB = list_get(general, i);
+		unPCB = list_get(general, i);
 		printf("Cola De General_Process | PID=%d\n",
 				unPCB->processId);
 		printf("------- Fin entrada de cola -------\n");
 	}
 	for(i = 0; i< list_size(run); i++){
-		PCB* unPCB = list_get(run, i);
+		unPCB2 = list_get(run, i);
 		printf("Cola De RUNNING | PID=%d\n",
-				unPCB->processId);
-		printf("------- Fin entrada de cola -------\n");
-	}
-	for(i = 0; i< list_size(io); i++){
-		PCB* unPCB = list_get(io, i);
-		printf("Cola De IO_Device | cpuID=%d\n",
-				unPCB->processId);
-		printf("------- Fin entrada de cola -------\n");
-	}
-	for(i = 0; i< list_size(cpu); i++){
-		t_CPU* unaCPU = (t_CPU*)list_get(cpu, i);
-		printf("Cola De CPUs conectadas | PID=%d\n",
-				unaCPU->cpuSocket);
-		printf("------- Fin entrada de cola -------\n");
-	}
-	for(i = 0; i< list_size(semaforo); i++){
-		PCB* unPCB = list_get(semaforo, i);
-		printf("Cola De semadoros | PID=%d\n",
-				unPCB->processId);
+				unPCB2->processId);
 		printf("------- Fin entrada de cola -------\n");
 	}
 
+	printf("Lista De IO_Device\n");
+	for(i = 0; i< list_size(ioList); i++){
+		auxDevice = list_get(ioList, i);
+		printf("IO_Device => ioId = %s | sleepTime = %d | Blocked process count = %d\n",
+				auxDevice->ioId, auxDevice->sleepTime, queue_size(auxDevice->BlockedProcessesQueue));
+		printf("------- Fin entrada de cola -------\n");
+	}
+	printf("------- Fin lista dispositivos -------\n");
+
+	printf("Lista De CPUs conectadas\n");
+	for(i = 0; i< list_size(cpuList); i++){
+		t_CPU* unaCPU = (t_CPU*)list_get(cpuList, i);
+		printf("CPU => Socket = %d | PID = %d\n",
+				unaCPU->cpuSocket, unaCPU->PID);
+		printf("------- Fin entrada de cola -------\n");
+	}
+	printf("------- Fin lista de CPUs -------\n");
+
+	printf("Lista De Semáforos\n");
+	t_queue* auxQueue;
+	for(i = 0; i < list_size(semaforoList); i++){
+		t_semaforo* unSemaforo = list_get(semaforoList, i);
+		printf("Semáforo => sem_id = %s | Value = %d | Blocked process count = %d\n",
+				unSemaforo->sem_id, unSemaforo->sem_value, queue_size(unSemaforo->blocked_process_queue));
+		printf("------- Fin entrada de lista -------\n");
+	}
+	printf("------- Fin lista de Semáforos -------\n");
 
 	printf("----------------- Fin de colas -----------------\n");
 }
