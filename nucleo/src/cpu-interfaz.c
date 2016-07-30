@@ -194,6 +194,11 @@ void nucleo_wait(message* mensaje, t_CPU* cpu){
 			return;
 		}
 		//Bloquear proceso por semáforo
+		if(pcbMessage->contenido==0){
+			log_warning(nucleo_logger, "Socket de CPU %d desconectado\n", socket);
+			disconnect_cpu(socket);
+			return;
+		}
 		PCB* pcb = deserialize_pcb(pcbMessage->contenido);
 
 		//TODO: Guti - TESTEAR
@@ -203,6 +208,7 @@ void nucleo_wait(message* mensaje, t_CPU* cpu){
 			remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
 		}
 		else{
+			umc_notificarFinDePrograma(pcb->processId);
 			pcb = remove_pcb_by_ID(RUNNING_Process_List, cpu->PID);
 			free_pcb(pcb);
 		}

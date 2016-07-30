@@ -143,6 +143,7 @@ void signal(char* id){
 			set_pcb_READY(nextPcb);
 		}
 		else{
+			umc_notificarFinDePrograma(nextPcb->processId);
 			while(!queue_is_empty(semaforo->blocked_process_queue)){
 				if(!is_program_alive(nextPcb->processId)){
 					free_pcb(nextPcb);

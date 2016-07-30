@@ -9,6 +9,9 @@
 #include <sys/types.h>
 #include <sys/inotify.h>
 
+int oldQuantum;
+int oldQuantumSleep;
+
 // El tamaño de un evento es igual al tamaño de la estructura de inotify
 // mas el tamaño maximo de nombre de archivo que nosotros soportemos
 // en este caso el tamaño de nombre maximo que vamos a manejar es de 24
@@ -89,8 +92,16 @@ int main(void) {
 					//create config otra vez
 					//chequear que el campo haya cambiado (quantum o lo que sea)
 					t_config* config = getConfig("nucleo.config");
-					quantum = config_get_int_value(config, "QUANTUM");
-					quantum_sleep = config_get_int_value(config, "QUANTUM_SLEEP");
+					oldQuantum = config_get_int_value(config, "QUANTUM");
+					oldQuantumSleep = config_get_int_value(config, "QUANTUM_SLEEP");
+					if(oldQuantum!= quantum){
+						quantum = oldQuantum;
+						printf("Nuevo quantum: %d\n", quantum);
+					}
+					if(oldQuantumSleep!=quantum_sleep){
+						quantum_sleep = oldQuantumSleep;
+						printf("Nuevo quantum sleep: %d\n", quantum_sleep);
+					}
 				}
 				offset += sizeof (struct inotify_event) + event->len;
 			}
